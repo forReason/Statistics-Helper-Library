@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Statistics.Average_NS
 {
-    internal class Progressing_Average_Double
+    public class Progressing_Average_Double
     {
         public Progressing_Average_Double()
         {
@@ -25,7 +25,7 @@ namespace Statistics.Average_NS
             Value += (input - Value) / _Count;
         }
     }
-    class Progressing_Average_Decimal
+    public class Progressing_Average_Decimal
     {
         public Progressing_Average_Decimal()
         {
