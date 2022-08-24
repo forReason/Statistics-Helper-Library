@@ -4,10 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Statistics
+namespace Statistics.Average_NS
 {
-    public class Average
+    public class Volumetric_Average
     {
+        /// <summary>
+        /// Builds an average based on two values based on their amount
+        /// </summary>
+        /// <param name="value1"></param>
+        /// <param name="volume1"></param>
+        /// <param name="value2"></param>
+        /// <param name="volume2"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException">negative volumes not allowed</exception>
         public static double VolumeBasedAverage(double value1, double volume1, double value2, double volume2)
         {
             /// condition prechecks
@@ -56,7 +65,6 @@ namespace Statistics
                 returnAverage += value2 * (volume2/totalVolume);
                 return returnAverage;
             }
-            
         }
     }
 }
