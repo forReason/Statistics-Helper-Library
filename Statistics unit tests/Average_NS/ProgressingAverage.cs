@@ -17,11 +17,11 @@ namespace Statistics_unit_tests.Average_NS
             Random rng = new Random();
             uint max = int.MaxValue;
             uint stepSize = max / 20;
-            for(uint i = 0; i < max; i+= stepSize)
+            for (uint i = 0; i < max; i += stepSize)
             {
                 Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
                 double result = rng.NextDouble() * i;
-                for (uint b = 0 ; b < max; b+= stepSize)
+                for (uint b = 0; b < max; b += stepSize)
                 {
                     progressingAverage.AddValue(result);
                 }
@@ -29,6 +29,75 @@ namespace Statistics_unit_tests.Average_NS
                 {
                     throw new Exception("Value does not add up!");
                 }
+            }
+        }
+        [Fact]
+        public void StaticNegativeValues()
+        {
+            // positive tests
+            Random rng = new Random();
+            uint max = int.MaxValue;
+            uint stepSize = max / 20;
+            for (uint i = 0; i < max; i += stepSize)
+            {
+                Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
+                double result = rng.NextDouble() * i;
+                result = -result;
+                for (uint b = 0; b < max; b += stepSize)
+                {
+                    progressingAverage.AddValue(result);
+                }
+                if (progressingAverage.Value != result)
+                {
+                    throw new Exception("Value does not add up!");
+                }
+            }
+        }
+        [Fact]
+        public void PositiveValues()
+        {
+            // positive tests
+            Random rng = new Random();
+            uint max = int.MaxValue / 50;
+            uint stepSize = max / 50;
+            for (uint i = 50; i < max; i += stepSize)
+            {
+                Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
+                uint result = 0;
+                uint steps = 0;
+                uint stepsizeb = i / 50;
+                for (uint b = 0; b < i; b += stepSize)
+                {
+                    result += b;
+                    steps++;
+                    progressingAverage.AddValue(b);
+                }
+                double endResult = result / (double)steps;
+                if (progressingAverage.Value != endResult)
+                {
+                    throw new Exception("Value does not add up!");
+                }
+            }
+        }
+        [Fact]
+        public void RandomValue()
+        {
+            // positive tests
+            Random rng = new Random();
+            Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
+            double result = 0;
+            uint steps = 0;
+            for (uint b = 0; b < 2000; b ++)
+            {
+                double random = rng.NextDouble() - 0.5;
+                result += random;
+                steps++;
+                progressingAverage.AddValue(random);
+            }
+            double endResult = result / (double)steps;
+            if (Math.Round(progressingAverage.Value,6) != Math.Round(endResult,6))
+            {
+                throw new Exception("Value does not add up!");
             }
         }
     }
