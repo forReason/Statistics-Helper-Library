@@ -1,39 +1,92 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Statistics.Objects;
+﻿using Statistics.Objects;
 
 namespace Statistics.Average_NS
 {
-    public class Moving_Average
+    public class Moving_Average_Double
     {
-        public Moving_Average(TimeSpan totalTime, TimeSpan valueResolution)
+        public Moving_Average_Double(TimeSpan totalTime, TimeSpan valueResolution)
         {
             this.TotalTime = totalTime;
             this.ValueResolution = valueResolution;
+            Clear();
         }
         // "Settings"
         /// <summary>
-        ///  
+        ///  TotalTime specifies window of time in the past which should keepp track of (eg last 2hours)
         /// </summary>
-        TimeSpan TotalTime { get; set; }
-        TimeSpan ValueResolution { get; set; }
+        public TimeSpan TotalTime { get; set; }
+        /// <summary>
+        /// ValueResolution specifies how much time be consolidated into one dataPoint (mainly Memory saving Feature)
+        /// </summary>
+        public TimeSpan ValueResolution { get; set; }
         // Working variables
-        Queue<TimeSpot_Value<double>> queue = new Queue<TimeSpot_Value<double>>();
-        private TimeSpot_Value<double> spotValue;
-        private int ResolutionValuePoints = 0;
-        public double AddValuePoint(double value)
+        private Queue<TimeSpot_Value<double>> ValueQueue { get; set; }
+        private DateTime CurrentTimeSpot { get; set; }
+        private Progressing_Average_Double CurrentTimeSpotAverage = new Progressing_Average_Double();
+        private double QueueValue { get; set; }
+        /// <summary>
+        /// Value represents the current Moving Average
+        /// </summary>
+        public double Value { get; private set; }
+        /// <summary>
+        /// adds a single value point and assumes the date time of the value point is now
+        /// </summary>
+        /// <remarks>
+        /// handy for live fed data
+        /// </remarks>
+        /// <param name="value"></param>
+        public void AddValuePoint(double value)
         {
-            return AddValuePoint(value, DateTime.Now);
+            AddValuePoint(value, DateTime.Now);
         }
-        public double AddValuePoint(double value, DateTime timeStamp)
+        /// <summary>
+        /// adds a single data point based on the points date. </br>
+        /// handy for historical data
+        /// </summary>
+        /// <remarks>
+        /// Value points always need to be added in series
+        /// </remarks>
+        /// <param name="value"></param>
+        /// <param name="timeStamp"></param>
+        public void AddValuePoint(double value, DateTime timeStamp)
         {
-            // create new spot valu if its null
-            //if (this.spotValue.Equals(default(SpotValue<double>))) spotValue = new SpotValue<double>(timeStamp,0);
-            throw new NotImplementedException();
-            return 0;
+            // check if new value needs to be added to queue
+            if (CurrentTimeSpot + ValueResolution < timeStamp)
+            {
+                double spotValue = CurrentTimeSpotAverage.Value / ValueQueue.Count;
+                ValueQueue.Enqueue(new TimeSpot_Value<double>(CurrentTimeSpot, spotValue));
+                QueueValue += spotValue;
+                CurrentTimeSpot = timeStamp;
+                CurrentTimeSpotAverage.Clear();
+            }
+            // check if oldest timeSpot needs to be dequeued
+            TimeSpot_Value<double> checkRemovethis;
+            if (ValueQueue.TryPeek(out checkRemovethis))
+            {
+                if (checkRemovethis.Time + TotalTime < timeStamp)
+                {
+                    ValueQueue.Dequeue();
+                    QueueValue -= checkRemovethis.Value;
+                }
+            }
+            // Update current TimeSpot
+            CurrentTimeSpotAverage.AddValue(value);
+            // update public value
+            this.Value = Volumetric_Average.VolumeBasedAverage(value1: QueueValue, volume1: TotalTime.TotalMinutes, value2: CurrentTimeSpotAverage.Value, volume2: ValueResolution.TotalMinutes);
+        }
+        /// <summary>
+        /// resets the average to 0 and clears all its internal values.
+        /// </summary>
+        /// <remarks>
+        /// setting (time) persist
+        /// </remarks>
+        public void Clear()
+        {
+            ValueQueue = new Queue<TimeSpot_Value<double>>();
+            CurrentTimeSpot = DateTime.MinValue;
+            CurrentTimeSpotAverage.Clear();
+            QueueValue = 0;
+            Value = 0;
         }
     }
 }
