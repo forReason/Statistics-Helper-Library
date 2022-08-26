@@ -13,3 +13,6 @@ While I try to add unit tests to my projects, do a quick test yourself and check
 - Moving average
 - Quick average on the fly (omitting memory restraints and overflow)
 - Volumetric average for 2 values (averaging two values by teir weight)
+
+### Minimum Maximum
+- Calculate Maximum for a given amount of Datapoints (useful for sensor Data)
