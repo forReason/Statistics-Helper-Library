@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statistics", "Statistics\Statistics.csproj", "{9E13401B-396F-451F-9DBB-EB2A44B2FE30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Statistics", "Statistics\Statistics.csproj", "{9E13401B-396F-451F-9DBB-EB2A44B2FE30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statistics unit tests", "Statistics unit tests\Statistics unit tests.csproj", "{23E86560-55B8-408B-B20D-461220E411E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Statistics unit tests", "Statistics unit tests\Statistics unit tests.csproj", "{23E86560-55B8-408B-B20D-461220E411E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
