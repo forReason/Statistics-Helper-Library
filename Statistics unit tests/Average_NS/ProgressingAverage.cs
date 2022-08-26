@@ -79,6 +79,10 @@ namespace Statistics_unit_tests.Average_NS
                 }
             }
         }
+        /// <summary>
+        /// tests a generating the average from a range of random doubles (-0.5 to 0.5)
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         [Fact]
         public void RandomValue()
         {
