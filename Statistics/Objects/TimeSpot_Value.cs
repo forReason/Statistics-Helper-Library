@@ -13,7 +13,7 @@ namespace Statistics.Objects
             this.Time = time;
             this.Value = value;
         }
-        DateTime Time { get; set; }
-        T Value { get; set; }
+        public DateTime Time { get; set; }
+        public T Value { get; set; }
     }
 }
