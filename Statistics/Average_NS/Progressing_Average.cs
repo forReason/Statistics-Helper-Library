@@ -10,8 +10,7 @@ namespace Statistics.Average_NS
     {
         public Progressing_Average_Double()
         {
-            _Count = 0;
-            Value = 0;
+            Clear();
         }
         public double Value { get; private set; }
         private int _Count { get; set; }
@@ -24,19 +23,28 @@ namespace Statistics.Average_NS
             _Count++;
             Value += (input - Value) / _Count;
         }
+        public void Clear()
+        {
+            _Count = 0;
+            Value = 0;
+        }
     }
     public class Progressing_Average_Decimal
     {
         public Progressing_Average_Decimal()
         {
-            _Count = 0;
-            Value = 0;
+            Clear();
         }
         public decimal Value { get; private set; }
         private decimal _Count { get; set; }
         public void AddValue(decimal input)
         {
             Value += (input - Value) / _Count;
+        }
+        public void Clear()
+        {
+            _Count = 0;
+            Value = 0;
         }
     }
 }
