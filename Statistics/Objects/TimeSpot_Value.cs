@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Statistics.Objects
 {
-    internal struct TimeSpot_Value<T>
+    public struct TimeSpot_Value<T>
     {
-        internal TimeSpot_Value(DateTime time, T value)
+        public TimeSpot_Value(DateTime time, T value)
         {
             this.Time = time;
             this.Value = value;
