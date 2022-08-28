@@ -9,11 +9,11 @@ It is not about errorhandling. Make sure, you feed quality data. Garbage in, Gar
 While I try to add unit tests to my projects, do a quick test yourself and check if the data pushed out by this library actually makes sense to you.
 
 # Current implementations
-### average
+### Average
 - Moving average
 - Quick average on the fly (omitting memory restraints and overflow)
 - Volumetric average for 2 values (averaging two values by teir weight)
 
-### Minimum Maximum
+### Minimum / Maximum
 - Calculate Maximum or Minimum for a given amount of Datapoints (useful for sensor Data)
 - Calculate Maximum or Minimum for a sliding time window (useful for historical or inconsistent Data)
