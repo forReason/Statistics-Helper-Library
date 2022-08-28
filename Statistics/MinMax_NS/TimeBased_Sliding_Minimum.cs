@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace Statistics.MinMax_NS
 {
-    internal class TimeBased_Sliding_Maximum
+    public class TimeBased_Sliding_Minimum
     {
-        public TimeBased_Sliding_Maximum(TimeSpan duration)
+        public TimeBased_Sliding_Minimum(TimeSpan duration)
         {
             Clear();
             Duration = duration;
         }
-        public double CurrentMaximum { get; set; }
+        public double CurrentMinimum { get; set; }
         public TimeSpan Duration { get; set; }
 
-        private List<Objects.TimeSpot_Value<double>> MaximumValues = new List<Objects.TimeSpot_Value<double>>();
+        private List<Objects.TimeSpot_Value<double>> MinimumValues = new List<Objects.TimeSpot_Value<double>>();
         /// <summary>
         /// this function assumes the dateTime of the added point is right now
         /// good for realtime / sensor data
@@ -24,7 +24,7 @@ namespace Statistics.MinMax_NS
         /// <param name="input"></param>
         public void AddValue(double input)
         {
-            Objects.TimeSpot_Value<double> value = new Objects.TimeSpot_Value<double> {Time = DateTime.Now, Value = input };
+            Objects.TimeSpot_Value<double> value = new Objects.TimeSpot_Value<double> { Time = DateTime.Now, Value = input };
             AddValue(value);
         }
         /// <summary>
@@ -35,13 +35,13 @@ namespace Statistics.MinMax_NS
         {
             // calculate the oldest date to keep in tracking list
             DateTime targetDate = input.Time - Duration;
-            // maximum logic
-            if (input.Value >= CurrentMaximum)
+            // minimum logic
+            if (input.Value <= CurrentMinimum)
             {
-                // new maximum found, clear tracking list
+                // new minimum found, clear tracking list
                 // this is the best case scenario
-                MaximumValues.Clear();
-                CurrentMaximum = input.Value;
+                MinimumValues.Clear();
+                CurrentMinimum = input.Value;
             }
             else
             {
@@ -49,38 +49,38 @@ namespace Statistics.MinMax_NS
                 // go backwards the maximum tracking list and check for smaller values
                 // clear the list of all smaller values. The list should therefore always
                 // be in descending order
-                for (int b = MaximumValues.Count - 1; b >= 0; b--)
+                for (int b = MinimumValues.Count - 1; b >= 0; b--)
                 {
-                    if (MaximumValues[b].Value <= input.Value)
+                    if (MinimumValues[b].Value >= input.Value)
                     {
-                        // a lower value has been found. We have a newer, higher value
+                        // a higher value has been found. We have a newer, lower value
                         // clear this waste value from the tracking list
-                        MaximumValues.RemoveAt(b);
+                        MinimumValues.RemoveAt(b);
                     }
                     else
                     {
-                        // there are no more lower values. 
-                        // stop looking for smaller values to save time
+                        // there are no more higher values. 
+                        // stop looking for larger values to save time
                         break;
                     }
                 }
             }
             // append new value to tracking list, no matter if higher or lower
             // all future values might be lower
-            MaximumValues.Add(input);
+            MinimumValues.Add(input);
             // check if the oldest value is too old to be kept in the tracking list
-            while (MaximumValues[0].Time < targetDate)
+            while (MinimumValues[0].Time < targetDate)
             {
                 // oldest value is to be removed
-                MaximumValues.RemoveAt(0);
+                MinimumValues.RemoveAt(0);
                 // update maximum
-                CurrentMaximum = MaximumValues[0].Value;
+                CurrentMinimum = MinimumValues[0].Value;
             }
         }
         public void Clear()
         {
-            this.CurrentMaximum = double.MinValue;
-            this.MaximumValues.Clear();
+            this.CurrentMinimum = double.MaxValue;
+            this.MinimumValues.Clear();
         }
     }
 }
