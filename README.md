@@ -15,4 +15,5 @@ While I try to add unit tests to my projects, do a quick test yourself and check
 - Volumetric average for 2 values (averaging two values by teir weight)
 
 ### Minimum Maximum
-- Calculate Maximum for a given amount of Datapoints (useful for sensor Data)
+- Calculate Maximum or Minimum for a given amount of Datapoints (useful for sensor Data)
+- Calculate Maximum or Minimum for a sliding time window (useful for historical or inconsistent Data)
