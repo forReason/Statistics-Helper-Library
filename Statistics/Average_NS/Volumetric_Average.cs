@@ -35,6 +35,15 @@ namespace Statistics.Average_NS
             {
                 return (value1 / 2) + (value2 / 2);
             }
+            // check if ine volume is 0
+            if (volume1 == 0)
+            {
+                return value2;
+            }
+            else if (volume2 == 0)
+            {
+                return value1;
+            }
             /// prepare variables
             // return variable
             double returnAverage = 0;
