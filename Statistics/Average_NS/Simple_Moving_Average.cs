@@ -9,19 +9,22 @@ namespace Statistics.Average_NS
     /// <summary>
     /// this is an extremely lightweight and fast class in order to receive the simple moving average
     /// </summary>
-    internal class Simple_Moving_Average_Double
+    public class Simple_Moving_Average_Double
     {
-        public Simple_Moving_Average_Double(uint data_Length)
+        public Simple_Moving_Average_Double(uint maxDataLength, double divergenceCorrection = 0.95)
         {
+            MaxDataLength = maxDataLength;
+            DivergenceCorrection = divergenceCorrection;
             Clear();
         }
-        public uint DataLength { get; set; }
-        private uint _AddedDatapoints { get; set; }
+        public uint MaxDataLength { get; set; }
+        public uint CurrentDataLength { get; private set; }
         private bool _SeriesLengthReached { get; set; }
         public double Value { get; set; }
+        public double DivergenceCorrection { get; set; }
         public void Clear()
         {
-            _AddedDatapoints = 0;
+            CurrentDataLength = 0;
             Value = 0;
             _SeriesLengthReached = false;
         }
@@ -29,13 +32,13 @@ namespace Statistics.Average_NS
         {
             if (_SeriesLengthReached)
             {
-                Value += (input - Value) / DataLength;
+                Value += (input - Value) / (MaxDataLength*DivergenceCorrection);
             }
             else
             {
-                _AddedDatapoints++;
-                Value += (input - Value) / _AddedDatapoints;
-                if (_AddedDatapoints >= DataLength)
+                CurrentDataLength++;
+                Value += (input - Value) / CurrentDataLength;
+                if (CurrentDataLength >= MaxDataLength)
                 {
                     _SeriesLengthReached=true;
                 }

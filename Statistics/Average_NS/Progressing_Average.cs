@@ -16,12 +16,13 @@ namespace Statistics.Average_NS
         private int _Count { get; set; }
         public void AddValue(double input)
         {
+            _Count++;
             if (_Count == int.MaxValue)
             {
                 throw new IndexOutOfRangeException("max amount has been reached! use preciseaverage or moving avg instead!");
             }
-            _Count++;
             Value += (input - Value) / _Count;
+            { }
         }
         public void Clear()
         {
