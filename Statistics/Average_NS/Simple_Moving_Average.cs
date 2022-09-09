@@ -30,19 +30,9 @@ namespace Statistics.Average_NS
         }
         public void AddPoint(double input)
         {
-            if (_SeriesLengthReached)
-            {
-                Value += (input - Value) / (MaxDataLength*DivergenceCorrection);
-            }
-            else
-            {
-                CurrentDataLength++;
-                Value += (input - Value) / CurrentDataLength;
-                if (CurrentDataLength >= MaxDataLength)
-                {
-                    _SeriesLengthReached=true;
-                }
-            }
+            CurrentDataLength++;
+            Value += (input - Value) / (CurrentDataLength * DivergenceCorrection);
+            CurrentDataLength -= CurrentDataLength / MaxDataLength;
         }
     }
     /// <summary>
