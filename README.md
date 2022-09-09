@@ -13,7 +13,11 @@ While I try to add unit tests to my projects, do a quick test yourself and check
 - Moving average
 - Quick average on the fly (omitting memory restraints and overflow)
 - Volumetric average for 2 values (averaging two values by teir weight)
+- time based moving average (good for historic data and data with gaps, also good for targeting a certain time duration)
 
 ### Minimum / Maximum
 - Calculate Maximum or Minimum for a given amount of Datapoints (useful for sensor Data)
 - Calculate Maximum or Minimum for a sliding time window (useful for historical or inconsistent Data)
+
+### Statistics
+- added a relatively quick function for obtaining the standard deviation on the fly.
