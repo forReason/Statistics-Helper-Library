@@ -20,4 +20,4 @@ While I try to add unit tests to my projects, do a quick test yourself and check
 - Calculate Maximum or Minimum for a sliding time window (useful for historical or inconsistent Data)
 
 ### Statistics
-- added a relatively quick function for obtaining the standard deviation on the fly.
+- obtain standard deviation on the fly. (warning: will overflow if ran indefinitely)
