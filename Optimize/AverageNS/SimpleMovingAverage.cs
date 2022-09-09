@@ -94,16 +94,18 @@ namespace Optimize.AverageNS
             Progressing_Average_Double results = new Progressing_Average_Double();
             Sliding_Maximum max = new Sliding_Maximum(10);
             Sliding_Minimum min = new Sliding_Minimum(10);
-            double precision = 0;
-            while (true)
+            double precision = double.MaxValue;
+            Console.WriteLine($"starting benchmark for value {optimizeValue} with target divergence < {targetPrecision*100}%");
+            max.AddPoint(double.PositiveInfinity);
+            while (precision > targetPrecision)
             {
                 double result = RunEpoch(100, optimizeValue);
                 results.AddValue(result);
                 // calculate early stopping
-                min.AddPoint(result);
-                max.AddPoint(result);
-                precision = ((max.Value - min.Value) / Math.Abs(result));
-                Console.WriteLine($"\rbenchmarking value:{optimizeValue} divergence:{((precision)*100).ToString("0.00")}% Loss: {results.Value.ToString("0.00")}");
+                min.AddPoint(results.Value);
+                max.AddPoint(results.Value);
+                precision = ((max.Value - min.Value) / Math.Abs(results.Value));
+                Console.WriteLine($"\rbenchmarking value:{optimizeValue} divergence:{((precision)*100).ToString("0.00")}% ({(max.Value-min.Value).ToString("0.00")}) Loss: {results.Value.ToString("0.00")}");
             }
             Console.WriteLine($"final result for {optimizeValue}: {Math.Round(results.Value, 2)}");
             return new BenchmarkResult(optimizeValue, results.Value);
