@@ -1,4 +1,5 @@
 ﻿using Statistics.Average_NS;
+using Statistics.MinMax_NS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,30 +92,20 @@ namespace Optimize.AverageNS
         private BenchmarkResult BenchmarkValueDivergence(double optimizeValue, double targetPrecision)
         {
             Progressing_Average_Double results = new Progressing_Average_Double();
-            double oldDivergence = double.MaxValue;
-            int correctEpochs = 0;
+            Sliding_Maximum max = new Sliding_Maximum(10);
+            Sliding_Minimum min = new Sliding_Minimum(10);
+            double precision = 0;
             while (true)
             {
                 double result = RunEpoch(100, optimizeValue);
                 results.AddValue(result);
-                double epochChange = Math.Abs(1 - (oldDivergence / results.Value));
-                oldDivergence = results.Value;
-                double epochPrecision = Math.Round(epochChange * 100, 2);
-                Console.WriteLine($"\rbenchmarking value:{optimizeValue} accuracy:{100-epochPrecision}% Loss: {Math.Round(results.Value, 2)}");
-                if (epochChange < targetPrecision)
-                { // precision reached
-                    correctEpochs ++;
-                    if (correctEpochs >= 10)
-                    {
-                        Console.WriteLine($"final result for {optimizeValue}: {Math.Round(results.Value, 2)}");
-                        break;
-                    }
-                }
-                else
-                {
-                    correctEpochs = 0;
-                }
+                // calculate early stopping
+                min.AddPoint(result);
+                max.AddPoint(result);
+                precision = ((max.Value - min.Value) / Math.Abs(result));
+                Console.WriteLine($"\rbenchmarking value:{optimizeValue} divergence:{((precision)*100).ToString("0.00")}% Loss: {results.Value.ToString("0.00")}");
             }
+            Console.WriteLine($"final result for {optimizeValue}: {Math.Round(results.Value, 2)}");
             return new BenchmarkResult(optimizeValue, results.Value);
         }
         private double RunEpoch(int epochDuration, double optimizeValue)
@@ -161,7 +152,8 @@ namespace Optimize.AverageNS
             uint increase = lengthSteps;
             Simple_Moving_Average_Double simpleAverage = new Simple_Moving_Average_Double(length);
             Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
-            Statistics.Variance_NS.StandardDeviation divergence_avg = new Statistics.Variance_NS.StandardDeviation();
+            //Statistics.Variance_NS.StandardDeviation divergence_avg = new Statistics.Variance_NS.StandardDeviation();
+            Progressing_Average_Double divergence_avg = new Progressing_Average_Double();
             for (uint dataLength = 1; dataLength < length; dataLength += increase)
             {
                 simpleAverage.Clear();
@@ -182,24 +174,10 @@ namespace Optimize.AverageNS
                 }
 
                 double absoluteDivergence = Math.Abs(simpleAverage.Value-progressingAverage.Value);
-                //if ()
-                //double percentualDivergence = (absoluteDivergence / Math.Abs(progressingAverage.Value))*100;
-                //if (double.IsInfinity(percentualDivergence))
-                //{
-                //    Console.WriteLine("ERROR! result is infinity!");
-                //    Console.WriteLine($"value: {value}");
-                //    Console.WriteLine($"simpleAverage: {simpleAverage.Value}");
-                //    Console.WriteLine($"benchmark: {progressingAverage.Value}");
-                //    Console.WriteLine($"absolute divergence: {absoluteDivergence}");
-                //    Console.WriteLine($"percentualDivergence: {percentualDivergence}");
-                //
-                //    Console.WriteLine("ERROR!!!");
-                //}
-                //if (double.IsNaN(percentualDivergence))
-                //{
-                //    percentualDivergence = 0;
-                //}
-                divergence_avg.AddValue(absoluteDivergence);
+                double max = Math.Max(absoluteDivergence, Math.Abs(progressingAverage.Value))+1;
+                double min = Math.Min(absoluteDivergence, Math.Abs(progressingAverage.Value))+1;
+                double divergenceFactor = (max / min)*100;
+                divergence_avg.AddValue(divergenceFactor);
                 
             }
             if (double.IsNaN(divergence_avg.Value))
