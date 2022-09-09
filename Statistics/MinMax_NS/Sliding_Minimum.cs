@@ -25,7 +25,7 @@ namespace Statistics.MinMax_NS
         public void AddPoint(double input)
         {
             // if new value has been found, all other values can be discarded, hence this function
-            if (input >= Value)
+            if (input <= Value)
             {
                 Value = input;
                 Values.NewMinMaxFound(input);
