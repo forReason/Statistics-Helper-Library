@@ -13,20 +13,20 @@ namespace Statistics.Average_NS
             Clear();
         }
         public double Value { get; private set; }
-        private int _Count { get; set; }
+        public int Count { get; private set; }
         public void AddValue(double input)
         {
-            _Count++;
-            if (_Count == int.MaxValue)
+            Count++;
+            if (Count == int.MaxValue)
             {
                 throw new IndexOutOfRangeException("max amount has been reached! use preciseaverage or moving avg instead!");
             }
-            Value += (input - Value) / _Count;
+            Value += (input - Value) / Count;
             { }
         }
         public void Clear()
         {
-            _Count = 0;
+            Count = 0;
             Value = 0;
         }
     }
