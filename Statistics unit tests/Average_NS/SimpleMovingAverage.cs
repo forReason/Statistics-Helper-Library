@@ -11,6 +11,49 @@ namespace Statistics_unit_tests.Average_NS
     public class SimpleMovingAverage
     {
         [Fact]
+        public void TestDataLength_NewInstance()
+        {
+            for (uint targetLength = 0; targetLength < 50000; targetLength++)
+            {
+                Simple_Moving_Average_Double sma = new Simple_Moving_Average_Double(targetLength);
+                if (sma.MaxDataLength != targetLength)
+                {
+                    throw new Exception($"target length ({targetLength}) and max data length ({sma.MaxDataLength}) does not match up!");
+                }
+                for(int i = 0; i < targetLength * 2; i++)
+                {
+                    sma.AddPoint(1);
+                }
+                if (sma.CurrentDataLength != targetLength)
+                {
+                    { }
+                    throw new Exception($"Current Data Length ({sma.CurrentDataLength}) does not match target data length ({targetLength})!");
+                }
+            }
+        }
+        [Fact]
+        public void TestDataLength_ReusedInstance()
+        {
+            Simple_Moving_Average_Double sma = new Simple_Moving_Average_Double(0);
+            for (uint targetLength = 0; targetLength < 50000; targetLength++)
+            {
+                sma.MaxDataLength = targetLength;
+                if (sma.MaxDataLength != targetLength)
+                {
+                    throw new Exception($"target length ({targetLength}) and max data length ({sma.MaxDataLength}) does not match up!");
+                }
+                for (int i = 0; i < targetLength * 2; i++)
+                {
+                    sma.AddPoint(1);
+                }
+                if (sma.CurrentDataLength != targetLength)
+                {
+                    { }
+                    throw new Exception($"Current Data Length ({sma.CurrentDataLength}) does not match target data length ({targetLength})!");
+                }
+            }
+        }
+        [Fact]
         public void StaticPositiveValues()
         {
             // positive tests
@@ -19,12 +62,12 @@ namespace Statistics_unit_tests.Average_NS
             uint stepSize = max / 20;
             for (uint i = 0; i < max; i += stepSize)
             {
-                Simple_Moving_Average_Double progressingAverage = new Simple_Moving_Average_Double(10);
+                Simple_Moving_Average_Double sma = new Simple_Moving_Average_Double(10);
                 double result = rng.NextDouble() * i;
                 for (uint b = 0; b < max; b += stepSize)
                 {
-                    progressingAverage.AddPoint(result);
-                    if (progressingAverage.Value != result)
+                    sma.AddPoint(result);
+                    if (sma.Value != result)
                     {
                         throw new Exception("Value does not add up!");
                     }
