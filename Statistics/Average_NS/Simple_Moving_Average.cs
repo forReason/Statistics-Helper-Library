@@ -17,22 +17,50 @@ namespace Statistics.Average_NS
             DivergenceCorrection = divergenceCorrection;
             Clear();
         }
-        public uint MaxDataLength { get; set; }
+        /// <summary>
+        /// the target maximum data length to keep track of
+        /// </summary>
+        public uint MaxDataLength 
+        { 
+            get
+            {
+                return _MaxDataLength;
+            }
+            set
+            {
+                // reset size (in case of downsize)
+                uint overFlow = CurrentDataLength - value;
+                overFlow = Math.Max(overFlow, 0);
+                CurrentDataLength -= overFlow;
+                _MaxDataLength = value;
+                
+            } 
+        }
+        private uint _MaxDataLength;
+        /// <summary>
+        /// the actual number of currently tracked points (should be <= maxDataLength)
+        /// </summary>
         public uint CurrentDataLength { get; private set; }
-        private bool _SeriesLengthReached { get; set; }
-        public double Value { get; set; }
+        /// <summary>
+        /// The current moving average value
+        /// </summary>
+        public double Value { get; private set; }
+        /// <summary>
+        /// This is important for time series! 
+        /// Lets say, the value goes up to 10000 and then turns back to 5. 
+        /// The value lags behind as opposed to a true average.
+        /// </summary>
         public double DivergenceCorrection { get; set; }
         public void Clear()
         {
             CurrentDataLength = 0;
             Value = 0;
-            _SeriesLengthReached = false;
         }
         public void AddPoint(double input)
         {
             CurrentDataLength++;
             Value += (input - Value) / (CurrentDataLength * DivergenceCorrection);
-            CurrentDataLength -= CurrentDataLength / MaxDataLength;
+            CurrentDataLength -= CurrentDataLength / (MaxDataLength+1);
         }
     }
     /// <summary>
