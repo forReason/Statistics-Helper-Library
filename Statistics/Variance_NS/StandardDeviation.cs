@@ -19,6 +19,10 @@ namespace Statistics.Variance_NS
         {
             get
             {
+                if (Iteration <= 2)
+                {
+                    throw new InvalidOperationException("can't get std dev with less than 3 values!");
+                }
                 return Math.Sqrt(S / (Iteration - 2));
             }
         }
