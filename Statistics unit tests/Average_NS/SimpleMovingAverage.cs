@@ -13,7 +13,8 @@ namespace Statistics_unit_tests.Average_NS
         [Fact]
         public void TestDataLength_NewInstance()
         {
-            for (uint targetLength = 0; targetLength < 50000; targetLength++)
+            uint maxSize = 50000;
+            for (uint targetLength = 0; targetLength < maxSize; targetLength += maxSize/20)
             {
                 Simple_Moving_Average_Double sma = new Simple_Moving_Average_Double(targetLength);
                 if (sma.MaxDataLength != targetLength)
@@ -32,10 +33,34 @@ namespace Statistics_unit_tests.Average_NS
             }
         }
         [Fact]
-        public void TestDataLength_ReusedInstance()
+        public void TestDataLength_ReusedInstance_Upsize()
         {
             Simple_Moving_Average_Double sma = new Simple_Moving_Average_Double(0);
-            for (uint targetLength = 0; targetLength < 50000; targetLength++)
+            uint maxSize = 50000;
+            for (uint targetLength = 0; targetLength < maxSize; targetLength += maxSize/20)
+            {
+                sma.MaxDataLength = targetLength;
+                if (sma.MaxDataLength != targetLength)
+                {
+                    throw new Exception($"target length ({targetLength}) and max data length ({sma.MaxDataLength}) does not match up!");
+                }
+                for (int i = 0; i < targetLength * 2; i++)
+                {
+                    sma.AddPoint(1);
+                }
+                if (sma.CurrentDataLength != targetLength)
+                {
+                    { }
+                    throw new Exception($"Current Data Length ({sma.CurrentDataLength}) does not match target data length ({targetLength})!");
+                }
+            }
+        }
+        [Fact]
+        public void TestDataLength_ReusedInstance_Downsize()
+        {
+            Simple_Moving_Average_Double sma = new Simple_Moving_Average_Double(0);
+            uint maxSize = 50000;
+            for (uint targetLength = maxSize; targetLength > 0; targetLength -= maxSize / 20)
             {
                 sma.MaxDataLength = targetLength;
                 if (sma.MaxDataLength != targetLength)
