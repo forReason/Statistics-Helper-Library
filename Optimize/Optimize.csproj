@@ -8,7 +8,60 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\CSV_Helper_Project\CSV_Helper_Project\CSV_Helper_Project.csproj" />
     <ProjectReference Include="..\Statistics\Statistics.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Training_Data\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Training_Data\comments.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\commodity_futures.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\coronavirus-covid-19-pandemic-usa-counties.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\costofliving-query-tweets.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\India_GDP_Data.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\media prediction and its cost.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\ph_dengue_cases2016-2020.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\player_current_stats.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\region25_en.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\region41_en.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\smoke_detection_iot.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\videos-stats.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\weather.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\wfp_food_prices_ind.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Training_Data\winemag-data-130k-v2.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
