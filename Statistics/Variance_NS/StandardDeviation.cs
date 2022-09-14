@@ -51,7 +51,7 @@ namespace Statistics.Variance_NS
         {
             M = 0.0;
             S = 0.0;
-            Iteration = 1;
+            Count = 1;
         }
     }
 }
