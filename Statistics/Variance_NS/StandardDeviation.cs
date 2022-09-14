@@ -14,16 +14,16 @@ namespace Statistics.Variance_NS
         }
         private double M { get; set; }
         private double S { get; set; }
-        private uint Iteration { get; set; }
+        public uint Count { get; private set; }
         public double Value
         {
             get
             {
-                if (Iteration <= 2)
+                if (Count <= 2)
                 {
                     throw new InvalidOperationException("can't get std dev with less than 3 values!");
                 }
-                return Math.Sqrt(S / (Iteration - 2));
+                return Math.Sqrt(S / (Count - 2));
             }
         }
         public void AddValue(double value)
@@ -37,12 +37,12 @@ namespace Statistics.Variance_NS
                 throw new ArgumentException("value IS nan!");
             }
             double tmpM = M;
-            M += (value - tmpM) / Iteration;
+            M += (value - tmpM) / Count;
             S += (value - tmpM) * (value - M);
-            Iteration++;
+            Count++;
             if (double.IsNaN(M))
             {
-                Console.WriteLine($"\nNAN EXCEPTION!!! divide by: {Iteration}");
+                Console.WriteLine($"\nNAN EXCEPTION!!! divide by: {Count}");
                 Console.WriteLine($"\nNAN EXCEPTION!!! tmpM: {tmpM}");
                 throw new ArgumentException("m IS nan!");
             }
