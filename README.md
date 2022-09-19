@@ -13,7 +13,7 @@ While I try to add unit tests to my projects, do a quick test yourself and check
 - Moving average
 - Exponential Smoothing (Moving average approximation, very fast and lightweight)
 - Quick average on the fly (omitting memory restraints and overflow)
-- Volumetric average for 2 values (averaging two values by teir weight)
+- Volumetric average for 2 values (averaging two values by their weight)
 - Time based moving average (good for historic data and data with gaps, also good for targeting a certain time duration)
 
 ### Minimum / Maximum
