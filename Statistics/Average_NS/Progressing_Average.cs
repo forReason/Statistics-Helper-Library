@@ -22,7 +22,6 @@ namespace Statistics.Average_NS
                 throw new IndexOutOfRangeException("max amount has been reached! use preciseaverage or moving avg instead!");
             }
             Value += (input - Value) / Count;
-            { }
         }
         public void Clear()
         {
