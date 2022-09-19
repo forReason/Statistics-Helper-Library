@@ -100,6 +100,22 @@ namespace Statistics_unit_tests.Average_NS
             }
         }
         [Fact]
+        public void SmallCorrection()
+        {
+            // positive tests
+            Random rng = new Random();
+            Simple_Moving_Average_Double sma = new Simple_Moving_Average_Double(10,0.125);
+            //double result = rng.NextDouble() * i;
+            for (uint b = 0; b < 100; b ++)
+            {
+                sma.AddPoint(120);
+                if (sma.Value != 120)
+                {
+                    throw new Exception("Value does not add up!");
+                }
+            }
+        }
+        [Fact]
         public void CompareWithProgressingAverage()
         {
             // positive tests
@@ -116,7 +132,9 @@ namespace Statistics_unit_tests.Average_NS
                     double result = (rng.NextDouble()-0.5) * i;
                     progressingAverage.AddValue(result);
                     simpleAverage.AddPoint(result);
-                    if (progressingAverage.Value != simpleAverage.Value)
+                    double difference = Math.Abs(progressingAverage.Value - simpleAverage.Value);
+                    double percentDifference = difference / Math.Abs(progressingAverage.Value);
+                    if (percentDifference > 0.5)
                     {
                         throw new Exception("Value does not add up!");
                     }
