@@ -11,9 +11,10 @@ While I try to add unit tests to my projects, do a quick test yourself and check
 # Current implementations
 ### Average
 - Moving average
+- Exponential Smoothing (Moving average approximation, very fast and lightweight)
 - Quick average on the fly (omitting memory restraints and overflow)
 - Volumetric average for 2 values (averaging two values by teir weight)
-- time based moving average (good for historic data and data with gaps, also good for targeting a certain time duration)
+- Time based moving average (good for historic data and data with gaps, also good for targeting a certain time duration)
 
 ### Minimum / Maximum
 - Calculate Maximum or Minimum for a given amount of Datapoints (useful for sensor Data)
