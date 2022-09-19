@@ -21,18 +21,14 @@ namespace Statistics.Variance_NS
             {
                 if (Count <= 2)
                 {
-                    throw new InvalidOperationException("can't get std dev with less than 3 values!");
+                    return 0;
                 }
                 return Math.Sqrt(S / (Count - 2));
             }
         }
         public void AddValue(double value)
         {
-            if (value != 0 && !double.IsNormal(value))
-            {
-                throw new ArgumentException($"input {value} is abnormal!");
-            }
-            if (double.IsNaN(value))
+            if (double.IsNaN(value) || double.IsInfinity(value))
             {
                 throw new ArgumentException("value IS nan!");
             }
