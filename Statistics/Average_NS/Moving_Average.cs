@@ -18,12 +18,12 @@ namespace Statistics.Average_NS
         /// ValueResolution specifies how much time be consolidated into one dataPoint (mainly Memory saving Feature)
         /// </summary>
         public TimeSpan ValueResolution { get; private set; }
-        private uint Steps { get; set; }
+        private int Steps { get; set; }
         public void SetResolution(TimeSpan totalTime, TimeSpan valueResolution) 
         {
             this.TotalTime = totalTime;
             this.ValueResolution = valueResolution;
-            Steps = (uint)(this.TotalTime.TotalMinutes / this.ValueResolution.TotalMinutes);
+            Steps = (int)(this.TotalTime.TotalMinutes / this.ValueResolution.TotalMinutes);
             Average = new Simple_Moving_Average_Double(Steps);
         }
         // Working variables
@@ -41,9 +41,9 @@ namespace Statistics.Average_NS
         /// handy for live fed data
         /// </remarks>
         /// <param name="value"></param>
-        public void AddValuePoint(double value)
+        public void AddValue(double value)
         {
-            AddValuePoint(value, DateTime.Now);
+            AddValue(value, DateTime.Now);
         }
         /// <summary>
         /// adds a single data point based on the points date. </br>
@@ -54,7 +54,7 @@ namespace Statistics.Average_NS
         /// </remarks>
         /// <param name="value"></param>
         /// <param name="timeStamp"></param>
-        public void AddValuePoint(double value, DateTime timeStamp)
+        public void AddValue(double value, DateTime timeStamp)
         {
             /// check if new value needs to be added to queue
             if (CurrentTimeSpot + ValueResolution < timeStamp)
@@ -69,7 +69,7 @@ namespace Statistics.Average_NS
                     }
                     while (CurrentTimeSpot < timeStamp)
                     { // fill up gap
-                        Average.AddPoint(CurrentTimeSpotAverage.Value);
+                        Average.AddValue(CurrentTimeSpotAverage.Value);
                         CurrentTimeSpot += ValueResolution;
                     }
                 }

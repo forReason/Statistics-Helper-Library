@@ -206,7 +206,7 @@ namespace Optimize.AverageNS
         private async Task<double> BenchSavedFiles(double optimizeValue)
         {
             uint numberSizeSteps = 20;
-            Simple_Moving_Average_Double simpleAverage = new Simple_Moving_Average_Double(numberSizeSteps, optimizeValue);
+            Simple_Exponential_Average_Double simpleAverage = new Simple_Exponential_Average_Double(numberSizeSteps, optimizeValue);
             Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
             StandardDeviation divergence_sdv = new StandardDeviation();
             Progressing_Average_Double divergence_avg = new Progressing_Average_Double();
@@ -228,7 +228,7 @@ namespace Optimize.AverageNS
                         {
                             double point = file[baseIndex + stepIndex];
                             
-                            simpleAverage.AddPoint(point);
+                            simpleAverage.AddValue(point);
                             progressingAverage.AddValue(point);
                         }
                         // get metric
@@ -279,12 +279,12 @@ namespace Optimize.AverageNS
             uint iterations = 250;
             uint lengthSteps = 15;
             // generate simple average queues
-            List<Simple_Moving_Average_Double> simpleAverages = new List<Simple_Moving_Average_Double>();
+            List<Simple_Exponential_Average_Double> simpleAverages = new List<Simple_Exponential_Average_Double>();
             List<StandardDeviation> divergence_sdv = new List<StandardDeviation>();
             List<Progressing_Average_Double> divergence_avg = new List<Progressing_Average_Double>();
             for(int i = 2; i <= lengthSteps; i++)
             {
-                simpleAverages.Add(new Simple_Moving_Average_Double((uint)Math.Pow(i, 4),optimizeValue));
+                simpleAverages.Add(new Simple_Exponential_Average_Double((uint)Math.Pow(i, 4),optimizeValue));
                 divergence_sdv.Add(new StandardDeviation());
                 divergence_avg.Add(new Progressing_Average_Double());
             }
@@ -300,7 +300,7 @@ namespace Optimize.AverageNS
                     comparisonBenchmark.AddValue(value);
                     for(int avgIndex = 0; avgIndex < simpleAverages.Count; avgIndex++)
                     {
-                        simpleAverages[avgIndex].AddPoint(value);
+                        simpleAverages[avgIndex].AddValue(value);
                         if (stepIteration == simpleAverages[avgIndex].MaxDataLength)
                         {
                             double absoluteDivergence = Math.Abs(simpleAverages[avgIndex].Value - comparisonBenchmark.Value);

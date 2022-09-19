@@ -25,7 +25,7 @@ namespace Statistics_unit_tests.Average_NS
                 double result = rng.NextDouble() * i;
                 for (uint b = 0; b < microStep; b ++)
                 {
-                    timebasedAverage.AddValuePoint(result);
+                    timebasedAverage.AddValue(result);
                     Task.Delay(sleep).Wait();
                     if (timebasedAverage.Value != result)
                     { // proof result
@@ -54,12 +54,12 @@ namespace Statistics_unit_tests.Average_NS
                 double result2 = rng.NextDouble() * i;
                 double control = Math.Round((result1 + result2) / 2,6);
 
-                timebasedAverage.AddValuePoint(result1, baseTime);
-                timebasedAverage.AddValuePoint(result2, baseTime.AddSeconds(5));
-                timebasedAverage.AddValuePoint(result2, baseTime.AddSeconds(6));
-                timebasedAverage.AddValuePoint(result2, baseTime.AddSeconds(7));
-                timebasedAverage.AddValuePoint(result2, baseTime.AddSeconds(8));
-                timebasedAverage.AddValuePoint(result2, baseTime.AddSeconds(9));
+                timebasedAverage.AddValue(result1, baseTime);
+                timebasedAverage.AddValue(result2, baseTime.AddSeconds(5));
+                timebasedAverage.AddValue(result2, baseTime.AddSeconds(6));
+                timebasedAverage.AddValue(result2, baseTime.AddSeconds(7));
+                timebasedAverage.AddValue(result2, baseTime.AddSeconds(8));
+                timebasedAverage.AddValue(result2, baseTime.AddSeconds(9));
                 if (Math.Round(timebasedAverage.Value,6) != control)
                 { // proof result
                     throw new Exception("Value does not add up!");
@@ -78,7 +78,7 @@ namespace Statistics_unit_tests.Average_NS
             TimeSpan sleep = stepDuration / 20;
             int microStep = (int)(duration.TotalSeconds / sleep.TotalSeconds);
             Moving_Average_Double timebasedAverage = new Moving_Average_Double(duration, stepDuration);
-            Simple_Moving_Average_Double controlAverage = new Simple_Moving_Average_Double((uint)duration.TotalSeconds);
+            Simple_Moving_Average_Double controlAverage = new Simple_Moving_Average_Double((int)duration.TotalSeconds);
             DateTime baseTime = DateTime.Parse("2022/08/09 13:22:00");
             for (uint i = 0; i < max; i += stepSize)
             {
@@ -88,8 +88,8 @@ namespace Statistics_unit_tests.Average_NS
                 for(int b = 0; b < 1000; b++)
                 {
                     double rand = (rng.NextDouble() - 0.5) * i;
-                    timebasedAverage.AddValuePoint(rand,baseTime.AddSeconds(b));
-                    controlAverage.AddPoint(rand);
+                    timebasedAverage.AddValue(rand,baseTime.AddSeconds(b));
+                    controlAverage.AddValue(rand);
                     if (timebasedAverage.Value != controlAverage.Value)
                     { // proof result
                         throw new Exception("Value does not add up!");

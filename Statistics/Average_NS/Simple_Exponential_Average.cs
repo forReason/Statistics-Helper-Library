@@ -70,7 +70,7 @@ namespace Statistics.Average_NS
             _CurrentDataLength = 0;
             Value = 0;
         }
-        public void AddPoint(double input)
+        public void AddValue(double input)
         {
             _CurrentDataLength++;
             Value += (input - Value) / (_CurrentDataLength);// * DivergenceCorrection);
