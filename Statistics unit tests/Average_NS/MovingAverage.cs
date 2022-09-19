@@ -12,7 +12,7 @@ namespace Statistics_unit_tests.Average_NS
         {
             // positive tests
             Random rng = new Random();
-            uint max = int.MaxValue;
+            uint max = int.MaxValue/2;
             uint stepSize = max / 20;
             TimeSpan duration = TimeSpan.FromSeconds(10);
             TimeSpan stepDuration = duration/ 20;
@@ -75,22 +75,24 @@ namespace Statistics_unit_tests.Average_NS
             uint stepSize = max / 20;
             TimeSpan duration = TimeSpan.FromSeconds(10);
             TimeSpan stepDuration = duration / 20;
-            TimeSpan sleep = stepDuration / 20;
-            int microStep = (int)(duration.TotalSeconds / sleep.TotalSeconds);
+            double stepAmount = duration / stepDuration;
             Moving_Average_Double timebasedAverage = new Moving_Average_Double(duration, stepDuration);
-            Simple_Moving_Average_Double controlAverage = new Simple_Moving_Average_Double((int)duration.TotalSeconds);
+            Progressing_Average_Double controlAverage = new Progressing_Average_Double();
             DateTime baseTime = DateTime.Parse("2022/08/09 13:22:00");
             for (uint i = 0; i < max; i += stepSize)
             {
                 // clear
                 timebasedAverage.Clear();
                 controlAverage.Clear();
-                for(int b = 0; b < 1000; b++)
+                for(int b = 0; b < stepAmount; b++)
                 {
                     double rand = (rng.NextDouble() - 0.5) * i;
-                    timebasedAverage.AddValue(rand,baseTime.AddSeconds(b));
+                    DateTime targetTime = baseTime + (b * (stepDuration + TimeSpan.FromMilliseconds(1)));
+                    timebasedAverage.AddValue(rand, targetTime);
                     controlAverage.AddValue(rand);
-                    if (timebasedAverage.Value != controlAverage.Value)
+                    double divergence = Math.Abs(timebasedAverage.Value - controlAverage.Value);
+                    double divergencePercent = divergence / controlAverage.Value;
+                    if (divergencePercent > 0.001)
                     { // proof result
                         throw new Exception("Value does not add up!");
                     }

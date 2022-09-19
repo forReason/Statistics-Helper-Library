@@ -67,7 +67,8 @@ namespace Statistics.Average_NS
                         CurrentTimeSpot = timeStamp - TotalTime;
                         Average.Clear();
                     }
-                    while (CurrentTimeSpot < timeStamp)
+                    int missingSteps = (int)((timeStamp - CurrentTimeSpot)/ ValueResolution);
+                    for (int i = 0; i < missingSteps; i++)
                     { // fill up gap
                         Average.AddValue(CurrentTimeSpotAverage.Value);
                         CurrentTimeSpot += ValueResolution;
@@ -83,6 +84,10 @@ namespace Statistics.Average_NS
             Value = Volumetric_Average.VolumeBasedAverage(
                 value1: Average.Value, volume1: (Average.CurrentDataLength * ValueResolution).TotalMinutes,
                 value2: CurrentTimeSpotAverage.Value, volume2: ValueResolution.TotalMinutes);
+            if (Value != 0)
+            {
+                { }
+            }
         }
         /// <summary>
         /// resets the average to 0 and clears all its internal values.
