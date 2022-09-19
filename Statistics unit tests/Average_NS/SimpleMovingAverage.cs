@@ -92,7 +92,9 @@ namespace Statistics_unit_tests.Average_NS
                 for (uint b = 0; b < max; b += stepSize)
                 {
                     sma.AddValue(result);
-                    if (sma.Value != result)
+                    double diff = Math.Abs(result - sma.Value);
+                    double diffPercent = diff / result;
+                    if (diffPercent > 0.00001)
                     {
                         throw new Exception("Value does not add up!");
                     }
@@ -110,7 +112,6 @@ namespace Statistics_unit_tests.Average_NS
             {
                 Simple_Moving_Average_Double simpleAverage = new Simple_Moving_Average_Double(1000);
                 Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
-                
                 for (uint b = 0; b < 1000; b ++)
                 {
                     double result = (rng.NextDouble()-0.5) * i;
@@ -130,21 +131,21 @@ namespace Statistics_unit_tests.Average_NS
         {
             // positive tests
             Random rng = new Random();
-            uint max = int.MaxValue;
-            uint stepSize = max / 20;
-            for (uint i = 0; i < max; i += stepSize)
+            int max = 50000;
+            int stepSize = max / 20;
+            for (int i = 0; i < max; i += stepSize)
             {
-                for(uint dataLength = 1; dataLength < 50000; dataLength ++)
+                for(int dataLength = 1; dataLength < 50000; dataLength += 50000/20)
                 {
-                    Simple_Moving_Average_Double simpleAverage = new Simple_Moving_Average_Double(1000);
+                    Simple_Moving_Average_Double simpleAverage = new Simple_Moving_Average_Double(dataLength);
                     double startValue = (rng.NextDouble() - 0.5) * i;
                     double targetValue = (rng.NextDouble() - 0.5) * i;
 
-                    for (uint b = 0; b < dataLength; b++)
+                    for (uint b = 0; b <= dataLength; b++)
                     {
                         simpleAverage.AddValue(startValue);
                     }
-                    for (uint b = 0; b < dataLength; b++)
+                    for (uint b = 0; b <= dataLength; b++)
                     {
                         simpleAverage.AddValue(targetValue);
                     }
