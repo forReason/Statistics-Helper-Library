@@ -1,11 +1,7 @@
-﻿using Statistics.Average_NS;
+﻿using Optimize.IO;
+using Statistics.Average_NS;
 using Statistics.MinMax_NS;
 using Statistics.Variance_NS;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Optimize.AverageNS
 {
@@ -13,6 +9,10 @@ namespace Optimize.AverageNS
     {
         public SimpleMovingAverage()
         {
+            if (!Directory.Exists("Benchmarks"))
+            {
+                Directory.CreateDirectory("Benchmarks");
+            }
             Console.WriteLine("parsing training data into memory");
             DirectoryInfo trainingData = new DirectoryInfo("Training_Data");
             List<double> output = new List<double>();
@@ -42,11 +42,11 @@ namespace Optimize.AverageNS
             { }
         }
         List<double[]> TestFiles = new List<double[]>();
-
+        private LogProgress ProgressLog = new LogProgress("Benchmarks\\OptimizeHistory.csv");
         internal double Optimize(double startValue)
         {
             /// Configuration
-            double targetPrecision = 0.005;
+            double targetPrecision = 0.0001;
             ///Working variables
             // 0 = min value; 1 = current best testresult; 2 = max value
             BenchmarkResult[] optimizeRestrainBracket = new BenchmarkResult[3];
@@ -87,6 +87,7 @@ namespace Optimize.AverageNS
                     optimizeRestrainBracket[1] = result;
                 }
             }
+            ProgressLog.AddEntry(optimizeRestrainBracket);
             // start looking for upperbound
             if (optimizeRestrainBracket[2].Value <= optimizeRestrainBracket[1].Value)
             {
@@ -114,15 +115,63 @@ namespace Optimize.AverageNS
                     }
                 }
             }
+            ProgressLog.AddEntry(optimizeRestrainBracket);
             // min max bound should be found now. Narrowing the band
-            while (true)
+            double precision = double.MaxValue;
+            while (precision > targetPrecision)
             {
-                { }
-            }
+                double diffLowerBound = Math.Abs(optimizeRestrainBracket[0].Score - optimizeRestrainBracket[1].Score);
+                double diffUpperBound = Math.Abs(optimizeRestrainBracket[1].Score - optimizeRestrainBracket[2].Score);
+                double nextScanValue = 0;
+                if (diffUpperBound > diffLowerBound) nextScanValue = (optimizeRestrainBracket[1].Value + optimizeRestrainBracket[2].Value) / 2;
+                else nextScanValue = (optimizeRestrainBracket[0].Value + optimizeRestrainBracket[1].Value) / 2;
+                BenchmarkResult result = BenchmarkValueDivergence(nextScanValue, targetPrecision);
+                double divergence = Math.Abs(optimizeRestrainBracket[0].Score - result.Score);
+                if (result.Value > optimizeRestrainBracket[1].Value)
+                { // value in upper bound
+                    if (result.Score > optimizeRestrainBracket[1].Score) optimizeRestrainBracket[2] = result;
+                    else
+                    {
+                        optimizeRestrainBracket[0] = optimizeRestrainBracket[1];
+                        optimizeRestrainBracket[1] = result;
+                    }
+                }
+                else
+                { // value in lower bound
 
+                    if (result.Score > optimizeRestrainBracket[1].Score) optimizeRestrainBracket[0] = result;
+                    else
+                    {
+                        optimizeRestrainBracket[2] = optimizeRestrainBracket[1];
+                        optimizeRestrainBracket[1] = result;
+                    }
+                }
+                ProgressLog.AddEntry(optimizeRestrainBracket);
+                precision = (divergence / optimizeRestrainBracket[0].Score);
+                Console.WriteLine($"current boundaries: (" +
+                        $"{optimizeRestrainBracket[0].Value} - {optimizeRestrainBracket[0].Score};" +
+                        $"{optimizeRestrainBracket[1].Value} - {optimizeRestrainBracket[1].Score};" +
+                        $"{optimizeRestrainBracket[2].Value} - {optimizeRestrainBracket[2].Score})");
+            }
+            Console.WriteLine($"Optimum with a target precision of {targetPrecision} found!");
+            Console.WriteLine($"Final result:");
+            Console.WriteLine($"{optimizeRestrainBracket[0].Value} - {optimizeRestrainBracket[0].Score};" +
+                        $"{optimizeRestrainBracket[1].Value} - {optimizeRestrainBracket[1].Score};" +
+                        $"{optimizeRestrainBracket[2].Value} - {optimizeRestrainBracket[2].Score})");
+            Console.WriteLine("Find a log in Benchmarks\\OptimizeHistory.csv");
+            Console.WriteLine("benchmarking finished!");
+            return optimizeRestrainBracket[1].Value;
         }
         private BenchmarkResult BenchmarkValueDivergence(double optimizeValue, double targetPrecision)
         {
+            
+            string saveFile = $@"Benchmarks\{optimizeValue}";
+            if (File.Exists(saveFile))
+            {
+                string value = File.ReadAllText(saveFile);
+                double result = double.Parse(value);
+                return new BenchmarkResult(optimizeValue, result);
+            }
             Progressing_Average_Double results = new Progressing_Average_Double();
             Sliding_Maximum max = new Sliding_Maximum(10);
             Sliding_Minimum min = new Sliding_Minimum(10);
@@ -136,7 +185,7 @@ namespace Optimize.AverageNS
             // start random data simulation
             while (precision > targetPrecision)
             {
-                double result = RunEpoch(64, optimizeValue);
+                double result = RunEpoch(Environment.ProcessorCount, optimizeValue);
                 results.AddValue(result);
                 // calculate early stopping
                 min.AddPoint(results.Value);
@@ -144,8 +193,13 @@ namespace Optimize.AverageNS
                 precision = ((max.Value - min.Value) / Math.Abs(results.Value));
                 Console.WriteLine($"\rbenchmarking value:{optimizeValue} divergence:{((precision)*100).ToString("0.00")}% ({(max.Value-min.Value).ToString("0.00")}) Loss: {results.Value.ToString("0.00")}");
             }
-            Console.WriteLine($"final result for {optimizeValue}: {Math.Round(results.Value, 2)}");
             double mergedResult = Volumetric_Average.VolumeBasedAverage(value1: results.Value, volume1: 0.3, value2: realDataResults, volume2: 0.7);
+            Console.WriteLine($"final result for {optimizeValue}: {mergedResult.ToString()}");
+            if (double.IsNaN(mergedResult) || double.IsInfinity(mergedResult))
+            {
+                { }
+            }
+            File.WriteAllText(saveFile, mergedResult.ToString());
             return new BenchmarkResult(optimizeValue, mergedResult);
         }
         
@@ -156,10 +210,12 @@ namespace Optimize.AverageNS
             Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
             StandardDeviation divergence_sdv = new StandardDeviation();
             Progressing_Average_Double divergence_avg = new Progressing_Average_Double();
+            Progressing_Average_Double total_divergence_sdv_avg = new Progressing_Average_Double();
+            Progressing_Average_Double total_divergence_avg = new Progressing_Average_Double();
             foreach(double[] file in TestFiles)
             { // go trough each test file
                 uint fileSizeDivider = (uint)(file.Length / numberSizeSteps); // a lot of 20 is this long
-                for (int stepDivider = 1; stepDivider <numberSizeSteps && stepDivider < fileSizeDivider/2; stepDivider++)
+                for (int stepDivider = 1; stepDivider < numberSizeSteps && stepDivider < fileSizeDivider/2; stepDivider++)
                 { // smaller substeps
                     uint dataLength = (uint)(fileSizeDivider / stepDivider);
                     simpleAverage.MaxDataLength = dataLength;
@@ -170,22 +226,27 @@ namespace Optimize.AverageNS
                         int baseIndex =(int)(i * dataLength);
                         for (int stepIndex = 0; stepIndex < dataLength; stepIndex++)
                         {
-                            simpleAverage.AddPoint(file[baseIndex+stepIndex]);
-                            progressingAverage.AddValue(file[baseIndex + stepIndex]);
+                            double point = file[baseIndex + stepIndex];
+                            
+                            simpleAverage.AddPoint(point);
+                            progressingAverage.AddValue(point);
                         }
                         // get metric
                         double absoluteDivergence = Math.Abs(simpleAverage.Value - progressingAverage.Value);
                         double divergenceFactor = (absoluteDivergence / (Math.Abs(progressingAverage.Value) + 1)) * 100;
                         divergence_avg.AddValue(divergenceFactor);
                         divergence_sdv.AddValue(divergenceFactor);
-                        if (divergenceFactor > 300)
-                        {
-                            { }
-                        }
                     }
+                    if (divergence_sdv.Count > 2)
+                    {
+                        total_divergence_avg.AddValue(divergence_avg.Value);
+                        total_divergence_sdv_avg.AddValue(divergence_sdv.Value);
+                    }
+                    divergence_sdv.Clear();
+                    divergence_avg.Clear();
                 }
             }
-            double loss = divergence_avg.Value * divergence_sdv.Value;
+            double loss = total_divergence_avg.Value * total_divergence_sdv_avg.Value;
             return loss;
         }
         private double RunEpoch(int epochDuration, double optimizeValue)
