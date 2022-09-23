@@ -37,5 +37,9 @@ namespace Statistics.Average_NS
             AverageQueue.Clear();
             Value = 0;
         }
+        public override string ToString()
+        {
+            return this.Value.ToString();
+        }
     }
 }

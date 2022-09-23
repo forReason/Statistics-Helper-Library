@@ -46,5 +46,9 @@ namespace Statistics.Average_NS
             _Count = 0;
             Value = 0;
         }
+        public override string ToString()
+        {
+            return this.Value.ToString();
+        }
     }
 }

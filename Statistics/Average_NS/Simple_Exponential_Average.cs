@@ -76,6 +76,10 @@ namespace Statistics.Average_NS
             Value += (input - Value) / (_CurrentDataLength);// * DivergenceCorrection);
             _CurrentDataLength -= _CurrentDataLength / (_CorrectedDataLength + 1);
         }
+        public override string ToString()
+        {
+            return this.Value.ToString();
+        }
     }
     /// <summary>
     /// this is an extremely lightweight and fast class in order to receive the simple moving average

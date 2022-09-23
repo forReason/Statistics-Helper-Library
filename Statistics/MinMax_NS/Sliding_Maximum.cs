@@ -58,5 +58,9 @@ namespace Statistics.MinMax_NS
             Values.Clear();
             Value = double.MinValue;
         }
+        public override string ToString()
+        {
+            return this.Value.ToString();
+        }
     }
 }

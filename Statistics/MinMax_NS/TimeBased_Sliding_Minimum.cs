@@ -82,5 +82,9 @@ namespace Statistics.MinMax_NS
             this.CurrentMinimum = double.MaxValue;
             this.MinimumValues.Clear();
         }
+        public override string ToString()
+        {
+            return this.CurrentMinimum.ToString();
+        }
     }
 }

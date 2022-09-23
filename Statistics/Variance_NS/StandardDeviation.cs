@@ -49,5 +49,9 @@ namespace Statistics.Variance_NS
             S = 0.0;
             Count = 1;
         }
+        public override string ToString()
+        {
+            return this.Value.ToString();
+        }
     }
 }

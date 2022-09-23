@@ -102,5 +102,9 @@ namespace Statistics.Average_NS
             Average.Clear();
             Value = 0;
         }
+        public override string ToString()
+        {
+            return this.Value.ToString();
+        }
     }
 }
