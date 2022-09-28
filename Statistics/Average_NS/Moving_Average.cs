@@ -28,6 +28,7 @@ namespace Statistics.Average_NS
         }
         // Working variables
         private DateTime CurrentTimeSpot { get; set; }
+        private DateTime LastTimeStamp { get; set; }
         private Progressing_Average_Double CurrentTimeSpotAverage = new Progressing_Average_Double();
         private Simple_Moving_Average_Double Average { get; set; }
         /// <summary>
@@ -56,6 +57,7 @@ namespace Statistics.Average_NS
         /// <param name="timeStamp"></param>
         public void AddValue(double value, DateTime timeStamp)
         {
+            LastTimeStamp = timeStamp;
             /// check if new value needs to be added to queue
             if (CurrentTimeSpot + ValueResolution < timeStamp)
             { // new time spot needs to be created
@@ -80,10 +82,11 @@ namespace Statistics.Average_NS
             }
             // add value to current time frame accumulation
             CurrentTimeSpotAverage.AddValue(value);
+            TimeSpan currentSpotTimeSpan = LastTimeStamp - CurrentTimeSpot; 
             // merge historic queue and previous time spot
             Value = Volumetric_Average.VolumeBasedAverage(
                 value1: Average.Value, volume1: (Average.CurrentDataLength * ValueResolution).TotalMinutes,
-                value2: CurrentTimeSpotAverage.Value, volume2: ValueResolution.TotalMinutes);
+                value2: CurrentTimeSpotAverage.Value, volume2: currentSpotTimeSpan.TotalMinutes);
             if (Value != 0)
             {
                 { }
