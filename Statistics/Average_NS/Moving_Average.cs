@@ -9,10 +9,11 @@ namespace Statistics.Average_NS
         {
             SetResolution(totalTime, valueResolution);
             Clear();
-            RestoreBackup(backupPath);
+            FileInfo backupFile = new FileInfo(backupPath);
+            RestoreBackup(backupFile);
             // NOTE: THIS MUST OCCUR AFTER RESTOREBACKUP
             // OTHERWISE INFINITE LOOP
-            BackupPath = backupPath;
+            BackupFile = backupFile;
         }
         // "Settings"
         /// <summary>
@@ -34,7 +35,7 @@ namespace Statistics.Average_NS
         // Working variables
         private DateTime CurrentTimeSpot { get; set; }
         private DateTime LastTimeStamp { get; set; }
-        public string BackupPath { get; set; }
+        public FileInfo BackupFile { get; set; }
         private Progressing_Average_Double CurrentTimeSpotAverage = new Progressing_Average_Double();
         private Simple_Moving_Average_Double Average { get; set; }
         /// <summary>
@@ -103,7 +104,7 @@ namespace Statistics.Average_NS
         }
         private void AddBackupValue(DateTime time, double value)
         {
-            if (BackupPath == null || BackupPath =="")
+            if (BackupFile == null)
             { return; }
             BackupStringBuilder.Append(time);
             BackupStringBuilder.Append(';');
@@ -117,17 +118,18 @@ namespace Statistics.Average_NS
         }
         private void StoreBackup()
         {
-            if (BackupPath == null || BackupPath == "")
+            if (BackupFile == null)
             { return; }
-            File.WriteAllLines(BackupPath, BackupLines);
+            BackupFile.Directory.Create();
+            File.WriteAllLines(BackupFile.FullName, BackupLines);
         }
         StringBuilder BackupStringBuilder = new StringBuilder();
         Queue<string> BackupLines = new Queue<string>();
-        private void RestoreBackup(string backupPath)
+        private void RestoreBackup(FileInfo backupFile)
         {
-            if (File.Exists(backupPath))
+            if (backupFile.Exists)
             {
-                string[] lines = File.ReadAllLines(BackupPath);
+                string[] lines = File.ReadAllLines(backupFile.FullName);
                 foreach (string line in lines)
                 {
                     string[] split = line.Split(';');
