@@ -20,7 +20,7 @@ namespace Statistics.Average_NS
         public static double VolumeBasedAverage(double value1, double volume1, double value2, double volume2)
         {
             /// condition prechecks
-            if (volume1 < 0 || volume2 <0)
+            if (volume1 < 0 || volume2 < 0)
             {
                 throw new NotImplementedException("negative volumes are not implemented!");
             }
@@ -62,18 +62,44 @@ namespace Statistics.Average_NS
             returnAverage += value2 * volume2;
             if (!double.IsNaN(returnAverage))
             {
-                return returnAverage/totalVolume;
+                return returnAverage / totalVolume;
             }
             else
             {
                 returnAverage = 0;
                 // reduce precision by one digit if numbers get too large
                 // add value1 to average
-                returnAverage += value1 * (volume1/totalVolume);
+                returnAverage += value1 * (volume1 / totalVolume);
                 // add value2 to average
-                returnAverage += value2 * (volume2/totalVolume);
+                returnAverage += value2 * (volume2 / totalVolume);
                 return returnAverage;
             }
         }
+        public static double VolumeBasedAverage(VolumetricValue[] values)
+        {
+            double totalVolume = 0;
+            foreach (VolumetricValue item in values)
+            {
+                totalVolume += item.Volume;
+            }
+            if (totalVolume == 0) return 0;
+            double result = 0;
+            foreach(VolumetricValue item in values)
+            {
+                double factor = (item.Volume / totalVolume);
+                result += item.Value * factor;
+            }
+            return result;
+        }
+    }
+    public struct VolumetricValue
+    {
+        public VolumetricValue(double value, double volume)
+        {
+            Value = value;
+            Volume = volume;
+        }
+        public double Value { get; set; }
+        public double Volume { get; set; }
     }
 }
