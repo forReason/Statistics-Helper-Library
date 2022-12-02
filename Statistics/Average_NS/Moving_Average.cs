@@ -5,6 +5,12 @@ namespace Statistics.Average_NS
 {
     public class Moving_Average_Double
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="totalTime">the total timespan which shoud be tracked</param>
+        /// <param name="valueResolution">the duration each datapoint should cover ( must be smaller than totaltime )</param>
+        /// <param name="backupPath">(where to stora / restore backups)</param>
         public Moving_Average_Double(TimeSpan totalTime, TimeSpan valueResolution, string backupPath = "")
         {
             SetResolution(totalTime, valueResolution);
@@ -136,7 +142,7 @@ namespace Statistics.Average_NS
                     DateTime time = DateTime.Parse(split[0]);
                     double value = double.Parse(split[1]);
                     Average.AddValue(value);
-                    BackupLines.Append(line);
+                    BackupLines.Enqueue(line);
                 }
             }
         }
