@@ -1,9 +1,5 @@
 ﻿using Optimize.AverageNS;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Optimize.IO
 {
@@ -12,11 +8,11 @@ namespace Optimize.IO
         internal LogProgress(string path)
         {
             Path = path;
-            Table = new CSV_Helper_Project.Table();
+            Table = new QuickCsv.Net.Table_NS.Table();
             Table.SetColumnNames(new string[] {"Low Bound", "Low Bound Loss", "Current Optimum","Current Optimum Loss", "Upper Bound","Upper Bound Loss" });
         }
         private string Path { get; set; }
-        private CSV_Helper_Project.Table Table { get; set; }
+        private QuickCsv.Net.Table_NS.Table Table { get; set; }
         public void AddEntry(BenchmarkResult[] restrainBracket)
         {
             int index = Table.AppendEmptyRecord();

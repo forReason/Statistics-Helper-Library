@@ -2,6 +2,7 @@
 using Statistics.Average_NS;
 using Statistics.MinMax_NS;
 using Statistics.Variance_NS;
+using QuickCsv.Net;
 
 namespace Optimize.AverageNS
 {
@@ -18,7 +19,7 @@ namespace Optimize.AverageNS
             List<double> output = new List<double>();
             foreach (FileInfo csvTable in trainingData.GetFiles())
             {
-                CSV_Helper_Project.Table table = new CSV_Helper_Project.Table();
+                QuickCsv.Net.Table_NS.Table table = new QuickCsv.Net.Table_NS.Table();
                 table.LoadFromFile(csvTable.FullName,hasHeaders:true,delimiter:',');
                 foreach (string col in table.GetHeaders())
                 {

@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Platforms>AnyCPU;x64</Platforms>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT-Modern-Variant</PackageLicenseExpression>
+    <Title>Statistics.Net</Title>
+    <Authors>Julian Bechtold, KryptoMine CH</Authors>
+    <Description>a quick and lightweight library to grab statistics of live data on the fly</Description>
+    <Copyright>Julian Bechtold</Copyright>
+    <PackageProjectUrl>https://github.com/forReason/Statistics-Helper-Library</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/forReason/Statistics-Helper-Library</RepositoryUrl>
+    <PackageTags>statistics;average;moving average;minmax;variance</PackageTags>
+  </PropertyGroup>
+
+</Project>

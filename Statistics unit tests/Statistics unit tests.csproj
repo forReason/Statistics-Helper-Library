@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Statistics_unit_tests</RootNamespace>
     <Nullable>enable</Nullable>
 
@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Statistics\Statistics.csproj" />
+    <ProjectReference Include="..\Statistics\Statistics.Net.csproj" />
   </ItemGroup>
 
 </Project>
