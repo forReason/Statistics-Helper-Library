@@ -1,5 +1,4 @@
-﻿using QuickStatistics.Net.Objects;
-using System.Text;
+﻿using System.Text;
 
 namespace QuickStatistics.Net.Average_NS
 {
@@ -33,12 +32,15 @@ namespace QuickStatistics.Net.Average_NS
         /// ValueResolution specifies how much time be consolidated into one dataPoint (mainly Memory saving Feature)
         /// </summary>
         public TimeSpan ValueResolution { get; private set; }
+        /// <summary>
+        /// the total amount of steps which fit into the Time Window "TotalTime"
+        /// </summary>
         private int Steps { get; set; }
         public void SetResolution(TimeSpan totalTime, TimeSpan valueResolution) 
         {
             this.TotalTime = totalTime;
             this.ValueResolution = valueResolution;
-            Steps = (int)(this.TotalTime.TotalMinutes / this.ValueResolution.TotalMinutes);
+            Steps = (int)Math.Round((this.TotalTime.TotalMinutes / this.ValueResolution.TotalMinutes));
             Average = new Simple_Moving_Average_Double(Steps);
         }
         // Working variables
@@ -86,7 +88,7 @@ namespace QuickStatistics.Net.Average_NS
                         Average.Clear();
                         BackupLines.Clear();
                     }
-                    int missingSteps = (int)((timeStamp - CurrentTimeSpot)/ ValueResolution);
+                    int missingSteps = (int)Math.Round((timeStamp - CurrentTimeSpot).TotalMinutes / ValueResolution.TotalMinutes);
                     for (int i = 0; i < missingSteps; i++)
                     { // fill up gap
                         Average.AddValue(CurrentTimeSpotAverage.Value);
@@ -103,9 +105,16 @@ namespace QuickStatistics.Net.Average_NS
             CurrentTimeSpotAverage.AddValue(value);
             TimeSpan currentSpotTimeSpan = LastTimeStamp - CurrentTimeSpot; 
             // merge historic queue and previous time spot
-            Value = Volumetric_Average.VolumeBasedAverage(
+            if (Average.CurrentDataLength > 0)
+            {
+                Value = Volumetric_Average.VolumeBasedAverage(
                 value1: Average.Value, volume1: (Average.CurrentDataLength * ValueResolution).TotalMinutes,
                 value2: CurrentTimeSpotAverage.Value, volume2: currentSpotTimeSpan.TotalMinutes);
+            } else
+            {
+                Value = CurrentTimeSpotAverage.Value;
+            }
+            
             if (Value != 0)
             {
                 { }
