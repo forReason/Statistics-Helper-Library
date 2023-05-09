@@ -99,5 +99,12 @@ namespace Statistics_unit_tests.Average_NS
                 throw new System.Exception($"result was: {testResult} should be: {double.MinValue - (double.MaxValue / 2)}");
             }
         }
+        [Fact]
+        public void BasicVolumeAverage_WithZero_Edgecases()
+        {
+            // edge cases
+            double testResult = Volumetric_Average.VolumeBasedAverage(value2: 0, volume2: 0, value1: 10, volume1: 10);
+            Assert.Equal(10, testResult);
+        }
     }
 }
