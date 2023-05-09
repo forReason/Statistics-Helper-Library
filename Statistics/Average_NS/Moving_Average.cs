@@ -75,7 +75,6 @@ namespace QuickStatistics.Net.Average_NS
         /// <param name="timeStamp"></param>
         public void AddValue(double value, DateTime timeStamp)
         {
-            LastTimeStamp = timeStamp;
             /// check if new value needs to be added to queue
             if (CurrentTimeSpot + ValueResolution < timeStamp)
             { // new time spot needs to be created
@@ -98,9 +97,10 @@ namespace QuickStatistics.Net.Average_NS
                     StoreBackup();
                 }
                 // prepare for new timeSpot
-                CurrentTimeSpot = timeStamp;
+                CurrentTimeSpot = LastTimeStamp;
                 CurrentTimeSpotAverage.Clear();
             }
+            LastTimeStamp = timeStamp;
             // add value to current time frame accumulation
             CurrentTimeSpotAverage.AddValue(value);
             TimeSpan currentSpotTimeSpan = LastTimeStamp - CurrentTimeSpot; 
