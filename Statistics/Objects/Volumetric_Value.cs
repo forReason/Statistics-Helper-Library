@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Statistics.Objects
+namespace QuickStatistics.Net.Objects
 {
     internal class Volumetric_Value<T>
     {

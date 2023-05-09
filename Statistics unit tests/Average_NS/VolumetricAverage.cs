@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using Statistics.Average_NS;
+using QuickStatistics.Net.Average_NS;
 
 namespace Statistics_unit_tests.Average_NS
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 using Xunit;
-using Statistics.MinMax_NS;
+using QuickStatistics.Net.MinMax_NS;
 
 namespace Statistics_unit_tests.Minmax
 {

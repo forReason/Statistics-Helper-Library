@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Statistics.Average_NS
+namespace QuickStatistics.Net.Average_NS
 {
     /// <summary>
     /// this is an extremely lightweight and fast class in order to receive the simple moving average

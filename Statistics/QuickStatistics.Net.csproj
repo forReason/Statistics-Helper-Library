@@ -1,19 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFrameworks>net7.0;net6.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>AnyCPU;x64</Platforms>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT-Modern-Variant</PackageLicenseExpression>
-    <Title>Statistics.Net</Title>
+    <Title>QuickStatistics.Net.Net</Title>
     <Authors>Julian Bechtold, KryptoMine CH</Authors>
     <Description>a quick and lightweight library to grab statistics of live data on the fly</Description>
     <Copyright>Julian Bechtold</Copyright>
     <PackageProjectUrl>https://github.com/forReason/Statistics-Helper-Library</PackageProjectUrl>
     <RepositoryUrl>https://github.com/forReason/Statistics-Helper-Library</RepositoryUrl>
     <PackageTags>statistics;average;moving average;minmax;variance</PackageTags>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Version>1.0.1</Version>
+    <PackageReleaseNotes>target .net 6 &amp; 7</PackageReleaseNotes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="QuickCsv.Net" Version="1.0.1" />
+  </ItemGroup>
 
 </Project>

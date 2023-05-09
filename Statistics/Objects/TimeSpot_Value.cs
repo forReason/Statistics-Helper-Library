@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Statistics.Objects
+﻿namespace QuickStatistics.Net.Objects
 {
     public struct TimeSpot_Value<T>
     {

@@ -1,5 +1,5 @@
 ﻿using System;
-using Statistics.Average_NS;
+using QuickStatistics.Net.Average_NS;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -27,10 +27,7 @@ namespace Statistics_unit_tests.Average_NS
                 {
                     timebasedAverage.AddValue(result);
                     Task.Delay(sleep).Wait();
-                    if (timebasedAverage.Value != result)
-                    { // proof result
-                        throw new Exception("Value does not add up!");
-                    }
+                    Assert.Equal(timebasedAverage.Value, result);
                 }
             }
         }
@@ -60,10 +57,7 @@ namespace Statistics_unit_tests.Average_NS
                 timebasedAverage.AddValue(result2, baseTime.AddSeconds(7));
                 timebasedAverage.AddValue(result2, baseTime.AddSeconds(8));
                 timebasedAverage.AddValue(result2, baseTime.AddSeconds(9));
-                if (Math.Round(timebasedAverage.Value,6) != control)
-                { // proof result
-                    throw new Exception("Value does not add up!");
-                }
+                Assert.Equal(Math.Round(timebasedAverage.Value, 6), control);
             }
         }
         [Fact]

@@ -1,4 +1,4 @@
-﻿using Statistics.Average_NS;
+﻿using QuickStatistics.Net.Average_NS;
 using System;
 using System.Collections.Generic;
 using System.Linq;

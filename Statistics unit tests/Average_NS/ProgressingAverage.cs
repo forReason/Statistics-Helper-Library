@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Statistics.Average_NS;
+using QuickStatistics.Net.Average_NS;
 using Xunit;
 
 namespace Statistics_unit_tests.Average_NS

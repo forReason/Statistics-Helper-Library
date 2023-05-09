@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Statistics.Variance_NS
+namespace QuickStatistics.Net.Variance_NS
 {
     public class StandardDeviation
     {

@@ -1,7 +1,7 @@
 ﻿using Optimize.IO;
-using Statistics.Average_NS;
-using Statistics.MinMax_NS;
-using Statistics.Variance_NS;
+using QuickStatistics.Net.Average_NS;
+using QuickStatistics.Net.MinMax_NS;
+using QuickStatistics.Net.Variance_NS;
 using QuickCsv.Net;
 
 namespace Optimize.AverageNS

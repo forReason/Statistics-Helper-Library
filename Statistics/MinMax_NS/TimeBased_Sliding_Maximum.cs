@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Statistics.MinMax_NS
+namespace QuickStatistics.Net.MinMax_NS
 {
     internal class TimeBased_Sliding_Maximum
     {

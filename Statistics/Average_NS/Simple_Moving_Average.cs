@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Statistics.Average_NS
+namespace QuickStatistics.Net.Average_NS
 {
     public class Simple_Moving_Average_Double
     {

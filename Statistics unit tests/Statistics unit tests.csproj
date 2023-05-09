@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Statistics\Statistics.Net.csproj" />
+    <ProjectReference Include="..\Statistics\QuickStatistics.Net.csproj" />
   </ItemGroup>
 
 </Project>

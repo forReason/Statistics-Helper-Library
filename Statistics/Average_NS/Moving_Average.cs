@@ -1,7 +1,7 @@
-﻿using Statistics.Objects;
+﻿using QuickStatistics.Net.Objects;
 using System.Text;
 
-namespace Statistics.Average_NS
+namespace QuickStatistics.Net.Average_NS
 {
     public class Moving_Average_Double
     {
@@ -15,11 +15,14 @@ namespace Statistics.Average_NS
         {
             SetResolution(totalTime, valueResolution);
             Clear();
-            FileInfo backupFile = new FileInfo(backupPath);
-            RestoreBackup(backupFile);
-            // NOTE: THIS MUST OCCUR AFTER RESTOREBACKUP
-            // OTHERWISE INFINITE LOOP
-            BackupFile = backupFile;
+            if (backupPath != "")
+            {
+                FileInfo backupFile = new FileInfo(backupPath);
+                RestoreBackup(backupFile);
+                // NOTE: THIS MUST OCCUR AFTER RESTOREBACKUP
+                // OTHERWISE INFINITE LOOP
+                BackupFile = backupFile;
+            }
         }
         // "Settings"
         /// <summary>
@@ -41,7 +44,7 @@ namespace Statistics.Average_NS
         // Working variables
         private DateTime CurrentTimeSpot { get; set; }
         private DateTime LastTimeStamp { get; set; }
-        public FileInfo BackupFile { get; set; }
+        public FileInfo? BackupFile { get; set; }
         private Progressing_Average_Double CurrentTimeSpotAverage = new Progressing_Average_Double();
         private Simple_Moving_Average_Double Average { get; set; }
         /// <summary>
@@ -111,7 +114,9 @@ namespace Statistics.Average_NS
         private void AddBackupValue(DateTime time, double value)
         {
             if (BackupFile == null)
-            { return; }
+            { 
+                return; 
+            }
             BackupStringBuilder.Append(time);
             BackupStringBuilder.Append(';');
             BackupStringBuilder.Append(value);
