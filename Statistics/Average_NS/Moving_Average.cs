@@ -47,7 +47,8 @@ namespace QuickStatistics.Net.Average_NS
         private DateTime CurrentTimeSpot { get; set; }
         private DateTime LastTimeStamp { get; set; }
         public FileInfo? BackupFile { get; set; }
-        private Progressing_Average_Double CurrentTimeSpotAverage = new Progressing_Average_Double();
+        private double CurrentTimeSpotVolumetricAverage = 0;
+        private double PreviousValue = 0;
         private Simple_Moving_Average_Double Average { get; set; }
         /// <summary>
         /// Value represents the current Moving Average
@@ -90,29 +91,46 @@ namespace QuickStatistics.Net.Average_NS
                     int missingSteps = (int)Math.Round((timeStamp - CurrentTimeSpot).TotalMinutes / ValueResolution.TotalMinutes);
                     for (int i = 0; i < missingSteps; i++)
                     { // fill up gap
-                        Average.AddValue(CurrentTimeSpotAverage.Value);
-                        AddBackupValue(CurrentTimeSpot, CurrentTimeSpotAverage.Value);
+                        Average.AddValue(CurrentTimeSpotVolumetricAverage);
+                        AddBackupValue(CurrentTimeSpot, CurrentTimeSpotVolumetricAverage);
                         CurrentTimeSpot += ValueResolution;
                     }
                     StoreBackup();
                 }
                 // prepare for new timeSpot
                 CurrentTimeSpot = LastTimeStamp;
-                CurrentTimeSpotAverage.Clear();
+                //LastTimeStamp = timeStamp;
+                CurrentTimeSpotVolumetricAverage = 0;
             }
-            LastTimeStamp = timeStamp;
+            // generate volumetric average
+            TimeSpan microTickTime = timeStamp - LastTimeStamp;
+            TimeSpan stepduration = timeStamp - CurrentTimeSpot - microTickTime;
+            if (stepduration.TotalSeconds < 0 || microTickTime.TotalSeconds < 0)
+            {
+                throw new InvalidOperationException("you cannot add data points from the past! Did you forget to Clear()?");
+            }
+
+            double currentAssumption = (PreviousValue + value) / 2;
+            if (microTickTime.TotalSeconds == 0.0) CurrentTimeSpotVolumetricAverage = (Value + value) / 2;
+            else
+            {
+                CurrentTimeSpotVolumetricAverage = Volumetric_Average.VolumeBasedAverage(CurrentTimeSpotVolumetricAverage, stepduration.TotalSeconds, currentAssumption, microTickTime.TotalSeconds);
+            }
+            PreviousValue = value;
+
             // add value to current time frame accumulation
-            CurrentTimeSpotAverage.AddValue(value);
-            TimeSpan currentSpotTimeSpan = LastTimeStamp - CurrentTimeSpot; 
+            LastTimeStamp = timeStamp;
+            TimeSpan currentSpotTimeSpan = LastTimeStamp - CurrentTimeSpot;
+            
             // merge historic queue and previous time spot
             if (Average.CurrentDataLength > 0)
             {
                 Value = Volumetric_Average.VolumeBasedAverage(
                 value1: Average.Value, volume1: (Average.CurrentDataLength * ValueResolution).TotalMinutes,
-                value2: CurrentTimeSpotAverage.Value, volume2: currentSpotTimeSpan.TotalMinutes);
+                value2: CurrentTimeSpotVolumetricAverage, volume2: currentSpotTimeSpan.TotalMinutes);
             } else
             {
-                Value = CurrentTimeSpotAverage.Value;
+                Value = CurrentTimeSpotVolumetricAverage;
             }
             
             if (Value != 0)
@@ -169,7 +187,10 @@ namespace QuickStatistics.Net.Average_NS
         public void Clear()
         {
             CurrentTimeSpot = DateTime.MinValue;
-            CurrentTimeSpotAverage.Clear();
+            LastTimeStamp = DateTime.MinValue;
+            //CurrentTimeSpotAverage.Clear();
+            CurrentTimeSpotVolumetricAverage= 0;
+            PreviousValue = 0;
             Average.Clear();
             Value = 0;
         }

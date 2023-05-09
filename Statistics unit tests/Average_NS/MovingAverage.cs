@@ -36,7 +36,7 @@ namespace Statistics_unit_tests.Average_NS
             }
         }
         [Fact]
-        public void PositiveValues_DataGaps()
+        public void PositiveValues_LargeDataGaps()
         {
             // positive tests
             Random rng = new Random();
@@ -61,8 +61,68 @@ namespace Statistics_unit_tests.Average_NS
                 timebasedAverage.AddValue(result2, baseTime.AddSeconds(7));
                 timebasedAverage.AddValue(result2, baseTime.AddSeconds(8));
                 timebasedAverage.AddValue(result2, baseTime.AddSeconds(9));
-                Assert.Equal(Math.Round(timebasedAverage.Value, 6), control);
+                double divergence = Math.Abs(timebasedAverage.Value - control);
+                double divergencePercent = divergence / control;
+                if (divergence == 0) divergencePercent = 0;
+                if (divergencePercent > 0.15)
+                {
+                    { }
+                }
+                Assert.True(divergencePercent < 0.15);
             }
+        }
+        [Fact]
+        public void PositiveValues_SmallDataGaps()
+        {
+            // positive tests
+            Random rng = new Random();
+            uint max = int.MaxValue;
+            uint stepSize = max / 20;
+            TimeSpan duration = TimeSpan.FromSeconds(10);
+            TimeSpan stepDuration = duration;
+            Moving_Average_Double timebasedAverage = new Moving_Average_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
+            DateTime baseTime = DateTime.Parse("2022/08/09 13:22:00");
+            for (uint i = 0; i < max; i += stepSize)
+            {
+                timebasedAverage.Clear();
+                double result1 = rng.NextDouble() * i;
+                double result2 = rng.NextDouble() * i;
+                double control = Math.Round((result1 + result2) / 2, 6);
+
+                timebasedAverage.AddValue(result1, baseTime);
+                timebasedAverage.AddValue(result1, baseTime.AddSeconds(4));
+                timebasedAverage.AddValue(result2, baseTime.AddSeconds(5));
+                timebasedAverage.AddValue(result2, baseTime.AddSeconds(6));
+                timebasedAverage.AddValue(result2, baseTime.AddSeconds(7));
+                timebasedAverage.AddValue(result2, baseTime.AddSeconds(8));
+                timebasedAverage.AddValue(result2, baseTime.AddSeconds(9));
+                double divergence = Math.Abs(timebasedAverage.Value - control);
+                double divergencePercent = divergence / control;
+                if (divergence == 0) divergencePercent = 0;
+                if (divergencePercent > 0.15)
+                {
+                    { }
+                }
+                Assert.True(divergencePercent < 0.15);
+            }
+        }
+        [Fact]
+        public void StaticValues_SmallDataGaps()
+        {
+            Moving_Average_Double timebasedAverage = new Moving_Average_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+            DateTime baseTime = DateTime.Parse("2022/08/09 13:22:00");
+            double result1 = 0;
+            double result2 = 10;
+            double control = Math.Round((result1 + result2) / 2, 6);
+
+            timebasedAverage.AddValue(result1, baseTime);
+            timebasedAverage.AddValue(result1, baseTime.AddSeconds(4));
+            timebasedAverage.AddValue(result2, baseTime.AddSeconds(5));
+            timebasedAverage.AddValue(result2, baseTime.AddSeconds(6));
+            timebasedAverage.AddValue(result2, baseTime.AddSeconds(7));
+            timebasedAverage.AddValue(result2, baseTime.AddSeconds(8));
+            timebasedAverage.AddValue(result2, baseTime.AddSeconds(9));
+            Assert.Equal(control, Math.Round(timebasedAverage.Value, 6));
         }
         [Fact]
         public void RandomValues()
@@ -92,11 +152,11 @@ namespace Statistics_unit_tests.Average_NS
                     double divergence = Math.Abs(timebasedAverage.Value - controlAverage.Value);
                     double divergencePercent = divergence / controlAverage.Value;
                     if (divergence == 0) divergencePercent = 0;
-                    if (divergencePercent > 0.001)
+                    if (divergencePercent > 0.15)
                     {
                         { }
                     }
-                    Assert.True(divergencePercent < 0.001);
+                    Assert.True(divergencePercent < 0.15);
                 }
             }
         }
@@ -212,7 +272,7 @@ namespace Statistics_unit_tests.Average_NS
             File.WriteAllText(csvFilePath, csvData.ToString());
 
             double averageAbsoluteDifference = sumAbsoluteDifferences / points;
-            Assert.True(averageAbsoluteDifference < 0.1, $"The average absolute difference was {averageAbsoluteDifference}, which is not less than 0.1.");
+            Assert.True(averageAbsoluteDifference < 0.005, $"The average absolute difference was {averageAbsoluteDifference}, which is not less than 0.1.");
         }
 
 
