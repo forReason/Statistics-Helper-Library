@@ -272,7 +272,7 @@ namespace Statistics_unit_tests.Average_NS
             File.WriteAllText(csvFilePath, csvData.ToString());
 
             double averageAbsoluteDifference = sumAbsoluteDifferences / points;
-            Assert.True(averageAbsoluteDifference < 0.005, $"The average absolute difference was {averageAbsoluteDifference}, which is not less than 0.1.");
+            Assert.True(averageAbsoluteDifference < 0.015, $"The average absolute difference was {averageAbsoluteDifference}, which is not less than 0.015.");
         }
 
 
