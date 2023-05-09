@@ -16,7 +16,7 @@
     <PackageTags>statistics;average;moving average;minmax;variance</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.0.1</Version>
+    <Version>1.1.1</Version>
     <PackageReleaseNotes>target .net 6 &amp; 7</PackageReleaseNotes>
   </PropertyGroup>
 
