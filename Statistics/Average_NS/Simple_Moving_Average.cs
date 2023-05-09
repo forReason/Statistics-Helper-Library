@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QuickStatistics.Net.Average_NS
+﻿namespace QuickStatistics.Net.Average_NS
 {
     public class Simple_Moving_Average_Double
     {
