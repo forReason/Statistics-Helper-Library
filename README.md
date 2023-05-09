@@ -12,6 +12,8 @@ While I try to add unit tests to my projects, do a quick test yourself and check
 ### Average
 - Moving average
 ```
+using QuickStatistics.Net.Average_NS;
+
 // Create a new Moving_Average_Double object with a total tracking time of 2 hours and a value resolution of 1 minute
 Moving_Average_Double ma = new Moving_Average_Double(TimeSpan.FromHours(2), TimeSpan.FromMinutes(1));
 
@@ -35,10 +37,17 @@ currentValue = ma.Value;
 // Clear all values in the moving average
 ma.Clear();
 ```
-- Exponential Smoothing (Moving average approximation, very fast and lightweight)
-- Quick average on the fly (omitting memory restraints and overflow)
+### Averaging
+- progressing_Average:
+a straight forward, very fast, precise implementation for calculating the average value. Limit is int.max (count of values) so it is not suited for an infinite stream of data such as for sensors
+- Simple_Exponential_Average:
+Moving average approximation, very fast and lightweight
+- Simple_Moving_Average:
+Average on the fly (omitting memory restraints and overflow)
 - Volumetric average for 2 values (averaging two values by their weight)
-- Time based moving average (good for historic data and data with gaps, also good for targeting a certain time duration)
+- Moving_Average:
+Time based moving average (good for historic data and data with gaps, also good for targeting a certain time duration or when the input data stream is not consistent in speed)
+Maps the incoming data to a consistient timeline with variable resolution
 
 ### Minimum / Maximum
 - Calculate Maximum or Minimum for a given amount of Datapoints (useful for sensor Data)

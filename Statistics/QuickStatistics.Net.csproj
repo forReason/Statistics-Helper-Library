@@ -17,7 +17,9 @@
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Version>1.1.1</Version>
-    <PackageReleaseNotes>target .net 6 &amp; 7</PackageReleaseNotes>
+    <PackageReleaseNotes>- several bugfixes
+- improved unit tests
+- Line of moving average is now smoothed out and it follows data gaps better</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
