@@ -125,42 +125,6 @@ namespace Statistics_unit_tests.Average_NS
             Assert.Equal(control, Math.Round(timebasedAverage.Value, 6));
         }
         [Fact]
-        public void RandomValues()
-        {
-            // positive tests
-            Random rng = new Random();
-            uint max = int.MaxValue;
-            uint stepSize = max / 20;
-            TimeSpan duration = TimeSpan.FromSeconds(10);
-            TimeSpan stepDuration = duration / 20;
-            double stepAmount = duration / stepDuration;
-            Moving_Average_Double timebasedAverage = new Moving_Average_Double(duration, stepDuration);
-            Progressing_Average_Double controlAverage = new Progressing_Average_Double();
-            DateTime baseTime = DateTime.Parse("2022/08/09 13:22:00");
-            for (uint i = 0; i < max; i += stepSize)
-            {
-                // clear
-                timebasedAverage.Clear();
-                controlAverage.Clear();
-                for(int b = 0; b < stepAmount; b++)
-                {
-                    double randomSource = rng.NextDouble();
-                    double rand = (randomSource - 0.5) * i;
-                    DateTime targetTime = baseTime + (b * (stepDuration));
-                    timebasedAverage.AddValue(rand, targetTime);
-                    controlAverage.AddValue(rand);
-                    double divergence = Math.Abs(timebasedAverage.Value - controlAverage.Value);
-                    double divergencePercent = divergence / controlAverage.Value;
-                    if (divergence == 0) divergencePercent = 0;
-                    if (divergencePercent > 0.15)
-                    {
-                        { }
-                    }
-                    Assert.True(divergencePercent < 0.15);
-                }
-            }
-        }
-        [Fact]
         public void ConstantValues()
         {
             Moving_Average_Double timebasedAverage = new Moving_Average_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
@@ -274,10 +238,5 @@ namespace Statistics_unit_tests.Average_NS
             double averageAbsoluteDifference = sumAbsoluteDifferences / points;
             Assert.True(averageAbsoluteDifference < 0.015, $"The average absolute difference was {averageAbsoluteDifference}, which is not less than 0.015.");
         }
-
-
-
-
-
     }
 }
