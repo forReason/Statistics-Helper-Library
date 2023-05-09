@@ -28,6 +28,10 @@ namespace QuickStatistics.Net.Average_NS
             Count = 0;
             Value = 0;
         }
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
     public class Progressing_Average_Decimal
     {
