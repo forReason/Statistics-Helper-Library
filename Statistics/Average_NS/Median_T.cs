@@ -2,9 +2,22 @@
 
 namespace QuickStatistics.Net.Average_NS
 {
-    #if NET7_0_OR_GREATER
+#if NET7_0_OR_GREATER
+    /// <summary>
+    /// generic method in order to obtain the median from other types than double.
+    /// </summary>
+    /// <remarks>internaly uses a conversion to double at some point so may not be a good idea for large data types such a decimal<br/>
+    /// better use <see cref="Median_Decimal"/> for this purpose</remarks>
+    /// <typeparam name="T"></typeparam>
     public class Median <T> where T : INumber<T>
     {
+        /// <summary>
+        /// gets the median value of an array of numbers
+        /// </summary>
+        /// <param name="numbers">the numbers input</param>
+        /// <param name="inputIsSorted">specify when the input numbers are sorted already to save processing time</param>
+        /// <returns>median</returns>
+        /// <exception cref="ArgumentException"></exception>
         public double GetMedian(T[] numbers, bool inputIsSorted = false)
         {
             if (numbers == null || numbers.Length == 0)
@@ -22,7 +35,13 @@ namespace QuickStatistics.Net.Average_NS
 
             return Calculate(sortedNumbers);
         }
-
+        /// <summary>
+        /// gets the median value of a list of numbers
+        /// </summary>
+        /// <param name="numbers">the numbers input</param>
+        /// <param name="inputIsSorted">specify when the input numbers are sorted already to save processing time</param>
+        /// <returns>median</returns>
+        /// <exception cref="ArgumentException"></exception>
         public double GetMedian(List<T> numbers, bool inputIsSorted = false)
         {
             if (numbers == null || numbers.Count == 0)
@@ -38,7 +57,11 @@ namespace QuickStatistics.Net.Average_NS
 
             return Calculate(sortedNumbers);
         }
-
+        /// <summary>
+        /// gets the median value from a SORTED array of numbers
+        /// </summary>
+        /// <param name="sortedNumbers"></param>
+        /// <returns></returns>
         private double Calculate(T[] sortedNumbers)
         {
             int length = sortedNumbers.Length;
