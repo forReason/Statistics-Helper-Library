@@ -1,7 +1,7 @@
 ﻿
 namespace QuickStatistics.Net.Average_NS
 {
-    public class VolumetricAverage_Double
+    public class VolumetricAverage_Decimal
     {
         /// <summary>
         /// Builds an average based on two values based on their amount
@@ -12,7 +12,7 @@ namespace QuickStatistics.Net.Average_NS
         /// <param name="volume2"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException">negative volumes not allowed</exception>
-        public static double VolumeBasedAverage(double value1, double volume1, double value2, double volume2)
+        public static decimal VolumeBasedAverage(decimal value1, decimal volume1, decimal value2, decimal volume2)
         {
             /// condition prechecks
             if (volume1 < 0 || volume2 < 0)
@@ -41,60 +41,41 @@ namespace QuickStatistics.Net.Average_NS
             }
             /// prepare variables
             // return variable
-            double returnAverage = 0;
+            decimal returnAverage = 0;
             // required for calculation
-            double totalVolume = volume1 + volume2;
-            if (double.IsNaN(totalVolume))
-            { // volume1 + volume2 > double.max -> reduce precision to calculate
-                volume1 /= 2;
-                volume2 /= 2;
-                totalVolume = volume1 + volume2;
-            }
+            decimal totalVolume = volume1 + volume2;
             /// attempt highest precision calculation
             // add value1 to average
             returnAverage += value1 * volume1;
             // add value2 to average
             returnAverage += value2 * volume2;
-            if (!double.IsNaN(returnAverage))
-            {
-                return returnAverage / totalVolume;
-            }
-            else
-            {
-                returnAverage = 0;
-                // reduce precision by one digit if numbers get too large
-                // add value1 to average
-                returnAverage += value1 * (volume1 / totalVolume);
-                // add value2 to average
-                returnAverage += value2 * (volume2 / totalVolume);
-                return returnAverage;
-            }
+            return returnAverage / totalVolume;
         }
-        public static double VolumeBasedAverage(VolumetricValue_Double[] values)
+        public static decimal VolumeBasedAverage(VolumetricValue_Decimal[] values)
         {
-            double totalVolume = 0;
-            foreach (VolumetricValue_Double item in values)
+            decimal totalVolume = 0;
+            foreach (VolumetricValue_Decimal item in values)
             {
                 totalVolume += item.Volume;
             }
             if (totalVolume == 0) return 0;
-            double result = 0;
-            foreach(VolumetricValue_Double item in values)
+            decimal result = 0;
+            foreach(VolumetricValue_Decimal item in values)
             {
-                double factor = (item.Volume / totalVolume);
+                decimal factor = (item.Volume / totalVolume);
                 result += item.Value * factor;
             }
             return result;
         }
     }
-    public struct VolumetricValue_Double
+    public struct VolumetricValue_Decimal
     {
-        public VolumetricValue_Double(double value, double volume)
+        public VolumetricValue_Decimal(decimal value, decimal volume)
         {
             Value = value;
             Volume = volume;
         }
-        public double Value { get; set; }
-        public double Volume { get; set; }
+        public decimal Value { get; set; }
+        public decimal Volume { get; set; }
     }
 }

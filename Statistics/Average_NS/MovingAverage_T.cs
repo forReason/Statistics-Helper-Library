@@ -4,10 +4,17 @@ using System.Text;
 namespace QuickStatistics.Net.Average_NS
 {
 #if NET7_0_OR_GREATER
+    /// <summary>
+    /// calculates a time-normalized moving average for generic number type.<br/>
+    /// time-Normalized means that it is intended for uses where the input values are not in a steady timely manner.
+    /// </summary>
+    /// <remarks>Has an internal conversion to double so may not be suited for large number types such as decimal<br/>
+    /// for decimal, please use <see cref="MovingAverage_Decimal"/></remarks>
     public class MovingAverage <T> where T : INumber<T>
     {
         /// <summary>
-        /// 
+        /// calculates a time-normalized moving average for generic number type.<br/>
+        /// time-Normalized means that it is intended for uses where the input values are not in a steady timely manner.
         /// </summary>
         /// <param name="totalTime">the total timespan which shoud be tracked</param>
         /// <param name="valueResolution">the duration each datapoint should cover ( must be smaller than totaltime )</param>

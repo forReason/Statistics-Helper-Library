@@ -3,10 +3,10 @@
 namespace QuickStatistics.Net.Average_NS
 {
     /// <summary>
-    /// calculates a time-normalized moving average for type double.<br/>
+    /// calculates a time-normalized moving average for type decimal.<br/>
     /// time-Normalized means that it is intended for uses where the input values are not in a steady timely manner.
     /// </summary>
-    public class MovingAverage_Double
+    public class MovingAverage_Decimal
     {
         /// <summary>
         /// calculates a time-normalized moving average for type double.<br/>
@@ -15,7 +15,7 @@ namespace QuickStatistics.Net.Average_NS
         /// <param name="totalTime">the total timespan which shoud be tracked</param>
         /// <param name="valueResolution">the duration each datapoint should cover ( must be smaller than totaltime )</param>
         /// <param name="backupPath">(where to stora / restore backups)</param>
-        public MovingAverage_Double(TimeSpan totalTime, TimeSpan valueResolution, string backupPath = "")
+        public MovingAverage_Decimal(TimeSpan totalTime, TimeSpan valueResolution, string backupPath = "")
         {
             SetResolution(totalTime, valueResolution);
             Clear();
@@ -46,19 +46,19 @@ namespace QuickStatistics.Net.Average_NS
             this.TotalTime = totalTime;
             this.ValueResolution = valueResolution;
             Steps = (int)Math.Round((this.TotalTime.TotalMinutes / this.ValueResolution.TotalMinutes));
-            Average = new SimpleMovingAverage_Double(Steps);
+            Average = new SimpleMovingAverage_Decimal(Steps);
         }
         // Working variables
         private DateTime CurrentTimeSpot { get; set; }
         private DateTime LastTimeStamp { get; set; }
         public FileInfo? BackupFile { get; set; }
-        private double CurrentTimeSpotVolumetricAverage = 0;
-        private double PreviousValue = 0;
-        private SimpleMovingAverage_Double Average { get; set; }
+        private decimal CurrentTimeSpotVolumetricAverage = 0;
+        private decimal PreviousValue = 0;
+        private SimpleMovingAverage_Decimal Average { get; set; }
         /// <summary>
         /// Value represents the current Moving Average
         /// </summary>
-        public double Value { get; private set; }
+        public decimal Value { get; private set; }
         /// <summary>
         /// adds a single value point<br/>
         /// assumes the date time of the value point is NOW
@@ -67,7 +67,7 @@ namespace QuickStatistics.Net.Average_NS
         /// handy for live fed data
         /// </remarks>
         /// <param name="value"></param>
-        public void AddValue(double value)
+        public void AddValue(decimal value)
         {
             AddValue(value, DateTime.Now);
         }
@@ -80,7 +80,7 @@ namespace QuickStatistics.Net.Average_NS
         /// </remarks>
         /// <param name="value"></param>
         /// <param name="timeStamp"></param>
-        public void AddValue(double value, DateTime timeStamp)
+        public void AddValue(decimal value, DateTime timeStamp)
         {
             /// check if new value needs to be added to queue
             if (CurrentTimeSpot + ValueResolution < timeStamp)
@@ -116,11 +116,13 @@ namespace QuickStatistics.Net.Average_NS
                 throw new InvalidOperationException("you cannot add data points from the past! Did you forget to Clear()?");
             }
 
-            double currentAssumption = (PreviousValue + value) / 2;
+            decimal currentAssumption = (PreviousValue + value) / 2;
             if (microTickTime.TotalSeconds == 0.0) CurrentTimeSpotVolumetricAverage = (Value + value) / 2;
             else
             {
-                CurrentTimeSpotVolumetricAverage = VolumetricAverage_Double.VolumeBasedAverage(CurrentTimeSpotVolumetricAverage, stepduration.TotalSeconds, currentAssumption, microTickTime.TotalSeconds);
+                CurrentTimeSpotVolumetricAverage = VolumetricAverage_Decimal.VolumeBasedAverage(
+                    value1: CurrentTimeSpotVolumetricAverage, volume1: (decimal)stepduration.TotalSeconds,
+                    value2: currentAssumption, volume2: (decimal)microTickTime.TotalSeconds);
             }
             PreviousValue = value;
 
@@ -131,9 +133,9 @@ namespace QuickStatistics.Net.Average_NS
             // merge historic queue and previous time spot
             if (Average.CurrentDataLength > 0)
             {
-                Value = VolumetricAverage_Double.VolumeBasedAverage(
-                value1: Average.Value, volume1: (Average.CurrentDataLength * ValueResolution).TotalMinutes,
-                value2: CurrentTimeSpotVolumetricAverage, volume2: currentSpotTimeSpan.TotalMinutes);
+                Value = VolumetricAverage_Decimal.VolumeBasedAverage(
+                value1: Average.Value, volume1: (decimal)(Average.CurrentDataLength * ValueResolution).TotalMinutes,
+                value2: CurrentTimeSpotVolumetricAverage, volume2: (decimal)currentSpotTimeSpan.TotalMinutes);
             } else
             {
                 Value = CurrentTimeSpotVolumetricAverage;
@@ -144,7 +146,7 @@ namespace QuickStatistics.Net.Average_NS
                 { }
             }
         }
-        private void AddBackupValue(DateTime time, double value)
+        private void AddBackupValue(DateTime time, decimal value)
         {
             if (BackupFile == null)
             { 
@@ -178,7 +180,7 @@ namespace QuickStatistics.Net.Average_NS
                 {
                     string[] split = line.Split(';');
                     DateTime time = DateTime.Parse(split[0]);
-                    double value = double.Parse(split[1]);
+                    decimal value = decimal.Parse(split[1]);
                     Average.AddValue(value);
                     BackupLines.Enqueue(line);
                 }

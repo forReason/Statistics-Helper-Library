@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QuickStatistics.Net.Average_NS
+﻿namespace QuickStatistics.Net.Average_NS
 {
     /// <summary>
     /// this is an extremely lightweight and fast class in order to receive the simple moving average
     /// </summary>
-    public class SimpleExponentialAverage_Double
+    internal class SimpleExponentialAverage_Decimal
     {
-        public SimpleExponentialAverage_Double(uint maxDataLength, double divergenceCorrection = 0.29296875)
+        public SimpleExponentialAverage_Decimal(uint maxDataLength, decimal divergenceCorrection = 0.2929687m)
         {
             _DivergenceCorrection = divergenceCorrection;
             MaxDataLength = maxDataLength;
@@ -20,8 +14,8 @@ namespace QuickStatistics.Net.Average_NS
         /// <summary>
         /// the target maximum data length to keep track of
         /// </summary>
-        public uint MaxDataLength 
-        { 
+        public uint MaxDataLength
+        {
             get
             {
                 return _MaxDataLength;
@@ -30,7 +24,7 @@ namespace QuickStatistics.Net.Average_NS
             {
                 _MaxDataLength = value;
                 SetMax();
-            } 
+            }
         }
         private uint _MaxDataLength;
         private uint _CorrectedDataLength;
@@ -42,21 +36,22 @@ namespace QuickStatistics.Net.Average_NS
         /// <summary>
         /// The current moving average value
         /// </summary>
-        public double Value { get; private set; }
+        public decimal Value { get; private set; }
         /// <summary>
         /// This is important for time series! 
         /// Lets say, the value goes up to 10000 and then turns back to 5. 
         /// The value lags behind as opposed to a true average.
         /// </summary>
-        public double DivergenceCorrection
+        public decimal DivergenceCorrection
         {
             get { return _DivergenceCorrection; }
-            set { 
+            set
+            {
                 _DivergenceCorrection = value;
                 SetMax();
             }
         }
-        private double _DivergenceCorrection { get; set; }
+        private decimal _DivergenceCorrection { get; set; }
         private void SetMax()
         {
             _CorrectedDataLength = (uint)(_MaxDataLength * _DivergenceCorrection);
@@ -70,7 +65,7 @@ namespace QuickStatistics.Net.Average_NS
             _CurrentDataLength = 0;
             Value = 0;
         }
-        public void AddValue(double input)
+        public void AddValue(decimal input)
         {
             _CurrentDataLength++;
             Value += (input - Value) / (_CurrentDataLength);// * DivergenceCorrection);

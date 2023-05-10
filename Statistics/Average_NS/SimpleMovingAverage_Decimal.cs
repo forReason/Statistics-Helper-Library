@@ -4,20 +4,20 @@
     /// a very simple and fast method to get the moving average on sliding data.
     /// This function is particularly useful for large datasets or infinite data inflow
     /// </summary>
-    public class SimpleMovingAverage_Double
+    public class SimpleMovingAverage_Decimal
     {
-        public SimpleMovingAverage_Double(int length)
+        public SimpleMovingAverage_Decimal(int length)
         {
             MaxDataLength = length;
             Clear();
         }
-        private Queue<double> AverageQueue = new Queue<double>();
-        public double Value { get; private set; }
+        private Queue<decimal> AverageQueue = new Queue<decimal>();
+        public decimal Value { get; private set; }
         public int MaxDataLength { get; private set; }
         public int CurrentDataLength { get { return AverageQueue.Count; } }
-        public void AddValue(double input)
+        public void AddValue(decimal input)
         {
-            double weightedInput = input / MaxDataLength;
+            decimal weightedInput = input / MaxDataLength;
             AverageQueue.Enqueue(weightedInput);
             if (AverageQueue.Count <= MaxDataLength)
             {// queue is not full yet
@@ -25,7 +25,7 @@
             }
             else
             { // queue is full. now in sliding window
-                double change = weightedInput;
+                decimal change = weightedInput;
                 change -= AverageQueue.Dequeue();
                 Value += change;
             }

@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace QuickStatistics.Net.Average_NS
 {
+#if NET7_0_OR_GREATER
     /// <summary>
     /// this is an extremely lightweight and fast class in order to receive the simple moving average
     /// </summary>
-    public class SimpleExponentialAverage_Double
+    /// <remarks>has an internal conversion to Double for larger numbers, use <see cref="SimpleExponentialAverage_Decimal"/></remarks>
+    public class SimpleExponentialAverage <T> where T : INumber<T>
     {
-        public SimpleExponentialAverage_Double(uint maxDataLength, double divergenceCorrection = 0.29296875)
+        public SimpleExponentialAverage(uint maxDataLength, double divergenceCorrection = 0.29296875)
         {
             _DivergenceCorrection = divergenceCorrection;
             MaxDataLength = maxDataLength;
@@ -70,10 +73,10 @@ namespace QuickStatistics.Net.Average_NS
             _CurrentDataLength = 0;
             Value = 0;
         }
-        public void AddValue(double input)
+        public void AddValue(T input)
         {
             _CurrentDataLength++;
-            Value += (input - Value) / (_CurrentDataLength);// * DivergenceCorrection);
+            Value += (Convert.ToDouble(input) - Value) / (_CurrentDataLength);// * DivergenceCorrection);
             _CurrentDataLength -= _CurrentDataLength / (_CorrectedDataLength + 1);
         }
         public override string ToString()
@@ -81,4 +84,5 @@ namespace QuickStatistics.Net.Average_NS
             return this.Value.ToString();
         }
     }
+#endif
 }
