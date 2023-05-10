@@ -4,6 +4,7 @@ using System.Numerics;
 
 namespace QuickStatistics.Net.Median_NS
 {
+#if NET7_0_OR_GREATER
     /// <summary>
     /// running median can be used to quickly gather the median of all values added (so far)
     /// note, you might run into memory constraints, so this method is not suitable for infinite data flow
@@ -23,4 +24,5 @@ namespace QuickStatistics.Net.Median_NS
             return Median.GetMedian();
         }
     }
+#endif
 }
