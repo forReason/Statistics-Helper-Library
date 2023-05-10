@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace QuickStatistics.Net.Average_NS
+namespace QuickStatistics.Net.Median_NS
 {
 #if NET7_0_OR_GREATER
     /// <summary>
@@ -9,7 +9,7 @@ namespace QuickStatistics.Net.Average_NS
     /// <remarks>internaly uses a conversion to double at some point so may not be a good idea for large data types such a decimal<br/>
     /// better use <see cref="Median_Decimal"/> for this purpose</remarks>
     /// <typeparam name="T"></typeparam>
-    public class Median <T> where T : INumber<T>
+    public class Median<T> where T : INumber<T>
     {
         /// <summary>
         /// gets the median value of an array of numbers
@@ -31,7 +31,7 @@ namespace QuickStatistics.Net.Average_NS
             {
                 Array.Sort(sortedNumbers);
             }
-            
+
 
             return Calculate(sortedNumbers);
         }
@@ -76,5 +76,5 @@ namespace QuickStatistics.Net.Average_NS
             }
         }
     }
-    #endif
+#endif
 }

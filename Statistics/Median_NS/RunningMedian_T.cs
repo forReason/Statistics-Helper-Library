@@ -2,7 +2,7 @@
 
 using System.Numerics;
 
-namespace QuickStatistics.Net.Average_NS
+namespace QuickStatistics.Net.Median_NS
 {
     /// <summary>
     /// running median can be used to quickly gather the median of all values added (so far)

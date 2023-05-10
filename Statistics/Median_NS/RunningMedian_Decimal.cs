@@ -1,25 +1,23 @@
-﻿
-
-namespace QuickStatistics.Net.Average_NS
+﻿namespace QuickStatistics.Net.Median_NS
 {
     /// <summary>
     /// running median can be used to quickly gather the median of all values added (so far)
     /// note, you might run into memory constraints, so this method is not suitable for infinite data flow
     /// </summary>
-    public class RunningMedian_Double
+    public class RunningMedian_Decimal
     {
-        private readonly SortedSet<(double value, int id)> minHeap;
-        private readonly SortedSet<(double value, int id)> maxHeap;
+        private readonly SortedSet<(decimal value, int id)> minHeap;
+        private readonly SortedSet<(decimal value, int id)> maxHeap;
         private int idCounter;
 
-        public RunningMedian_Double()
+        public RunningMedian_Decimal()
         {
-            minHeap = new SortedSet<(double value, int id)>(Comparer<(double value, int id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : x.value.CompareTo(y.value)));
-            maxHeap = new SortedSet<(double value, int id)>(Comparer<(double value, int id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : y.value.CompareTo(x.value)));
+            minHeap = new SortedSet<(decimal value, int id)>(Comparer<(decimal value, int id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : x.value.CompareTo(y.value)));
+            maxHeap = new SortedSet<(decimal value, int id)>(Comparer<(decimal value, int id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : y.value.CompareTo(x.value)));
             idCounter = 0;
         }
 
-        public void AddValue(double value)
+        public void AddValue(decimal value)
         {
             var entry = (value, idCounter++);
 
@@ -35,7 +33,7 @@ namespace QuickStatistics.Net.Average_NS
             RebalanceHeaps();
         }
 
-        public double GetMedian()
+        public decimal GetMedian()
         {
             if (maxHeap.Count == 0)
             {
@@ -44,7 +42,7 @@ namespace QuickStatistics.Net.Average_NS
 
             if (maxHeap.Count == minHeap.Count)
             {
-                return (maxHeap.Min.value + minHeap.Min.value) / 2.0;
+                return (maxHeap.Min.value + minHeap.Min.value) / 2.0m;
             }
             else
             {
