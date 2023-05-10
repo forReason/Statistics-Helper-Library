@@ -25,4 +25,8 @@
     <ProjectReference Include="..\Statistics\QuickStatistics.Net.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Median_NS\" />
+  </ItemGroup>
+
 </Project>
