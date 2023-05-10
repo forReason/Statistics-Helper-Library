@@ -19,7 +19,7 @@ namespace Statistics_unit_tests.Average_NS
             uint stepSize = max / 20;
             for (uint i = 0; i < max; i += stepSize)
             {
-                Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
+                ProgressingAverage_Double progressingAverage = new ProgressingAverage_Double();
                 double result = rng.NextDouble() * i;
                 for (uint b = 0; b < max; b += stepSize)
                 {
@@ -40,7 +40,7 @@ namespace Statistics_unit_tests.Average_NS
             uint stepSize = max / 20;
             for (uint i = 0; i < max; i += stepSize)
             {
-                Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
+                ProgressingAverage_Double progressingAverage = new ProgressingAverage_Double();
                 double result = rng.NextDouble() * i;
                 result = -result;
                 for (uint b = 0; b < max; b += stepSize)
@@ -62,7 +62,7 @@ namespace Statistics_unit_tests.Average_NS
             uint stepSize = max / 50;
             for (uint i = 50; i < max; i += stepSize)
             {
-                Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
+                ProgressingAverage_Double progressingAverage = new ProgressingAverage_Double();
                 uint result = 0;
                 uint steps = 0;
                 uint stepsizeb = i / 50;
@@ -88,7 +88,7 @@ namespace Statistics_unit_tests.Average_NS
         {
             // positive tests
             Random rng = new Random();
-            Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
+            ProgressingAverage_Double progressingAverage = new ProgressingAverage_Double();
             double result = 0;
             uint steps = 0;
             for (uint b = 0; b < 2000; b ++)

@@ -1,8 +1,8 @@
 ﻿namespace QuickStatistics.Net.Average_NS
 {
-    public class Simple_Moving_Average_Double
+    public class SimpleMovingAverage_Double
     {
-        public Simple_Moving_Average_Double(int length)
+        public SimpleMovingAverage_Double(int length)
         {
             MaxDataLength = length;
             Clear();

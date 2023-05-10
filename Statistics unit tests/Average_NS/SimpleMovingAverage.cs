@@ -16,7 +16,7 @@ namespace Statistics_unit_tests.Average_NS
             int maxSize = 50000;
             for (int targetLength = 0; targetLength < maxSize; targetLength += maxSize/20)
             {
-                Simple_Moving_Average_Double sma = new Simple_Moving_Average_Double(targetLength);
+                SimpleMovingAverage_Double sma = new SimpleMovingAverage_Double(targetLength);
                 if (sma.MaxDataLength != targetLength)
                 {
                     throw new Exception($"target length ({targetLength}) and max data length ({sma.MaxDataLength}) does not match up!");
@@ -87,7 +87,7 @@ namespace Statistics_unit_tests.Average_NS
             uint stepSize = max / 20;
             for (uint i = 0; i < max; i += stepSize)
             {
-                Simple_Moving_Average_Double sma = new Simple_Moving_Average_Double(10);
+                SimpleMovingAverage_Double sma = new SimpleMovingAverage_Double(10);
                 double result = rng.NextDouble() * i;
                 for (uint b = 0; b < max; b += stepSize)
                 {
@@ -110,8 +110,8 @@ namespace Statistics_unit_tests.Average_NS
             uint stepSize = max / 20;
             for (uint i = 0; i < max; i += stepSize)
             {
-                Simple_Moving_Average_Double simpleAverage = new Simple_Moving_Average_Double(1000);
-                Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
+                SimpleMovingAverage_Double simpleAverage = new SimpleMovingAverage_Double(1000);
+                ProgressingAverage_Double progressingAverage = new ProgressingAverage_Double();
                 for (uint b = 0; b < 1000; b ++)
                 {
                     double result = (rng.NextDouble()-0.5) * i;
@@ -137,7 +137,7 @@ namespace Statistics_unit_tests.Average_NS
             {
                 for(int dataLength = 1; dataLength < 50000; dataLength += 50000/20)
                 {
-                    Simple_Moving_Average_Double simpleAverage = new Simple_Moving_Average_Double(dataLength);
+                    SimpleMovingAverage_Double simpleAverage = new SimpleMovingAverage_Double(dataLength);
                     double startValue = (rng.NextDouble() - 0.5) * i;
                     double targetValue = (rng.NextDouble() - 0.5) * i;
 

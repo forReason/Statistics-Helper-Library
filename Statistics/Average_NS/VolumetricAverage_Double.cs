@@ -1,7 +1,7 @@
 ﻿
 namespace QuickStatistics.Net.Average_NS
 {
-    public class Volumetric_Average
+    public class VolumetricAverage_Double
     {
         /// <summary>
         /// Builds an average based on two values based on their amount

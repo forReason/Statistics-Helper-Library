@@ -20,7 +20,7 @@ namespace Statistics_unit_tests.Average_NS
             TimeSpan stepDuration = duration/ 20;
             TimeSpan sleep = stepDuration / 20;
             int microStep = (int)(duration.TotalSeconds / sleep.TotalSeconds);
-            Moving_Average_Double timebasedAverage = new Moving_Average_Double(duration,stepDuration);
+            MovingAverage_Double timebasedAverage = new MovingAverage_Double(duration,stepDuration);
             for (uint i = 0; i < max; i += stepSize)
             {
                 timebasedAverage.Clear();
@@ -46,7 +46,7 @@ namespace Statistics_unit_tests.Average_NS
             TimeSpan stepDuration = duration / 20;
             TimeSpan sleep = stepDuration / 20;
             int microStep = (int)(duration.TotalSeconds / sleep.TotalSeconds);
-            Moving_Average_Double timebasedAverage = new Moving_Average_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
+            MovingAverage_Double timebasedAverage = new MovingAverage_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
             DateTime baseTime = DateTime.Parse("2022/08/09 13:22:00");
             for (uint i = 0; i < max; i += stepSize)
             {
@@ -80,7 +80,7 @@ namespace Statistics_unit_tests.Average_NS
             uint stepSize = max / 20;
             TimeSpan duration = TimeSpan.FromSeconds(10);
             TimeSpan stepDuration = duration;
-            Moving_Average_Double timebasedAverage = new Moving_Average_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
+            MovingAverage_Double timebasedAverage = new MovingAverage_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
             DateTime baseTime = DateTime.Parse("2022/08/09 13:22:00");
             for (uint i = 0; i < max; i += stepSize)
             {
@@ -109,7 +109,7 @@ namespace Statistics_unit_tests.Average_NS
         [Fact]
         public void StaticValues_SmallDataGaps()
         {
-            Moving_Average_Double timebasedAverage = new Moving_Average_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+            MovingAverage_Double timebasedAverage = new MovingAverage_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
             DateTime baseTime = DateTime.Parse("2022/08/09 13:22:00");
             double result1 = 0;
             double result2 = 10;
@@ -127,7 +127,7 @@ namespace Statistics_unit_tests.Average_NS
         [Fact]
         public void ConstantValues()
         {
-            Moving_Average_Double timebasedAverage = new Moving_Average_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
+            MovingAverage_Double timebasedAverage = new MovingAverage_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
             DateTime currentTime = DateTime.Now;
 
             for (int i = 0; i < 15; i++)
@@ -141,7 +141,7 @@ namespace Statistics_unit_tests.Average_NS
         [Fact]
         public void LinearIncrease()
         {
-            Moving_Average_Double timebasedAverage = new Moving_Average_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
+            MovingAverage_Double timebasedAverage = new MovingAverage_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
             DateTime currentTime = DateTime.Now;
 
             for (int i = 0; i < 20; i++)
@@ -155,7 +155,7 @@ namespace Statistics_unit_tests.Average_NS
         [Fact]
         public void LinearDecrease()
         {
-            Moving_Average_Double timebasedAverage = new Moving_Average_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
+            MovingAverage_Double timebasedAverage = new MovingAverage_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
             DateTime currentTime = DateTime.Now;
 
             for (int i = 20; i >= 0; i--)
@@ -173,7 +173,7 @@ namespace Statistics_unit_tests.Average_NS
             TimeSpan totalTime = TimeSpan.FromSeconds(points);
             TimeSpan stepDuration = totalTime / points;
 
-            Moving_Average_Double timebasedAverage = new Moving_Average_Double(totalTime, stepDuration);
+            MovingAverage_Double timebasedAverage = new MovingAverage_Double(totalTime, stepDuration);
             DateTime baseTime = DateTime.Now;
 
             double sumValues = 0;
@@ -198,7 +198,7 @@ namespace Statistics_unit_tests.Average_NS
             int stepcount = 10;
             TimeSpan stepDuration = totalTime / (points/stepcount);
 
-            Moving_Average_Double timebasedAverage = new Moving_Average_Double(totalTime, stepDuration);
+            MovingAverage_Double timebasedAverage = new MovingAverage_Double(totalTime, stepDuration);
             DateTime baseTime = DateTime.Now;
 
             double sumAbsoluteDifferences = 0;

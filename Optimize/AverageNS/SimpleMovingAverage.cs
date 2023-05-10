@@ -173,7 +173,7 @@ namespace Optimize.AverageNS
                 double result = double.Parse(value);
                 return new BenchmarkResult(optimizeValue, result);
             }
-            Progressing_Average_Double results = new Progressing_Average_Double();
+            ProgressingAverage_Double results = new ProgressingAverage_Double();
             Sliding_Maximum max = new Sliding_Maximum(10);
             Sliding_Minimum min = new Sliding_Minimum(10);
             double precision = double.MaxValue;
@@ -194,7 +194,7 @@ namespace Optimize.AverageNS
                 precision = ((max.Value - min.Value) / Math.Abs(results.Value));
                 Console.WriteLine($"\rbenchmarking value:{optimizeValue} divergence:{((precision)*100).ToString("0.00")}% ({(max.Value-min.Value).ToString("0.00")}) Loss: {results.Value.ToString("0.00")}");
             }
-            double mergedResult = Volumetric_Average.VolumeBasedAverage(value1: results.Value, volume1: 0.3, value2: realDataResults, volume2: 0.7);
+            double mergedResult = VolumetricAverage_Double.VolumeBasedAverage(value1: results.Value, volume1: 0.3, value2: realDataResults, volume2: 0.7);
             Console.WriteLine($"final result for {optimizeValue}: {mergedResult.ToString()}");
             if (double.IsNaN(mergedResult) || double.IsInfinity(mergedResult))
             {
@@ -207,12 +207,12 @@ namespace Optimize.AverageNS
         private async Task<double> BenchSavedFiles(double optimizeValue)
         {
             uint numberSizeSteps = 20;
-            Simple_Exponential_Average_Double simpleAverage = new Simple_Exponential_Average_Double(numberSizeSteps, optimizeValue);
-            Progressing_Average_Double progressingAverage = new Progressing_Average_Double();
+            SimpleExponentialAverage_Double simpleAverage = new SimpleExponentialAverage_Double(numberSizeSteps, optimizeValue);
+            ProgressingAverage_Double progressingAverage = new ProgressingAverage_Double();
             StandardDeviation divergence_sdv = new StandardDeviation();
-            Progressing_Average_Double divergence_avg = new Progressing_Average_Double();
-            Progressing_Average_Double total_divergence_sdv_avg = new Progressing_Average_Double();
-            Progressing_Average_Double total_divergence_avg = new Progressing_Average_Double();
+            ProgressingAverage_Double divergence_avg = new ProgressingAverage_Double();
+            ProgressingAverage_Double total_divergence_sdv_avg = new ProgressingAverage_Double();
+            ProgressingAverage_Double total_divergence_avg = new ProgressingAverage_Double();
             foreach(double[] file in TestFiles)
             { // go trough each test file
                 uint fileSizeDivider = (uint)(file.Length / numberSizeSteps); // a lot of 20 is this long
@@ -253,7 +253,7 @@ namespace Optimize.AverageNS
         private double RunEpoch(int epochDuration, double optimizeValue)
         {
             int threadLimit = Environment.ProcessorCount;
-            Progressing_Average_Double results = new Progressing_Average_Double();
+            ProgressingAverage_Double results = new ProgressingAverage_Double();
             List<Task<Task<double>>> benchResults = new List<Task<Task<double>>>();
             for (int i = 0; i < threadLimit; i++)
             {
@@ -280,16 +280,16 @@ namespace Optimize.AverageNS
             uint iterations = 250;
             uint lengthSteps = 15;
             // generate simple average queues
-            List<Simple_Exponential_Average_Double> simpleAverages = new List<Simple_Exponential_Average_Double>();
+            List<SimpleExponentialAverage_Double> simpleAverages = new List<SimpleExponentialAverage_Double>();
             List<StandardDeviation> divergence_sdv = new List<StandardDeviation>();
-            List<Progressing_Average_Double> divergence_avg = new List<Progressing_Average_Double>();
+            List<ProgressingAverage_Double> divergence_avg = new List<ProgressingAverage_Double>();
             for(int i = 2; i <= lengthSteps; i++)
             {
-                simpleAverages.Add(new Simple_Exponential_Average_Double((uint)Math.Pow(i, 4),optimizeValue));
+                simpleAverages.Add(new SimpleExponentialAverage_Double((uint)Math.Pow(i, 4),optimizeValue));
                 divergence_sdv.Add(new StandardDeviation());
-                divergence_avg.Add(new Progressing_Average_Double());
+                divergence_avg.Add(new ProgressingAverage_Double());
             }
-            Progressing_Average_Double comparisonBenchmark = new Progressing_Average_Double();
+            ProgressingAverage_Double comparisonBenchmark = new ProgressingAverage_Double();
             double value = 0;
             for (int step = 0; step < iterations; step++)
             { // generate test data
@@ -312,7 +312,7 @@ namespace Optimize.AverageNS
                     }
                 }
             }
-            Progressing_Average_Double calculationResult = new Progressing_Average_Double();
+            ProgressingAverage_Double calculationResult = new ProgressingAverage_Double();
             for (int avgIndex = 0; avgIndex < simpleAverages.Count; avgIndex++)
             {
                 double checkvalve = divergence_avg[avgIndex].Value * divergence_sdv[avgIndex].Value;

@@ -9,9 +9,9 @@ namespace QuickStatistics.Net.Average_NS
     /// <summary>
     /// this is an extremely lightweight and fast class in order to receive the simple moving average
     /// </summary>
-    public class Simple_Exponential_Average_Double
+    public class SimpleExponentialAverage_Double
     {
-        public Simple_Exponential_Average_Double(uint maxDataLength, double divergenceCorrection = 0.29296875)
+        public SimpleExponentialAverage_Double(uint maxDataLength, double divergenceCorrection = 0.29296875)
         {
             _DivergenceCorrection = divergenceCorrection;
             MaxDataLength = maxDataLength;

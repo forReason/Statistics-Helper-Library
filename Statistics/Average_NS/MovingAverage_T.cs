@@ -1,8 +1,10 @@
-﻿using System.Text;
+﻿using System.Numerics;
+using System.Text;
 
 namespace QuickStatistics.Net.Average_NS
 {
-    public class Moving_Average_Double
+#if NET7_0_OR_GREATER
+    public class MovingAverage <T> where T : INumber<T>
     {
         /// <summary>
         /// 
@@ -10,7 +12,7 @@ namespace QuickStatistics.Net.Average_NS
         /// <param name="totalTime">the total timespan which shoud be tracked</param>
         /// <param name="valueResolution">the duration each datapoint should cover ( must be smaller than totaltime )</param>
         /// <param name="backupPath">(where to stora / restore backups)</param>
-        public Moving_Average_Double(TimeSpan totalTime, TimeSpan valueResolution, string backupPath = "")
+        public MovingAverage(TimeSpan totalTime, TimeSpan valueResolution, string backupPath = "")
         {
             SetResolution(totalTime, valueResolution);
             Clear();
@@ -41,15 +43,15 @@ namespace QuickStatistics.Net.Average_NS
             this.TotalTime = totalTime;
             this.ValueResolution = valueResolution;
             Steps = (int)Math.Round((this.TotalTime.TotalMinutes / this.ValueResolution.TotalMinutes));
-            Average = new Simple_Moving_Average_Double(Steps);
+            Average = new SimpleMovingAverage_Double(Steps);
         }
         // Working variables
         private DateTime CurrentTimeSpot { get; set; }
         private DateTime LastTimeStamp { get; set; }
         public FileInfo? BackupFile { get; set; }
         private double CurrentTimeSpotVolumetricAverage = 0;
-        private double PreviousValue = 0;
-        private Simple_Moving_Average_Double Average { get; set; }
+        private T PreviousValue = default;
+        private SimpleMovingAverage_Double Average { get; set; }
         /// <summary>
         /// Value represents the current Moving Average
         /// </summary>
@@ -61,7 +63,7 @@ namespace QuickStatistics.Net.Average_NS
         /// handy for live fed data
         /// </remarks>
         /// <param name="value"></param>
-        public void AddValue(double value)
+        public void AddValue(T value)
         {
             AddValue(value, DateTime.Now);
         }
@@ -74,7 +76,7 @@ namespace QuickStatistics.Net.Average_NS
         /// </remarks>
         /// <param name="value"></param>
         /// <param name="timeStamp"></param>
-        public void AddValue(double value, DateTime timeStamp)
+        public void AddValue(T value, DateTime timeStamp)
         {
             /// check if new value needs to be added to queue
             if (CurrentTimeSpot + ValueResolution < timeStamp)
@@ -110,11 +112,11 @@ namespace QuickStatistics.Net.Average_NS
                 throw new InvalidOperationException("you cannot add data points from the past! Did you forget to Clear()?");
             }
 
-            double currentAssumption = (PreviousValue + value) / 2;
-            if (microTickTime.TotalSeconds == 0.0) CurrentTimeSpotVolumetricAverage = (Value + value) / 2;
+            double currentAssumption = Convert.ToDouble(PreviousValue + value) / 2.0;
+            if (microTickTime.TotalSeconds == 0.0) CurrentTimeSpotVolumetricAverage = (Value + Convert.ToDouble(value)) / 2.0;
             else
             {
-                CurrentTimeSpotVolumetricAverage = Volumetric_Average.VolumeBasedAverage(CurrentTimeSpotVolumetricAverage, stepduration.TotalSeconds, currentAssumption, microTickTime.TotalSeconds);
+                CurrentTimeSpotVolumetricAverage = VolumetricAverage_Double.VolumeBasedAverage(CurrentTimeSpotVolumetricAverage, stepduration.TotalSeconds, currentAssumption, microTickTime.TotalSeconds);
             }
             PreviousValue = value;
 
@@ -125,7 +127,7 @@ namespace QuickStatistics.Net.Average_NS
             // merge historic queue and previous time spot
             if (Average.CurrentDataLength > 0)
             {
-                Value = Volumetric_Average.VolumeBasedAverage(
+                Value = VolumetricAverage_Double.VolumeBasedAverage(
                 value1: Average.Value, volume1: (Average.CurrentDataLength * ValueResolution).TotalMinutes,
                 value2: CurrentTimeSpotVolumetricAverage, volume2: currentSpotTimeSpan.TotalMinutes);
             } else
@@ -190,7 +192,7 @@ namespace QuickStatistics.Net.Average_NS
             LastTimeStamp = DateTime.MinValue;
             //CurrentTimeSpotAverage.Clear();
             CurrentTimeSpotVolumetricAverage= 0;
-            PreviousValue = 0;
+            PreviousValue = default;
             Average.Clear();
             Value = 0;
         }
@@ -198,6 +200,6 @@ namespace QuickStatistics.Net.Average_NS
         {
             return this.Value.ToString();
         }
-        
     }
+#endif
 }

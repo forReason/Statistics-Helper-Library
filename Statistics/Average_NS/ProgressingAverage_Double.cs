@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace QuickStatistics.Net.Average_NS
 {
-    public class Progressing_Average_Double
+    public class ProgressingAverage_Double
     {
-        public Progressing_Average_Double()
+        public ProgressingAverage_Double()
         {
             Clear();
         }
