@@ -49,6 +49,12 @@ Average on the fly (omitting memory restraints and overflow)
 Time based moving average (good for historic data and data with gaps, also good for targeting a certain time duration or when the input data stream is not consistent in speed)
 Maps the incoming data to a consistient timeline with variable resolution
 
+### Median
+Median can be calculated:
+- On an array / List
+- Procedural upon adding values
+- On a rolling time window
+
 ### Minimum / Maximum
 - Calculate Maximum or Minimum for a given amount of Datapoints (useful for sensor Data)
 - Calculate Maximum or Minimum for a sliding time window (useful for historical or inconsistent Data)
