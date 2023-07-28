@@ -16,9 +16,11 @@
     <PackageTags>statistics;average;moving average;minmax;variance;median;moving median;rolling median</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>2.0.1</Version>
-    <PackageReleaseNotes>2.0.1
-- critical fix in ProgressingAverageDecimal
+    <Version>2.2.0</Version>
+    <PackageReleaseNotes>2.1.0
+- Critical fix in ProgressingAverageDecimal
+- Massive Documentation improvement
+- Made ProgressingAverage Thread Safe
 
 2.0.0
 - several bugfixes
