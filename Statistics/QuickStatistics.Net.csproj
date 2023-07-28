@@ -16,8 +16,12 @@
     <PackageTags>statistics;average;moving average;minmax;variance;median;moving median;rolling median</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>2.0.0</Version>
-    <PackageReleaseNotes>- several bugfixes
+    <Version>2.0.1</Version>
+    <PackageReleaseNotes>2.0.1
+- critical fix in ProgressingAverageDecimal
+
+2.0.0
+- several bugfixes
 - improved unit tests
 - Line of moving average is now smoothed out and it follows data gaps better
 - added Median functionalities</PackageReleaseNotes>

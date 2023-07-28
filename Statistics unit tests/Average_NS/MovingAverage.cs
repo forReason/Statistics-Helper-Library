@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Text;
 using System.IO;
+using System.Linq;
 
 namespace Statistics_unit_tests.Average_NS
 {
@@ -53,7 +54,19 @@ namespace Statistics_unit_tests.Average_NS
                 timebasedAverage.Clear();
                 double result1 = rng.NextDouble() * i;
                 double result2 = rng.NextDouble() * i;
-                double control = Math.Round((result1 + result2) / 2,6);
+                //double control = Math.Round((((result1 + result2) / 2)+ result2)/2, 6);
+                // Calculate the slope between result1 and result2 across the 5-second interval
+                double slope = (result2 - result1) / 5;
+
+                // Calculate the interpolated values for each second
+                double[] interpolatedValues = new double[5];
+                for (int j = 0; j < 5; j++)
+                {
+                    interpolatedValues[j] = result1 + slope * j;
+                }
+
+                // Calculate the average of interpolated values and result2 values
+                double control = (interpolatedValues.Sum() + (result2 * 5)) / 10;
 
                 timebasedAverage.AddValue(result1, baseTime);
                 timebasedAverage.AddValue(result2, baseTime.AddSeconds(5));
@@ -68,7 +81,8 @@ namespace Statistics_unit_tests.Average_NS
                 {
                     { }
                 }
-                Assert.True(divergencePercent < 0.15);
+                double divergencePercentAsPercentage = divergencePercent * 100;
+                Assert.True(divergencePercent < 0.15, $"Expected divergence percent to be less than 15%, but it was {Math.Round(divergencePercentAsPercentage,2)}%.");
             }
         }
         [Fact]
@@ -103,7 +117,8 @@ namespace Statistics_unit_tests.Average_NS
                 {
                     { }
                 }
-                Assert.True(divergencePercent < 0.15);
+                double divergencePercentAsPercentage = divergencePercent * 100;
+                Assert.True(divergencePercent < 0.15, $"Expected divergence percent to be less than 15%, but it was {Math.Round(divergencePercentAsPercentage)}%.");
             }
         }
         [Fact]

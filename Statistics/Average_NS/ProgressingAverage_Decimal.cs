@@ -1,41 +1,98 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+
 namespace QuickStatistics.Net.Average_NS
 {
     /// <summary>
-    /// progressing average is a simple, fast and precise method to get the average value
+    /// Provides a simple, fast, and precise method to compute the average of a finite number of inputs. <br/><br/>
+    /// thread safe
     /// </summary>
     /// <remarks>
-    /// it can only work on a finite number of inputs, so not suitable for indefinite input<br/>
-    /// for that purpose, please refer to <see cref="SimpleMovingAverage_Decimal"/>
+    /// This class is not suitable for an indefinite number of inputs. For that purpose, please refer to <see cref="SimpleMovingAverage_Decimal"/>.
     /// </remarks>
     public class ProgressingAverage_Decimal
     {
+        private readonly object _lockObject = new object();
+
+        /// <summary>
+        /// Initializes a new instance of the ProgressingAverage_Decimal class.
+        /// </summary>
         public ProgressingAverage_Decimal()
         {
             Clear();
         }
+
+        /// <summary>
+        /// Gets the current average value.
+        /// </summary>
         public decimal Value { get; private set; }
-        private decimal _Count { get; set; }
+
+        /// <summary>
+        /// Gets the current count of values that have been added.
+        /// </summary>
+        public decimal Count { get; private set; }
+
+        /// <summary>
+        /// Adds a new value to the average calculation.
+        /// </summary>
+        /// <param name="input">The value to add.</param>
+        /// <exception cref="OverflowException">Thrown when the maximum count of values is reached.</exception>
         public void AddValue(decimal input)
         {
-            Value += (input - Value) / _Count;
+            lock (_lockObject)
+            {
+                Count++;
+                if (Count == decimal.MaxValue)
+                {
+                    throw new OverflowException("Max amount has been reached! Use precise average or moving avg instead!");
+                }
+                Value += (input - Value) / Count;
+            }
         }
+
+        /// <summary>
+        /// Adds an array of new values to the average calculation.
+        /// </summary>
+        /// <param name="input">The array of values to add.</param>
         public void AddValue(decimal[] input)
         {
-            foreach (var item in input) { AddValue(item); }
+            foreach (var item in input)
+            {
+                AddValue(item);
+            }
         }
+
+        /// <summary>
+        /// Adds a list of new values to the average calculation.
+        /// </summary>
+        /// <param name="input">The list of values to add.</param>
         public void AddValue(List<decimal> input)
         {
-            foreach (var item in input) { AddValue(item); }
+            foreach (var item in input)
+            {
+                AddValue(item);
+            }
         }
+
+        /// <summary>
+        /// Clears the current average calculation.
+        /// </summary>
         public void Clear()
         {
-            _Count = 0;
-            Value = 0;
+            lock (_lockObject)
+            {
+                Count = 0;
+                Value = 0;
+            }
         }
+
+        /// <summary>
+        /// Returns a string that represents the current average value.
+        /// </summary>
+        /// <returns>A string that represents the current average value.</returns>
         public override string ToString()
         {
-            return this.Value.ToString();
+            return Value.ToString();
         }
     }
 }

@@ -3,18 +3,61 @@
 namespace QuickStatistics.Net.Average_NS
 {
     /// <summary>
-    /// calculates a time-normalized moving average for type double.<br/>
-    /// time-Normalized means that it is intended for uses where the input values are not in a steady timely manner.
+    /// Provides the ability to calculate a time-normalized moving average for type double.<br/>
+    /// Time-normalized signifies its intention to handle cases where input values do not arrive in a consistent and periodic manner.
     /// </summary>
+    /// <remarks>
+    /// <para><b>OVERVIEW</b></para>
+    /// The MovingAverage_Double class provides a robust and efficient solution to compute moving averages over a specified duration, even with missing or real-time data.
+    /// 
+    /// <para><b>CLASS FUNCTIONALITY</b></para>
+    /// The MovingAverage_Double class is designed to handle both real-time and historical data. It can accept individual data points with timestamps for real-time calculations 
+    /// and pairs of value-timestamp for historical data. The class also manages data gaps intelligently by filling gaps with the last known average, ensuring continuity in the moving average calculations.
+    /// 
+    /// <para><b>BACKUP AND RESTORE FEATURE</b></para>
+    /// This class also includes a backup and restore functionality which aids in persistent computations and disaster recovery. The backup is triggered each time a new time block is filled, 
+    /// and the restore operation occurs during the initialization if a valid backup file path is provided. If the backupPath parameter is either null or an empty string, this feature is disabled.
+    /// 
+    /// <para><b>IMPLICATIONS OF THE BACKUP FEATURE</b></para>
+    /// Please consider potential storage and performance implications of the backup feature. The size of the backup file will grow with more frequent data point additions or a longer totalTime period. 
+    /// Rapid data point additions could affect performance due to frequent file writing operations. Likewise, a large backup file might slow down the initialization due to the time required for reading the file. 
+    /// It is recommended to manage the frequency of backup operations and the size of the backup file according to your application's requirements and performance characteristics.
+    ///
+    /// <para><b>Thread Safety</b></para>
+    /// This class is not thread-safe. If instances of this class are accessed from multiple threads,
+    /// external synchronization must be implemented. For example, you can use lock statements when calling the methods to ensure thread safety.<br/>
+    /// note that the input time should be linear (i.e. sorted by date)
+    /// </remarks>
     public class MovingAverage_Double
     {
         /// <summary>
-        /// calculates a time-normalized moving average for type double.<br/>
-        /// time-Normalized means that it is intended for uses where the input values are not in a steady timely manner.
+        /// Initializes a new instance of the <see cref="MovingAverage_Double"/> class.
         /// </summary>
-        /// <param name="totalTime">the total timespan which shoud be tracked</param>
-        /// <param name="valueResolution">the duration each datapoint should cover ( must be smaller than totaltime )</param>
-        /// <param name="backupPath">(where to stora / restore backups)</param>
+        /// <param name="totalTime">Specifies the total duration which the moving average calculation should consider.</param>
+        /// <param name="valueResolution">The duration each data point should represent. Must be smaller than totalTime.</param>
+        /// <param name="backupPath">Path to store/restore backups. If left empty or null, the backup feature will be disabled.</param>
+        /// <remarks>
+        /// <para><b>OVERVIEW</b></para>
+        /// The MovingAverage_Double class provides a robust and efficient solution to compute moving averages over a specified duration, even with missing or real-time data.
+        /// 
+        /// <para><b>CLASS FUNCTIONALITY</b></para>
+        /// The MovingAverage_Double class is designed to handle both real-time and historical data. It can accept individual data points with timestamps for real-time calculations 
+        /// and pairs of value-timestamp for historical data. The class also manages data gaps intelligently by filling gaps with the last known average, ensuring continuity in the moving average calculations.
+        /// 
+        /// <para><b>BACKUP AND RESTORE FEATURE</b></para>
+        /// This class also includes a backup and restore functionality which aids in persistent computations and disaster recovery. The backup is triggered each time a new time block is filled, 
+        /// and the restore operation occurs during the initialization if a valid backup file path is provided. If the backupPath parameter is either null or an empty string, this feature is disabled.
+        /// 
+        /// <para><b>IMPLICATIONS OF THE BACKUP FEATURE</b></para>
+        /// Please consider potential storage and performance implications of the backup feature. The size of the backup file will grow with more frequent data point additions or a longer totalTime period. 
+        /// Rapid data point additions could affect performance due to frequent file writing operations. Likewise, a large backup file might slow down the initialization due to the time required for reading the file. 
+        /// It is recommended to manage the frequency of backup operations and the size of the backup file according to your application's requirements and performance characteristics.
+        /// 
+        /// <para><b>Thread Safety</b></para>
+        /// This class is not thread-safe. If instances of this class are accessed from multiple threads,
+        /// external synchronization must be implemented. For example, you can use lock statements when calling the methods to ensure thread safety.<br/>
+        /// note that the input time should be linear (i.e. sorted by date)
+        /// </remarks>
         public MovingAverage_Double(TimeSpan totalTime, TimeSpan valueResolution, string backupPath = "")
         {
             SetResolution(totalTime, valueResolution);
@@ -30,56 +73,99 @@ namespace QuickStatistics.Net.Average_NS
         }
         // "Settings"
         /// <summary>
-        ///  TotalTime specifies window of time in the past which should keepp track of (eg last 2hours)
+        /// Specifies the total duration of data that the moving average calculation should consider. 
+        /// This forms the "window" of data the moving average will consider at any given time.
         /// </summary>
-        public TimeSpan TotalTime { get; private set; }
+        /// <remarks>
+        /// Changing this value will adjust the resolution of the moving average calculation, 
+        /// leading to a different granularity of the moving average. Note that changing this value 
+        /// will invoke a recalculation of the moving average to reflect the updated duration.
+        /// </remarks>
+        public TimeSpan TotalTime
+        {
+            get { return _TotalTime; }
+            set { SetResolution(value, ValueResolution); }
+        }
+        private TimeSpan _TotalTime;
+
         /// <summary>
-        /// ValueResolution specifies how much time be consolidated into one dataPoint (mainly Memory saving Feature)
+        /// Specifies the duration each data point should represent in the moving average calculation.
         /// </summary>
-        public TimeSpan ValueResolution { get; private set; }
+        /// <remarks>
+        /// This determines how much time each individual data point in the calculation accounts for, 
+        /// which can affect the precision and performance of the moving average calculation. Note 
+        /// that changing this value will invoke a recalculation of the moving average to reflect 
+        /// the updated resolution.
+        /// </remarks>
+        public TimeSpan ValueResolution
+        {
+            get { return _ValueResolution; }
+            set { SetResolution(TotalTime, value); }
+        }
+        private TimeSpan _ValueResolution;
+
         /// <summary>
-        /// the total amount of steps which fit into the Time Window "TotalTime"
+        /// Represents the total number of steps that fit into the "TotalTime" window. This value 
+        /// is calculated automatically when either the TotalTime or ValueResolution properties 
+        /// are updated.
         /// </summary>
         private int Steps { get; set; }
-        public void SetResolution(TimeSpan totalTime, TimeSpan valueResolution) 
+
+        /// <summary>
+        /// Sets a new resolution for the moving average calculation by specifying a new total 
+        /// time and value resolution.
+        /// </summary>
+        /// <param name="totalTime">The new total time that the moving average calculation should consider.</param>
+        /// <param name="valueResolution">The new duration each data point should represent.</param>
+        /// <remarks>
+        /// This function updates the TotalTime, ValueResolution, and Steps properties and invokes 
+        /// a recalculation of the moving average to reflect the updated resolution.
+        /// </remarks>
+        public void SetResolution(TimeSpan totalTime, TimeSpan valueResolution)
         {
-            this.TotalTime = totalTime;
-            this.ValueResolution = valueResolution;
+            this._TotalTime = totalTime;
+            this._ValueResolution = valueResolution;
             Steps = (int)Math.Round((this.TotalTime.TotalMinutes / this.ValueResolution.TotalMinutes));
             Average = new SimpleMovingAverage_Double(Steps);
         }
+
         // Working variables
         private DateTime CurrentTimeSpot { get; set; }
         private DateTime LastTimeStamp { get; set; }
+        /// <summary>
+        /// the path where the Backup (if desired) should be saved / loaded
+        /// </summary>
+        /// <remarks>
+        /// if left blanc (null), disables backup feature
+        /// </remarks>
         public FileInfo? BackupFile { get; set; }
         private double CurrentTimeSpotVolumetricAverage = 0;
         private double PreviousValue = 0;
         private SimpleMovingAverage_Double Average { get; set; }
         /// <summary>
-        /// Value represents the current Moving Average
+        /// The current moving average value.
         /// </summary>
         public double Value { get; private set; }
         /// <summary>
-        /// adds a single value point<br/>
-        /// assumes the date time of the value point is NOW
+        /// Adds a single value point with the current timestamp. 
         /// </summary>
+        /// <param name="value">The value to add.</param>
         /// <remarks>
-        /// handy for live fed data
+        /// This method is particularly useful for live fed data.
         /// </remarks>
-        /// <param name="value"></param>
         public void AddValue(double value)
         {
             AddValue(value, DateTime.Now);
         }
         /// <summary>
-        /// adds a single data point based on the points date. </br>
-        /// handy for historical data
+        /// Adds a single data point with a specific timestamp. 
         /// </summary>
+        /// <param name="value">The value to add.</param>
+        /// <param name="timeStamp">The timestamp of the value.</param>
         /// <remarks>
-        /// Value points always need to be added in series
+        /// This method is useful for handling historical data. 
+        /// It's important to note that value points always need to be added in chronological order.
         /// </remarks>
-        /// <param name="value"></param>
-        /// <param name="timeStamp"></param>
         public void AddValue(double value, DateTime timeStamp)
         {
             /// check if new value needs to be added to queue
@@ -185,10 +271,10 @@ namespace QuickStatistics.Net.Average_NS
             }
         }
         /// <summary>
-        /// resets the average to 0 and clears all its internal values.
+        /// Resets the moving average to its initial state, clearing all internal values.
         /// </summary>
         /// <remarks>
-        /// setting (time) persist
+        /// The time settings (total time and value resolution) persist after a clear operation.
         /// </remarks>
         public void Clear()
         {

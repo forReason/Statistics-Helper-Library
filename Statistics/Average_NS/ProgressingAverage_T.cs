@@ -1,49 +1,94 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
 
 namespace QuickStatistics.Net.Average_NS
 {
 #if NET7_0_OR_GREATER
     /// <summary>
-    /// progressing average is a simple, fast and precise method to get the average value<br/>
-    /// has an internal conversion to double. Please use the alternative <see cref="ProgressingAverage_Decimal"/> for large numbers
+    /// Provides a thread-safe, simple, fast, and precise method to compute the average of a finite number of inputs.
+    /// This class uses decimal for calculations which provides precision even for large numbers. <br/><br/>
+    /// thread safe
     /// </summary>
     /// <remarks>
-    /// it can only work on a finite number of inputs, so not suitable for indefinite input<br/>
-    /// for that purpose, please refer to <see cref="SimpleMovingAverage"/>
+    /// This class is not suitable for an indefinite number of inputs.
+    /// For that purpose, please refer to <see cref="SimpleMovingAverage"/>.
     /// </remarks>
     public class ProgressingAverage<T> where T : INumber<T>
     {
+        private ProgressingAverage_Decimal avg;
+
+        /// <summary>
+        /// Initializes a new instance of the ProgressingAverage class.
+        /// </summary>
         public ProgressingAverage()
         {
-            Clear();
+            avg = new ProgressingAverage_Decimal();
         }
-        public double Value { get; private set; }
-        public int Count { get; private set; }
+
+        /// <summary>
+        /// Gets the current average value.
+        /// </summary>
+        public decimal ValuePrecise => avg.Value;
+        /// <summary>
+        /// Gets the current average value.
+        /// </summary>
+        public double Value => (double)avg.Value;
+
+        /// <summary>
+        /// Gets the current count of values that have been added.
+        /// </summary>
+        public decimal Count => avg.Count;
+
+        /// <summary>
+        /// Adds a new value to the average calculation.
+        /// </summary>
+        /// <param name="input">The value to add.</param>
         public void AddValue(T input)
         {
-            Count++;
-            if (Count == int.MaxValue)
-            {
-                throw new IndexOutOfRangeException("max amount has been reached! use preciseaverage or moving avg instead!");
-            }
-            Value += (Convert.ToDouble(input) - Value) / Count;
+            avg.AddValue(Convert.ToDecimal(input));
         }
+
+        /// <summary>
+        /// Adds an array of new values to the average calculation.
+        /// </summary>
+        /// <param name="input">The array of values to add.</param>
         public void AddValue(T[] input)
         {
-            foreach (var item in input) { AddValue(item); }
+            foreach (var item in input)
+            {
+                avg.AddValue(Convert.ToDecimal(item));
+            }
         }
+
+        /// <summary>
+        /// Adds a list of new values to the average calculation.
+        /// </summary>
+        /// <param name="input">The list of values to add.</param>
         public void AddValue(List<T> input)
         {
-            foreach (var item in input) { AddValue(item); }
+            foreach (var item in input)
+            {
+                avg.AddValue(Convert.ToDecimal(item));
+            }
         }
+
+        /// <summary>
+        /// Clears the current average calculation.
+        /// </summary>
         public void Clear()
         {
-            Count = 0;
-            Value = 0;
+            avg.Clear();
         }
+
+        /// <summary>
+        /// Returns a string that represents the current average value.
+        /// </summary>
+        /// <returns>A string that represents the current average value.</returns>
         public override string ToString()
         {
-            return Value.ToString();
+            return avg.ToString();
         }
     }
 #endif

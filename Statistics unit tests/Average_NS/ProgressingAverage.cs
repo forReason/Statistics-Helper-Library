@@ -32,6 +32,27 @@ namespace Statistics_unit_tests.Average_NS
             }
         }
         [Fact]
+        public void StaticPositiveValues_Decimal()
+        {
+            // positive tests
+            Random rng = new Random();
+            uint max = int.MaxValue;
+            uint stepSize = max / 20;
+            for (uint i = 0; i < max; i += stepSize)
+            {
+                ProgressingAverage_Decimal progressingAverage = new ProgressingAverage_Decimal();
+                decimal result = (decimal)rng.NextDouble() * i;
+                for (uint b = 0; b < max; b += stepSize)
+                {
+                    progressingAverage.AddValue(result);
+                }
+                if (progressingAverage.Value != result)
+                {
+                    throw new Exception("Value does not add up!");
+                }
+            }
+        }
+        [Fact]
         public void StaticNegativeValues()
         {
             // positive tests
