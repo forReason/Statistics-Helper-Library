@@ -16,8 +16,13 @@
     <PackageTags>statistics;average;moving average;minmax;variance;median;moving median;rolling median</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>2.1.1</Version>
-    <PackageReleaseNotes>2.1.1
+    <Version>2.1.2</Version>
+    <PackageReleaseNotes>2.1.2
+- improved xml documentation on time based minimum maximum
+- time based min/max now has better support for adding time values (historic data)
+- added xml documentation for timespot value
+
+2.1.1
 - Timebased sliding maximum is now public
 
 2.1.0
@@ -34,6 +39,7 @@
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <IncludeSymbols>False</IncludeSymbols>
+    <PackageOutputPath>Y:\Projects\Programmbibliotheken\LocalNugetPackages</PackageOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
