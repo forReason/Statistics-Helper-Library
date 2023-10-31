@@ -63,4 +63,5 @@ Median can be calculated:
 
 ### Statistics
 - obtain standard deviation on the fly. (warning: will overflow if ran indefinitely)
+- obtain exponential standard deviation on the fly for infinite amount of data points (less precision)
 - AbsoluteRateOfChange, Trend, Momentum and Deviation on sliding windows (Supported by simple moving average & moving average)

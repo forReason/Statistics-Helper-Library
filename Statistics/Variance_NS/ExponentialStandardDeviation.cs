@@ -3,7 +3,7 @@
     /// <summary>
     /// Implements the calculation of exponential standard deviation.
     /// </summary>
-    internal class ExponentialStandardDeviation
+    public class ExponentialStandardDeviation
     {
         private double sum = 0.0;
         private double sumOfSquares = 0.0;
