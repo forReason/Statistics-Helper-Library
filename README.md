@@ -44,10 +44,12 @@ a straight forward, very fast, precise implementation for calculating the averag
 Moving average approximation, very fast and lightweight
 - Simple_Moving_Average:
 Average on the fly (omitting memory restraints and overflow)
+Supports: AbsoluteRateOfChange, Trend, Momentum, Deviation
 - Volumetric average for 2 values (averaging two values by their weight)
 - Moving_Average:
 Time based moving average (good for historic data and data with gaps, also good for targeting a certain time duration or when the input data stream is not consistent in speed)
 Maps the incoming data to a consistient timeline with variable resolution
+Supports: AbsoluteRateOfChange, Trend, Momentum, Deviation
 
 ### Median
 Median can be calculated:
@@ -61,3 +63,4 @@ Median can be calculated:
 
 ### Statistics
 - obtain standard deviation on the fly. (warning: will overflow if ran indefinitely)
+- AbsoluteRateOfChange, Trend, Momentum and Deviation on sliding windows (Supported by simple moving average & moving average)
