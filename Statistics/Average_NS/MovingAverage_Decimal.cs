@@ -151,8 +151,7 @@ namespace QuickStatistics.Net.Average_NS
         public decimal AbsoluteRateOfChange { get { return (Average.NewestElement - CurrentTimeSpotVolumetricAverage) / Average.CurrentDataLength + 1; } }
 
         /// <summary>
-        /// Calculates the trend based on the oldest data point, often used for investment scenarios.<br/>
-        /// The trend is calculated using the oldest point as a reference.
+        /// Calculates the trend based on the moving average in order to obtain a percentage
         /// </summary>
         /// <remarks>
         /// The value is denoted as a percentage, e.g., -1.0 to X.0.
@@ -161,24 +160,10 @@ namespace QuickStatistics.Net.Average_NS
         {
             get
             {
-                return AbsoluteRateOfChange / Average.OldestElement;
+                return AbsoluteRateOfChange / Value;
             }
         }
 
-        /// <summary>
-        /// Calculates the short-term trend (also known as Relative Strength or Momentum), often used for trading scenarios.<br/>
-        /// The trend is calculated based on the AbsoluteRateOfChange and the most recent datapoint as a reference.
-        /// </summary>
-        /// <remarks>
-        /// The value is denoted as a percentage, e.g., -1.0 to X.0.
-        /// </remarks>
-        public decimal Momentum
-        {
-            get
-            {
-                return AbsoluteRateOfChange / Average.NewestElement;
-            }
-        }
         /// <summary>
         /// Calculates the deviation between the current data point and the Simple Moving Average (SMA).<br/>
         /// Deviation is the difference between the current value and the SMA, giving an idea of how much the current value varies from the average.

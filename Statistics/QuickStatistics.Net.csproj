@@ -17,7 +17,10 @@
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Version>2.2.0</Version>
-    <PackageReleaseNotes>2.2.0
+    <PackageReleaseNotes>2.2.1
+- fixed ambiguity for Trend
+
+2.2.0
 added capability to Simple Moving Average &amp; Moving average:
 - AbsoluteRateOfChange
 - Trend

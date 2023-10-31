@@ -51,8 +51,7 @@
         public decimal AbsoluteRateOfChange { get { return (AverageQueue.Last() - AverageQueue.Peek()) / AverageQueue.Count; } }
 
         /// <summary>
-        /// Calculates the trend based on the oldest data point, often used for investment scenarios.<br/>
-        /// The trend is calculated using the oldest point as a reference.
+        /// Calculates the trend based on the moving average in order to obtain a percentage
         /// </summary>
         /// <remarks>
         /// The value is denoted as a percentage, e.g., -1.0 to X.0.
@@ -61,22 +60,7 @@
         {
             get
             {
-                return AbsoluteRateOfChange / AverageQueue.Peek();
-            }
-        }
-
-        /// <summary>
-        /// Calculates the short-term trend (also known as Relative Strength or Momentum), often used for trading scenarios.<br/>
-        /// The trend is calculated based on the AbsoluteRateOfChange and the most recent datapoint as a reference.
-        /// </summary>
-        /// <remarks>
-        /// The value is denoted as a percentage, e.g., -1.0 to X.0.
-        /// </remarks>
-        public decimal Momentum
-        {
-            get
-            {
-                return AbsoluteRateOfChange / AverageQueue.Last();
+                return AbsoluteRateOfChange / Value;
             }
         }
 
