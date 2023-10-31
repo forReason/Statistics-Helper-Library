@@ -16,7 +16,7 @@
     <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>2.2.1</Version>
+    <Version>2.3.0</Version>
     <PackageReleaseNotes>2.2.1
 - fixed ambiguity for Trend
 
@@ -31,6 +31,9 @@ added capability to Simple Moving Average &amp; Moving average:
 - improved xml documentation on time based minimum maximum
 - time based min/max now has better support for adding time values (historic data)
 - added xml documentation for timespot value
+2.3.0
+- added time based exponential average
+- added time based exponential standard deviation
 
 2.1.1
 - Timebased sliding maximum is now public
