@@ -94,7 +94,7 @@
             if (currentTimestamp == null) currentTimestamp = DateTime.Now;
             lock (lockObj)
             {
-                ApplyDecay(currentTimestamp.Value);
+                //ApplyDecay(currentTimestamp.Value);
 
                 if (count < 2) return 0;
 
@@ -109,7 +109,7 @@
             if (currentTimestamp == null) currentTimestamp = DateTime.Now;
             lock (lockObj)
             {
-                ApplyDecay(currentTimestamp.Value);
+                //ApplyDecay(currentTimestamp.Value);
 
                 if (count < 2) return 0;
 
@@ -117,7 +117,7 @@
                 double variance = (sumOfSquares / count) - (mean * mean);
 
                 // Convert standard deviation to percentage of the mean
-                double stdDevPercentage = (Math.Sqrt(variance) / mean) * 100;
+                double stdDevPercentage = (Math.Sqrt(variance) / mean);
 
                 return stdDevPercentage;
             }
