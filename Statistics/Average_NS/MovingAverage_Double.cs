@@ -147,6 +147,60 @@ namespace QuickStatistics.Net.Average_NS
         /// </summary>
         public double Value { get; private set; }
         /// <summary>
+        /// Specifies the absolute rate of change by which the data set moved on average at each data point.
+        /// </summary>
+        public double AbsoluteRateOfChange { get { return (Average.NewestElement - CurrentTimeSpotVolumetricAverage) / Average.CurrentDataLength + 1; } }
+
+        /// <summary>
+        /// Calculates the trend based on the oldest data point, often used for investment scenarios.<br/>
+        /// The trend is calculated using the oldest point as a reference.
+        /// </summary>
+        /// <remarks>
+        /// The value is denoted as a percentage, e.g., -1.0 to X.0.
+        /// </remarks>
+        public double Trend
+        {
+            get
+            {
+                return AbsoluteRateOfChange / Average.OldestElement;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the short-term trend (also known as Relative Strength or Momentum), often used for trading scenarios.<br/>
+        /// The trend is calculated based on the AbsoluteRateOfChange and the most recent datapoint as a reference.
+        /// </summary>
+        /// <remarks>
+        /// The value is denoted as a percentage, e.g., -1.0 to X.0.
+        /// </remarks>
+        public double Momentum
+        {
+            get
+            {
+                return AbsoluteRateOfChange / Average.NewestElement;
+            }
+        }
+        /// <summary>
+        /// Calculates the deviation between the current data point and the Simple Moving Average (SMA).<br/>
+        /// Deviation is the difference between the current value and the SMA, giving an idea of how much the current value varies from the average.
+        /// </summary>
+        /// <remarks>
+        /// Positive deviation implies the current value is above the SMA, often interpreted as bullish movement in financial contexts.<br/>
+        /// Negative deviation implies the current value is below the SMA, often interpreted as bearish movement in financial contexts.
+        /// </remarks>
+        public double DeviationFromMA_Absolute { get { return PreviousValue - Value; } }
+
+        /// <summary>
+        /// Calculates the percentage-based deviation between the current data point and the Simple Moving Average (SMA).<br/>
+        /// The percentage-based deviation shows how much the current value deviates from the SMA relative to the SMA itself.
+        /// </summary>
+        /// <remarks>
+        /// Positive values indicate the current value is greater than the SMA, often interpreted as bullish.<br/>
+        /// Negative values indicate the current value is less than the SMA, often interpreted as bearish.<br/>
+        /// The value is denoted as a percentage, e.g., -1.0 to +X.0.
+        /// </remarks>
+        public double DeviationFromMA_Percentage { get { return DeviationFromMA_Absolute / Value; } }
+        /// <summary>
         /// Adds a single value point with the current timestamp. 
         /// </summary>
         /// <param name="value">The value to add.</param>
