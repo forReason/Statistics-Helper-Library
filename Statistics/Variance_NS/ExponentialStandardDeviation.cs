@@ -104,6 +104,25 @@
                 return Math.Sqrt(variance);
             }
         }
+        public double CalculateExponentialStdDevPercent(DateTime? currentTimestamp = null)
+        {
+            if (currentTimestamp == null) currentTimestamp = DateTime.Now;
+            lock (lockObj)
+            {
+                ApplyDecay(currentTimestamp.Value);
+
+                if (count < 2) return 0;
+
+                double mean = sum / count;
+                double variance = (sumOfSquares / count) - (mean * mean);
+
+                // Convert standard deviation to percentage of the mean
+                double stdDevPercentage = (Math.Sqrt(variance) / mean) * 100;
+
+                return stdDevPercentage;
+            }
+        }
+
 
         /// <summary>
         /// Stores the current state to a backup file.

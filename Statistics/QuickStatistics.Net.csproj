@@ -16,8 +16,14 @@
     <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>2.3.1</Version>
-    <PackageReleaseNotes>2.2.1
+    <Version>2.3.2</Version>
+    <PackageReleaseNotes>2.3.2
+- exponential standard deviation can now be expressed as percentage 
+
+2.3.1
+- added exponential standard deviation
+
+2.2.1
 - fixed ambiguity for Trend
 
 2.2.0
