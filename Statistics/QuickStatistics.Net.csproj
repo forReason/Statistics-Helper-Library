@@ -16,8 +16,11 @@
     <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>2.3.2</Version>
-    <PackageReleaseNotes>2.3.2
+    <Version>2.3.3</Version>
+    <PackageReleaseNotes>2.3.3
+- added a fix when exponentialaverage backup file was empty
+
+2.3.2
 - exponential standard deviation can now be expressed as percentage 
 
 2.3.1

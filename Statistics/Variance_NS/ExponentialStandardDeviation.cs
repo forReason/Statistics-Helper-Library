@@ -132,9 +132,17 @@
             if (BackupPath == null)
             { return; }
 
-            using StreamWriter sw = new StreamWriter(BackupPath);
-            sw.WriteLine($"{sum};{sumOfSquares};{count};{lastDecayTimestamp}");
+            try
+            {
+                using StreamWriter sw = new StreamWriter(BackupPath);
+                sw.WriteLine($"{sum};{sumOfSquares};{count};{lastDecayTimestamp}");
+            }
+            catch (Exception)
+            {
+                // Log an error or issue a warning if writing to the file failed.
+            }
         }
+
 
         /// <summary>
         /// Restores the state from a backup file.
@@ -145,12 +153,33 @@
             { return; }
 
             string line = File.ReadAllText(BackupPath);
+
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                // Log an error or issue a warning if backup file is empty.
+                return;
+            }
+
             string[] split = line.Split(';');
 
-            sum = double.Parse(split[0]);
-            sumOfSquares = double.Parse(split[1]);
-            count = double.Parse(split[2]);
-            lastDecayTimestamp = DateTime.Parse(split[3]);
+            if (split.Length < 4)
+            {
+                // Log an error or issue a warning if the backup file format is incorrect.
+                return;
+            }
+
+            try
+            {
+                sum = double.Parse(split[0]);
+                sumOfSquares = double.Parse(split[1]);
+                count = double.Parse(split[2]);
+                lastDecayTimestamp = DateTime.Parse(split[3]);
+            }
+            catch (Exception)
+            {
+                // Log an error or issue a warning if parsing failed.
+            }
         }
+
     }
 }
