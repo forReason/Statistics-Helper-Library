@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QuickStatistics.Net.MinMax_NS
+﻿namespace QuickStatistics.Net.MinMax_NS
 {
-    internal class TimeBased_Sliding_Maximum
+    public class TimeBased_Sliding_Maximum
     {
         public TimeBased_Sliding_Maximum(TimeSpan duration)
         {

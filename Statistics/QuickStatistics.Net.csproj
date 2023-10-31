@@ -16,8 +16,11 @@
     <PackageTags>statistics;average;moving average;minmax;variance;median;moving median;rolling median</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>2.2.0</Version>
-    <PackageReleaseNotes>2.1.0
+    <Version>2.1.1</Version>
+    <PackageReleaseNotes>2.1.1
+- Timebased sliding maximum is now public
+
+2.1.0
 - Critical fix in ProgressingAverageDecimal
 - Massive Documentation improvement
 - Made ProgressingAverage Thread Safe
@@ -30,6 +33,7 @@
     <NeutralLanguage>en</NeutralLanguage>
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <IncludeSymbols>False</IncludeSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
