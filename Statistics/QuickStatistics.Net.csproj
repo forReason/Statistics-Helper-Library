@@ -13,10 +13,10 @@
     <Copyright>Julian Bechtold</Copyright>
     <PackageProjectUrl>https://github.com/forReason/Statistics-Helper-Library</PackageProjectUrl>
     <RepositoryUrl>https://github.com/forReason/Statistics-Helper-Library</RepositoryUrl>
-    <PackageTags>statistics;average;moving average;minmax;variance;median;moving median;rolling median</PackageTags>
+    <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>2.2.0</Version>
+    <Version>2.2.1</Version>
     <PackageReleaseNotes>2.2.1
 - fixed ambiguity for Trend
 
