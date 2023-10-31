@@ -87,6 +87,7 @@
         /// <summary>
         /// Calculates the exponential standard deviation up to the current timestamp.
         /// </summary>
+        /// <remarks>applies decay if a datetime is provided for lookup</remarks>
         /// <param name="currentTimestamp">Optional current timestamp. If not provided, uses current time.</param>
         /// <returns>Returns the calculated exponential standard deviation.</returns>
         public double CalculateExponentialStdDev(DateTime? currentTimestamp = null)
@@ -94,7 +95,7 @@
             if (currentTimestamp == null) currentTimestamp = DateTime.Now;
             lock (lockObj)
             {
-                //ApplyDecay(currentTimestamp.Value);
+                if (currentTimestamp != null) ApplyDecay(currentTimestamp.Value);
 
                 if (count < 2) return 0;
 
@@ -104,12 +105,18 @@
                 return Math.Sqrt(variance);
             }
         }
+        /// <summary>
+        /// Calculates the exponential standard deviation up to the current timestamp.
+        /// </summary>
+        /// <remarks>applies decay if a datetime is provided for lookup</remarks>
+        /// <param name="currentTimestamp">Optional current timestamp. If not provided, uses current time.</param>
+        /// <returns>Returns the calculated exponential standard deviation.</returns>
         public double CalculateExponentialStdDevPercent(DateTime? currentTimestamp = null)
         {
-            if (currentTimestamp == null) currentTimestamp = DateTime.Now;
+            
             lock (lockObj)
             {
-                //ApplyDecay(currentTimestamp.Value);
+                if (currentTimestamp != null) ApplyDecay(currentTimestamp.Value);
 
                 if (count < 2) return 0;
 
