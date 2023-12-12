@@ -19,6 +19,7 @@
     <Version>2.4.0</Version>
     <PackageReleaseNotes>2.4.0
 - Implemented Math Difference
+- Minor code cleanup
 
 2.3.4
 - no longer applies decay upon lookup when no datetime is provided
