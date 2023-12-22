@@ -16,8 +16,16 @@
     <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>2.4.0</Version>
-    <PackageReleaseNotes>2.4.0
+    <Version>2.5.0</Version>
+    <PackageReleaseNotes>2.5.0
+- updated running median documentation
+- added bool to check if it contains Values
+- added clear method
+- median can be accessed by value property
+- clearer throws
+- fix moving Median
+
+2.4.0
 - Implemented Math Difference
 - Minor code cleanup
 

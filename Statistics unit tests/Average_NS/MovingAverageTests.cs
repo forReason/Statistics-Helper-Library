@@ -102,7 +102,6 @@ namespace Statistics_unit_tests.Average_NS
                 double control = Math.Round((result1 + result2) / 2, 6);
 
                 timebasedAverage.AddValue(result1, baseTime); 
-                timebasedAverage.AddValue(result1, baseTime.AddSeconds(1)); // purge DateTime.Default with first value
                 timebasedAverage.AddValue(result1, baseTime.AddSeconds(4));
                 timebasedAverage.AddValue(result2, baseTime.AddSeconds(5));
                 timebasedAverage.AddValue(result2, baseTime.AddSeconds(6));
