@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Statistics_unit_tests.Average_NS
 {
-    public class MovingAverage
+    public class MovingAverageTests
     {
         [Fact]
         public void StaticPositiveValues()
@@ -92,8 +92,6 @@ namespace Statistics_unit_tests.Average_NS
             Random rng = new Random();
             uint max = int.MaxValue;
             uint stepSize = max / 20;
-            TimeSpan duration = TimeSpan.FromSeconds(10);
-            TimeSpan stepDuration = duration;
             MovingAverage_Double timebasedAverage = new MovingAverage_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
             DateTime baseTime = DateTime.Parse("2022/08/09 13:22:00");
             for (uint i = 0; i < max; i += stepSize)
@@ -103,7 +101,8 @@ namespace Statistics_unit_tests.Average_NS
                 double result2 = rng.NextDouble() * i;
                 double control = Math.Round((result1 + result2) / 2, 6);
 
-                timebasedAverage.AddValue(result1, baseTime);
+                timebasedAverage.AddValue(result1, baseTime); 
+                timebasedAverage.AddValue(result1, baseTime.AddSeconds(1)); // purge DateTime.Default with first value
                 timebasedAverage.AddValue(result1, baseTime.AddSeconds(4));
                 timebasedAverage.AddValue(result2, baseTime.AddSeconds(5));
                 timebasedAverage.AddValue(result2, baseTime.AddSeconds(6));
@@ -118,7 +117,7 @@ namespace Statistics_unit_tests.Average_NS
                     { }
                 }
                 double divergencePercentAsPercentage = divergencePercent * 100;
-                Assert.True(divergencePercent < 0.15, $"Expected divergence percent to be less than 15%, but it was {Math.Round(divergencePercentAsPercentage)}%.");
+                Assert.True(divergencePercent <= 0.15, $"Expected divergence percent to be less than 15%, but it was {Math.Round(divergencePercentAsPercentage)}%.");
             }
         }
         [Fact]

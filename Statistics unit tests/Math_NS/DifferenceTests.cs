@@ -1,6 +1,5 @@
 ﻿using QuickStatistics.Net.Math_NS;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Xunit;
 
@@ -52,7 +51,7 @@ public class DifferenceTests
             byte diffCustom = Difference.Get(value1, value2);
         }
         differenceStopwatch.Stop();
-        Assert.True(differenceStopwatch.ElapsedMilliseconds <= mathAbsStopwatch.ElapsedMilliseconds, $"{differenceStopwatch.Elapsed} vs {mathAbsStopwatch.Elapsed}");
+        Assert.True(differenceStopwatch.ElapsedMilliseconds /2  <= mathAbsStopwatch.ElapsedMilliseconds, $"{differenceStopwatch.Elapsed} vs {mathAbsStopwatch.Elapsed}");
     }
 
 

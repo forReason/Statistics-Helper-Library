@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Statistics_unit_tests.Average_NS
 {
-    public class SimpleMovingAverage
+    public class SimpleMovingAverageTests
     {
         [Fact]
         public void TestDataLength_NewInstance()

@@ -1,16 +1,35 @@
 ﻿namespace QuickStatistics.Net.Median_NS
 {
     /// <summary>
-    /// moving median (or: Rolling Median) calculates the median on a rolling Time window and thus is suitable for indefinite data inflow
+    /// The MovingMedian_Decimal class implements a rolling or moving median calculation. It is designed to continuously provide the median value from a dynamically changing set of data. 
+    /// This implementation is particularly suited for scenarios where data is received in a stream, and the median of the recent 'window' of values is required at any point in time.
     /// </summary>
+    /// <remarks>
+    /// The class uses two heaps (minHeap and maxHeap) to efficiently calculate the median in a rolling window.
+    /// The class also maintains a dictionary for quick lookups and deletions, making it suitable for large datasets with frequent updates.
+    /// </remarks>
     public class MovingMedian_Decimal
     {
-        private readonly SortedSet<(decimal value, int id)> minHeap;
-        private readonly SortedSet<(decimal value, int id)> maxHeap;
-        private readonly Queue<decimal> window;
+        private readonly SortedSet<(decimal value, ulong id)> minHeap;
+        private readonly SortedSet<(decimal value, ulong id)> maxHeap;
+        private readonly Queue<(decimal value, ulong id)> window;
         private readonly int windowSize;
-        private int idCounter;
-
+        private readonly Dictionary<decimal, HashSet<ulong>> valueToIds;
+        private ulong idCounter;
+        /// <summary>
+        /// Indicates whether any values have been added to the median calculator.
+        /// </summary>
+        public bool ContainsValues => window.Count > 0;
+        /// <summary>
+        /// Gets the current median value of the elements.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown when no values have been added yet.</exception>
+        public decimal Value => GetMedian();
+        /// <summary>
+        /// Initializes a new instance of the MovingMedian_Decimal class with a specified window size.
+        /// </summary>
+        /// <param name="windowSize">The size of the rolling window for which the median is calculated.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the window size is less than or equal to zero.</exception>
         public MovingMedian_Decimal(int windowSize)
         {
             if (windowSize <= 0)
@@ -19,23 +38,33 @@
             }
 
             this.windowSize = windowSize;
-            window = new Queue<decimal>(windowSize);
-            minHeap = new SortedSet<(decimal value, int id)>(Comparer<(decimal value, int id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : x.value.CompareTo(y.value)));
-            maxHeap = new SortedSet<(decimal value, int id)>(Comparer<(decimal value, int id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : y.value.CompareTo(x.value)));
+            window = new Queue<(decimal value, ulong id)>(windowSize);
+            valueToIds = new Dictionary<decimal, HashSet<ulong >>();
+            minHeap = new SortedSet<(decimal value, ulong id)>(Comparer<(decimal value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : x.value.CompareTo(y.value)));
+            maxHeap = new SortedSet<(decimal value, ulong id)>(Comparer<(decimal value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : y.value.CompareTo(x.value)));
             idCounter = 0;
         }
-
+        /// <summary>
+        /// Adds a new value to the rolling window and updates the median calculation.
+        /// </summary>
+        /// <param name="value">The value to be added to the rolling window.</param>
         public void AddValue(decimal value)
         {
             if (window.Count == windowSize)
             {
                 RemoveValue(window.Dequeue());
             }
-            window.Enqueue(value);
-            InsertValue(value);
+
+            var entry = (value, idCounter++);
+            window.Enqueue(entry);
+            InsertValue(entry);
             RebalanceHeaps();
         }
-
+        /// <summary>
+        /// Retrieves the current median value of the elements within the rolling window.
+        /// </summary>
+        /// <returns>The median value.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when no values have been added yet.</exception>
         public decimal GetMedian()
         {
             if (maxHeap.Count == 0)
@@ -53,10 +82,15 @@
             }
         }
 
-        private void InsertValue(decimal value)
+        private void InsertValue((decimal value, ulong id) entry)
         {
-            var entry = (value, idCounter++);
-            if (maxHeap.Count == 0 || value <= maxHeap.Min.value)
+            if (!valueToIds.ContainsKey(entry.value))
+            {
+                valueToIds[entry.value] = new HashSet<ulong>();
+            }
+            valueToIds[entry.value].Add(entry.id);
+
+            if (maxHeap.Count == 0 || entry.value <= maxHeap.Min.value)
             {
                 maxHeap.Add(entry);
             }
@@ -64,20 +98,24 @@
             {
                 minHeap.Add(entry);
             }
+
+            RebalanceHeaps();
         }
 
-        private void RemoveValue(decimal value)
-        {
-            var entryToRemove = maxHeap.Contains((value, -1)) ? maxHeap.GetViewBetween((value, int.MinValue), (value, int.MaxValue)).Min : minHeap.GetViewBetween((value, int.MinValue), (value, int.MaxValue)).Min;
 
-            if (maxHeap.Contains(entryToRemove))
-            {
-                maxHeap.Remove(entryToRemove);
-            }
-            else
-            {
-                minHeap.Remove(entryToRemove);
-            }
+        private void RemoveValue((decimal value, ulong id) entry)
+        {
+            if (!valueToIds.ContainsKey(entry.value))
+                return;
+
+            valueToIds[entry.value].Remove(entry.id);
+            if (valueToIds[entry.value].Count == 0)
+                valueToIds.Remove(entry.value);
+
+            if (maxHeap.Contains(entry))
+                maxHeap.Remove(entry);
+            else if (minHeap.Contains(entry))
+                minHeap.Remove(entry);
         }
 
         private void RebalanceHeaps()
@@ -92,6 +130,17 @@
                 maxHeap.Add(minHeap.Min);
                 minHeap.Remove(minHeap.Min);
             }
+        }
+        /// <summary>
+        /// Clears all the data from the rolling window and resets the internal state for fresh reuse.
+        /// </summary>
+        public void Clear()
+        {
+            window.Clear();
+            minHeap.Clear();
+            maxHeap.Clear();
+            valueToIds.Clear();
+            idCounter = 0;
         }
     }
 }

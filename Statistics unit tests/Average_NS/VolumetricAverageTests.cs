@@ -4,7 +4,7 @@ using QuickStatistics.Net.Average_NS;
 
 namespace Statistics_unit_tests.Average_NS
 {
-    public class VolumetricAverage
+    public class VolumetricAverageTests
     {
         [Fact]
         public void BasicVolumeAverage_PositiveValues()

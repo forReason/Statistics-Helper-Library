@@ -14,14 +14,51 @@ namespace QuickStatistics.Net.Median_NS
     {
         private RunningMedian_Double Median = new RunningMedian_Double();
 
+        /// <summary>
+        ///  the amount of Values added so far
+        /// </summary>
+        public ulong ValueCount => Median.ValueCount;
+        /// <summary>
+        /// true when values have been added already
+        /// </summary>
+        public bool ContainsValues => Median.ContainsValues;
+
+        /// <summary>
+        /// retrieves the current Median Value.
+        /// </summary>
+        /// <remarks>Values need to be added before accessing</remarks>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">when no Values are added yet</exception>
         public void AddValue(T value)
         {
             Median.AddValue(Convert.ToDouble(value));
         }
 
+        /// <summary>
+        /// retrieves the current Median Value.
+        /// </summary>
+        /// <remarks>Values need to be added before accessing</remarks>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">when no Values are added yet</exception>
         public double GetMedian()
         {
             return Median.GetMedian();
+        }
+
+        /// <summary>
+        /// retrieves the current Median Value.
+        /// </summary>
+        /// <remarks>Values need to be added before accessing</remarks>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">when no Values are added yet</exception>
+        public double Value => GetMedian();
+
+        /// <summary>
+        /// empties the median making it ready for reuse
+        /// </summary>
+        public void Clear()
+        {
+            Median.Clear();
         }
     }
 #endif

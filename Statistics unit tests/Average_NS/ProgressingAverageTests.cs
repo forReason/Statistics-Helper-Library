@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Statistics_unit_tests.Average_NS
 {
-    public class ProgressingAverage
+    public class ProgressingAverageTests
     {
         [Fact]
         public void StaticPositiveValues()
