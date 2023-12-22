@@ -221,7 +221,7 @@ namespace QuickStatistics.Net.Average_NS
             bool shouldCreateNewTimeSpot = CurrentTimeSpot < valueTimeSlot; // the valueTimeStamp is newer than the current epoch reach
             if (shouldCreateNewTimeSpot)
             {
-                AddDataPoints(valueTimeSlot, interpolateMissingData); // handles Data gaps as well
+                AddDataPoints(valueTimeSlot, interpolateMissingData, value); // handles Data gaps as well
                 // prepare for new Time Spot
                 CurrentTimeSpot = CalculateTimeSpotStart(valueTimeStamp); // Use valueTimeStamp
                 LastTimeStamp = CurrentTimeSpot;
@@ -272,26 +272,49 @@ namespace QuickStatistics.Net.Average_NS
         /// it clears historical data and restarts calculations. For smaller gaps, it fills in missing steps to maintain 
         /// continuity in the moving average calculation.
         /// </remarks>
-        private void AddDataPoints(DateTime valueTimeSlot, bool interpolateMissingData = false)
+        private void AddDataPoints(DateTime valueTimeSlot, bool interpolateMissingData = false, double? value = null)
         {
+            double newValue = CurrentTimeSpotVolumetricAverage;
+            if (value != null)
+                newValue = value.Value;
             TimeSpan dataGap = (valueTimeSlot - CurrentTimeSpot);
+            int missingSteps = (int)(dataGap / ValueResolution);
             if (dataGap > TotalTime)// the data gap is larger than the entire rolling time window
             {
                 // clear the values and start freshly
-                CurrentTimeSpot = valueTimeSlot;
+                CurrentTimeSpot = CalculateTimeSpotStart(valueTimeSlot - TotalTime);
                 Average.Clear();
                 BackupLines.Clear();
+                
+                if (interpolateMissingData)
+                {
+                    // Interpolation logic for large data gap
+                    double slope = (newValue - PreviousValue) / (missingSteps);  // Adjust the slope calculation
+                    for (int i = Steps; i >0 ; i--)
+                    {
+                        double interpolatedValue = newValue - slope * i;
+                        Average.AddValue(interpolatedValue);
+                        AddBackupValue(CurrentTimeSpot, interpolatedValue);
+                    }
+                }
             }
             else if (dataGap > ValueResolution) // we have at least 1 missing entry
             {
-                // fill small data gaps
-                int missingSteps = (int)(dataGap / ValueResolution);
+                
+
                 for (int i = 0; i < missingSteps; i++)
                 {
-                    // fill 1 timespot gap step
-                    Average.AddValue(CurrentTimeSpotVolumetricAverage);
-                    AddBackupValue(CurrentTimeSpot, CurrentTimeSpotVolumetricAverage);
+                    double valueToAdd = CurrentTimeSpotVolumetricAverage;
+                    if (interpolateMissingData)
+                    {
+                        // Interpolation logic for each missing step
+                        double interpolationStep = (valueToAdd - PreviousValue) / (missingSteps + 1);
+                        valueToAdd = PreviousValue + interpolationStep * (i + 1);
 
+                    }
+
+                    Average.AddValue(valueToAdd);
+                    AddBackupValue(CurrentTimeSpot, valueToAdd);
                     CurrentTimeSpot += ValueResolution;
                 }
             }
@@ -302,6 +325,7 @@ namespace QuickStatistics.Net.Average_NS
             }
             StoreBackup();
         }
+
 
         /// <summary>
         /// Calculates the volumetric average for a new data point.

@@ -31,7 +31,7 @@ namespace QuickStatistics.Net.Average_NS
     public class MovingAverage_Decimal
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MovingAverage_Double"/> class.
+        /// Initializes a new instance of the <see cref="MovingAverage_Decimal"/> class.
         /// </summary>
         /// <param name="totalTime">Specifies the total duration which the moving average calculation should consider.</param>
         /// <param name="valueResolution">The duration each data point should represent. Must be smaller than totalTime.</param>
@@ -128,8 +128,15 @@ namespace QuickStatistics.Net.Average_NS
             Steps = (int)Math.Round((this.TotalTime.TotalMinutes / this.ValueResolution.TotalMinutes));
             Average = new SimpleMovingAverage_Decimal(Steps);
         }
+
         // Working variables
+        /// <summary>
+        /// the current slot of the resolution step grid
+        /// </summary>
         private DateTime CurrentTimeSpot { get; set; }
+        /// <summary>
+        /// the last added timespan
+        /// </summary>
         private DateTime LastTimeStamp { get; set; }
         /// <summary>
         /// the path where the Backup (if desired) should be saved / loaded
@@ -142,7 +149,7 @@ namespace QuickStatistics.Net.Average_NS
         private decimal PreviousValue = 0;
         private SimpleMovingAverage_Decimal Average { get; set; }
         /// <summary>
-        /// The current Moving Average
+        /// The current moving average value.
         /// </summary>
         public decimal Value { get; private set; }
         /// <summary>
@@ -185,97 +192,218 @@ namespace QuickStatistics.Net.Average_NS
         /// </remarks>
         public decimal DeviationFromMA_Percentage { get { return DeviationFromMA_Absolute / Value; } }
         /// <summary>
-        /// adds a single value point<br/>
-        /// assumes the date time of the value point is NOW
+        /// Adds a single value point with the current timestamp. 
         /// </summary>
+        /// <param name="value">The value to add.</param>
+        /// <param name="interpolateMissingData">this flag can be used if you did not gater data at all in between this and the last point to interpolate</param>
         /// <remarks>
-        /// handy for live fed data
+        /// This method is particularly useful for live fed data.
         /// </remarks>
-        /// <param name="value"></param>
-        public void AddValue(decimal value)
+        public void AddValue(decimal value, bool interpolateMissingData = false)
         {
-            AddValue(value, DateTime.Now);
+            AddValue(value, DateTime.Now, interpolateMissingData);
         }
         /// <summary>
-        /// adds a single data point based on the points date. </br>
-        /// handy for historical data
+        /// Adds a single data point with a specific timestamp. 
+        /// </summary>
+        /// <param name="value">The value to add.</param>
+        /// <param name="valueTimeStamp">The timestamp of the value.</param>
+        /// <param name="interpolateMissingData">this flag can be used if you did not gater data at all in between this and the last point to interpolate</param>
+        /// <remarks>
+        /// This method is useful for handling historical data. 
+        /// It's important to note that value points always need to be added in chronological order.
+        /// </remarks>
+        public void AddValue(decimal value, DateTime valueTimeStamp, bool interpolateMissingData = false)
+        {
+            DateTime valueTimeSlot = CalculateTimeSpotStart(valueTimeStamp);
+            // algorythm to decide if a new timeSpot (epoch) is to be opened and handling Data Gaps 
+            bool shouldCreateNewTimeSpot = CurrentTimeSpot < valueTimeSlot; // the valueTimeStamp is newer than the current epoch reach
+            if (shouldCreateNewTimeSpot)
+            {
+                AddDataPoints(valueTimeSlot, interpolateMissingData, value); // handles Data gaps as well
+                // prepare for new Time Spot
+                CurrentTimeSpot = CalculateTimeSpotStart(valueTimeStamp); // Use valueTimeStamp
+                LastTimeStamp = CurrentTimeSpot;
+                CurrentTimeSpotVolumetricAverage = value;
+                // Initialize with the first value only if no value has been added before
+                if (LastTimeStamp == DateTime.MinValue)
+                {
+                    if (Average.CurrentDataLength == 0)  // Check if Average is empty
+                    {
+                        Average.AddValue(value);
+                        PreviousValue = value;
+                    }
+                }
+            }
+
+            // Calculate the volumetric average for the new data point. This involves determining the
+            // average value for the current time spot based on the incoming value and the time elapsed.
+            // The volumetric average is a critical component in maintaining an accurate moving average,
+            // especially when data points are not uniformly distributed over time.
+            GenerateVolumetricAverage(value, valueTimeStamp);
+
+
+
+            // Update the moving average with the new volumetric average. This step combines the current
+            // time spot's volumetric average with the historical data to calculate the updated moving average.
+            // It ensures that the moving average reflects the most recent data while considering the historical context.
+            UpdateMovingAverage();
+            { }
+        }
+        /// <summary>
+        /// calculates the apropriate TimeSpot null aligned to prevent aliasing Issues
+        /// </summary>
+        /// <param name="valueTimeStamp"></param>
+        /// <returns></returns>
+        private DateTime CalculateTimeSpotStart(DateTime valueTimeStamp)
+        {
+            var timeSinceMinValue = valueTimeStamp - DateTime.MinValue;
+            var totalIntervals = (long)(timeSinceMinValue.Ticks / ValueResolution.Ticks);
+            return DateTime.MinValue + new TimeSpan(totalIntervals * ValueResolution.Ticks);
+        }
+        /// <summary>
+        /// Handles data gaps between the current data point and the previous one.
+        /// </summary>
+        /// <param name="valueTimeSlot">The time slot of the current value being added.</param>
+        /// <param name="interpolateMissingData">this flag can be used if you did not gater data at all in between this and the last point to interpolate</param>
+        /// <remarks>
+        /// This method addresses both large and small data gaps. For large gaps, exceeding the entire rolling window, 
+        /// it clears historical data and restarts calculations. For smaller gaps, it fills in missing steps to maintain 
+        /// continuity in the moving average calculation.
+        /// </remarks>
+        private void AddDataPoints(DateTime valueTimeSlot, bool interpolateMissingData = false, decimal? value = null)
+        {
+            decimal newValue = CurrentTimeSpotVolumetricAverage;
+            if (value != null)
+                newValue = value.Value;
+            TimeSpan dataGap = (valueTimeSlot - CurrentTimeSpot);
+            int missingSteps = (int)(dataGap / ValueResolution);
+            if (dataGap > TotalTime)// the data gap is larger than the entire rolling time window
+            {
+                // clear the values and start freshly
+                CurrentTimeSpot = CalculateTimeSpotStart(valueTimeSlot - TotalTime);
+                Average.Clear();
+                BackupLines.Clear();
+
+                if (interpolateMissingData)
+                {
+                    // Interpolation logic for large data gap
+                    decimal slope = (newValue - PreviousValue) / (missingSteps);  // Adjust the slope calculation
+                    for (int i = Steps; i > 0; i--)
+                    {
+                        decimal interpolatedValue = newValue - slope * i;
+                        Average.AddValue(interpolatedValue);
+                        AddBackupValue(CurrentTimeSpot, interpolatedValue);
+                    }
+                }
+            }
+            else if (dataGap > ValueResolution) // we have at least 1 missing entry
+            {
+                for (int i = 0; i < missingSteps; i++)
+                {
+                    decimal valueToAdd = CurrentTimeSpotVolumetricAverage;
+                    if (interpolateMissingData)
+                    {
+                        // Interpolation logic for each missing step
+                        decimal interpolationStep = (valueToAdd - PreviousValue) / (missingSteps + 1);
+                        valueToAdd = PreviousValue + interpolationStep * (i + 1);
+
+                    }
+
+                    Average.AddValue(valueToAdd);
+                    AddBackupValue(CurrentTimeSpot, valueToAdd);
+                    CurrentTimeSpot += ValueResolution;
+                }
+            }
+            else // no missing entry, but new time spot
+            {
+                Average.AddValue(CurrentTimeSpotVolumetricAverage);
+                AddBackupValue(CurrentTimeSpot, CurrentTimeSpotVolumetricAverage);
+            }
+            StoreBackup();
+        }
+
+
+        /// <summary>
+        /// Calculates the volumetric average for a new data point.
+        /// </summary>
+        /// <param name="value">The new data value to be added.</param>
+        /// <param name="valueTimeStamp">The timestamp associated with the new data value.</param>
+        /// <remarks>
+        /// This calculation involves determining the average value for the current time spot based on the incoming value and time elapsed.
+        /// It's a critical component in maintaining an accurate moving average, especially for data points not uniformly distributed over time.
+        /// </remarks>
+        private void GenerateVolumetricAverage(decimal value, DateTime valueTimeStamp)
+        {
+            TimeSpan microTickTime = valueTimeStamp - LastTimeStamp;
+            TimeSpan stepDuration = valueTimeStamp - CurrentTimeSpot - microTickTime;
+            // validate Timestamps
+            if (stepDuration.TotalSeconds < 0 || microTickTime.TotalSeconds < 0)
+            {
+                throw new InvalidOperationException("You cannot add data points from the past! Did you forget to Clear()?");
+            }
+
+            // calculate Moving Average
+            CurrentTimeSpotVolumetricAverage = VolumetricAverage_Decimal.VolumeBasedAverage(CurrentTimeSpotVolumetricAverage, (decimal)stepDuration.TotalSeconds, value, (decimal)microTickTime.TotalSeconds);
+
+            PreviousValue = value;
+            LastTimeStamp = valueTimeStamp;
+        }
+
+        /// <summary>
+        /// Updates the moving average with the newly calculated volumetric average.
         /// </summary>
         /// <remarks>
-        /// Value points always need to be added in series
+        /// This method combines the current time spot's volumetric average with historical data to compute the updated moving average.
+        /// It ensures that the moving average reflects the most recent data while accounting for the historical context.
         /// </remarks>
-        /// <param name="value"></param>
-        /// <param name="timeStamp"></param>
-        public void AddValue(decimal value, DateTime timeStamp)
+        private void UpdateMovingAverage()
         {
-            /// check if new value needs to be added to queue
-            if (CurrentTimeSpot + ValueResolution < timeStamp)
-            { // new time spot needs to be created
-                if (CurrentTimeSpot != default)
-                {
-                    /// the previous time spot needs to be added according to it's duration
-                    if (CurrentTimeSpot + TotalTime < timeStamp)
-                    { // There is a huge data gap. skip part to save processing time
-                        CurrentTimeSpot = timeStamp - TotalTime;
-                        Average.Clear();
-                        BackupLines.Clear();
-                    }
-                    int missingSteps = (int)Math.Round((timeStamp - CurrentTimeSpot).TotalMinutes / ValueResolution.TotalMinutes);
-                    for (int i = 0; i < missingSteps; i++)
-                    { // fill up gap
-                        Average.AddValue(CurrentTimeSpotVolumetricAverage);
-                        AddBackupValue(CurrentTimeSpot, CurrentTimeSpotVolumetricAverage);
-                        CurrentTimeSpot += ValueResolution;
-                    }
-                    StoreBackup();
-                }
-                // prepare for new timeSpot
-                CurrentTimeSpot = LastTimeStamp;
-                //LastTimeStamp = timeStamp;
-                CurrentTimeSpotVolumetricAverage = 0;
-            }
-            // generate volumetric average
-            TimeSpan microTickTime = timeStamp - LastTimeStamp;
-            TimeSpan stepduration = timeStamp - CurrentTimeSpot - microTickTime;
-            if (stepduration.TotalSeconds < 0 || microTickTime.TotalSeconds < 0)
-            {
-                throw new InvalidOperationException("you cannot add data points from the past! Did you forget to Clear()?");
-            }
-
-            decimal currentAssumption = (PreviousValue + value) / 2;
-            if (microTickTime.TotalSeconds == 0.0) CurrentTimeSpotVolumetricAverage = (Value + value) / 2;
-            else
-            {
-                CurrentTimeSpotVolumetricAverage = VolumetricAverage_Decimal.VolumeBasedAverage(
-                    value1: CurrentTimeSpotVolumetricAverage, volume1: (decimal)stepduration.TotalSeconds,
-                    value2: currentAssumption, volume2: (decimal)microTickTime.TotalSeconds);
-            }
-            PreviousValue = value;
-
-            // add value to current time frame accumulation
-            LastTimeStamp = timeStamp;
             TimeSpan currentSpotTimeSpan = LastTimeStamp - CurrentTimeSpot;
-            
-            // merge historic queue and previous time spot
+
             if (Average.CurrentDataLength > 0)
             {
                 Value = VolumetricAverage_Decimal.VolumeBasedAverage(
-                value1: Average.Value, volume1: (decimal)(Average.CurrentDataLength * ValueResolution).TotalMinutes,
-                value2: CurrentTimeSpotVolumetricAverage, volume2: (decimal)currentSpotTimeSpan.TotalMinutes);
-            } else
+                    value1: Average.Value, volume1: (decimal)(Average.CurrentDataLength * ValueResolution).TotalMinutes,
+                    value2: CurrentTimeSpotVolumetricAverage, volume2: (decimal)currentSpotTimeSpan.TotalMinutes);
+            }
+            else
             {
                 Value = CurrentTimeSpotVolumetricAverage;
             }
-            
-            if (Value != 0)
+        }
+        /// <summary>
+        /// calculates the current Moving average, even when no new elements have been added
+        /// </summary>
+        /// <param name="requestedTime">defaults to DateTime.Now, use when reading historic Data</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public decimal GetCurrentMovingAverage(DateTime? requestedTime)
+        {
+            DateTime time = DateTime.Now;
+            if (requestedTime != null)
+                time = requestedTime.Value;
+
+            if (requestedTime < LastTimeStamp)
+                throw new InvalidOperationException("you cannot get the ma of the past");
+            if (Average.CurrentDataLength > 0)
             {
-                { }
+                TimeSpan currentSpotTimeSpan = time - CurrentTimeSpot;
+                return VolumetricAverage_Decimal.VolumeBasedAverage(
+                    value1: Average.Value, volume1: (decimal)(Average.CurrentDataLength * ValueResolution).TotalMinutes,
+                    value2: CurrentTimeSpotVolumetricAverage, volume2: (decimal)currentSpotTimeSpan.TotalMinutes);
+            }
+            else
+            {
+                return CurrentTimeSpotVolumetricAverage;
             }
         }
+
         private void AddBackupValue(DateTime time, decimal value)
         {
             if (BackupFile == null)
-            { 
-                return; 
+            {
+                return;
             }
             BackupStringBuilder.Append(time);
             BackupStringBuilder.Append(';');
@@ -312,17 +440,17 @@ namespace QuickStatistics.Net.Average_NS
             }
         }
         /// <summary>
-        /// resets the average to 0 and clears all its internal values.
+        /// Resets the moving average to its initial state, clearing all internal values.
         /// </summary>
         /// <remarks>
-        /// setting (time) persist
+        /// The time settings (total time and value resolution) persist after a clear operation.
         /// </remarks>
         public void Clear()
         {
             CurrentTimeSpot = DateTime.MinValue;
             LastTimeStamp = DateTime.MinValue;
             //CurrentTimeSpotAverage.Clear();
-            CurrentTimeSpotVolumetricAverage= 0;
+            CurrentTimeSpotVolumetricAverage = 0;
             PreviousValue = 0;
             Average.Clear();
             Value = 0;
@@ -331,6 +459,6 @@ namespace QuickStatistics.Net.Average_NS
         {
             return this.Value.ToString();
         }
-        
+
     }
 }

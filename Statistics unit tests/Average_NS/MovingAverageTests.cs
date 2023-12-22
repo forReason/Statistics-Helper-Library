@@ -5,6 +5,7 @@ using Xunit;
 using System.Text;
 using System.IO;
 using System.Linq;
+using QuickStatistics.Net.Math_NS;
 
 namespace Statistics_unit_tests.Average_NS
 {
@@ -105,54 +106,47 @@ namespace Statistics_unit_tests.Average_NS
             Assert.True(Math.Abs(actualValue - expectedValue) < 0.01, $"Expected value close to {expectedValue}, but got {actualValue}.");
         }
         [Fact]
-        public void PositiveValues_LargeDataGaps_Interpolate()
+        public void LargeDataGapWithInterpolationTest()
         {
-            // positive tests
-            Random rng = new Random();
-            uint max = int.MaxValue;
-            uint stepSize = max / 20;
-            TimeSpan duration = TimeSpan.FromSeconds(10);
-            TimeSpan stepDuration = duration / 20;
-            TimeSpan sleep = stepDuration / 20;
-            int microStep = (int)(duration.TotalSeconds / sleep.TotalSeconds);
-            MovingAverage_Double timebasedAverage = new MovingAverage_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
+            MovingAverage_Double timeBasedAverage = new MovingAverage_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
             DateTime baseTime = DateTime.Parse("2022/08/09 13:22:00");
-            for (uint i = 0; i < max; i += stepSize)
-            {
-                timebasedAverage.Clear();
-                double result1 = rng.NextDouble() * i;
-                double result2 = rng.NextDouble() * i;
-                //double control = Math.Round((((result1 + result2) / 2)+ result2)/2, 6);
-                // Calculate the slope between result1 and result2 across the 5-second interval
-                double slope = (result2 - result1) / 5;
 
-                // Calculate the interpolated values for each second
-                double[] interpolatedValues = new double[5];
-                for (int j = 0; j < 5; j++)
-                {
-                    interpolatedValues[j] = result1 + slope * j;
-                }
+            // Adding initial value
+            double initialValue = 100;
+            timeBasedAverage.AddValue(initialValue, baseTime);
 
-                // Calculate the average of interpolated values and result2 values
-                double control = (interpolatedValues.Sum() + (result2 * 5)) / 10;
+            // Simulating a large data gap
+            DateTime newTime = baseTime.AddSeconds(20); // Large gap beyond TotalTime
+            double newValue = 200;
+            timeBasedAverage.AddValue(newValue, newTime, true); // With interpolation
 
-                timebasedAverage.AddValue(result1, baseTime, interpolateMissingData: true);
-                timebasedAverage.AddValue(result2, baseTime.AddSeconds(5), interpolateMissingData: true);
-                timebasedAverage.AddValue(result2, baseTime.AddSeconds(6), interpolateMissingData: true);
-                timebasedAverage.AddValue(result2, baseTime.AddSeconds(7), interpolateMissingData: true);
-                timebasedAverage.AddValue(result2, baseTime.AddSeconds(8), interpolateMissingData: true);
-                timebasedAverage.AddValue(result2, baseTime.AddSeconds(9), interpolateMissingData: true);
-                double divergence = Math.Abs(timebasedAverage.Value - control);
-                double divergencePercent = divergence / control;
-                if (divergence == 0) divergencePercent = 0;
-                if (divergencePercent > 0.15)
-                {
-                    { }
-                }
-                double divergencePercentAsPercentage = divergencePercent * 100;
-                Assert.True(divergencePercent < 0.35, $"Expected divergence percent to be less than 15%, but it was {Math.Round(divergencePercentAsPercentage, 2)}%.");
-            }
+            // Test to verify interpolated values
+            double expectedAverage = 175; // Simplified expectation for the test
+            Assert.Equal(expectedAverage, timeBasedAverage.GetCurrentMovingAverage(newTime.AddSeconds(1)), 2); // Precision of 2 decimal places
         }
+        [Fact]
+        public void SmallDataGapWithInterpolationTest()
+        {
+            MovingAverage_Double timeBasedAverage = new MovingAverage_Double(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
+            DateTime baseTime = DateTime.Parse("2022/08/09 13:22:00");
+
+            // Adding initial value
+            double initialValue = 50;
+            timeBasedAverage.AddValue(initialValue, baseTime);
+
+            // Simulating a small data gap
+            DateTime newTime = baseTime.AddSeconds(3); // Small gap within TotalTime
+            double newValue = 70;
+            timeBasedAverage.AddValue(newValue, newTime, true); // With interpolation
+
+            // Test to verify interpolated values
+            double expectedAverage = (initialValue + initialValue + ((initialValue + newValue) / 2) + newValue) / 4;
+
+            double difference = Difference.Get(expectedAverage, timeBasedAverage.GetCurrentMovingAverage(newTime.AddSeconds(1)));
+            double percetDifference = difference / expectedAverage;
+            Assert.True(percetDifference <  0.05);
+        }
+
 
         [Fact]
         public void PositiveValues_SmallDataGaps()
