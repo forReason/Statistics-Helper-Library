@@ -1,5 +1,4 @@
-﻿
-namespace QuickStatistics.Net.Average_NS
+﻿namespace QuickStatistics.Net.Average_NS
 {
     /// <summary>
     /// This class provides a simple, fast, and precise method to compute the average of a finite number of inputs. <br/><br/>
@@ -7,7 +6,9 @@ namespace QuickStatistics.Net.Average_NS
     /// </summary>
     /// <remarks>
     /// This class is not suitable for an indefinite number of inputs.
-    /// For an indefinite number of inputs, please refer to <see cref="SimpleMovingAverage_Double"/>.
+    /// For an indefinite number of inputs, please refer to <see cref="SimpleMovingAverage_Double"/>.<br/>
+    /// The theoretical maximum amount of Data Points is int.MaxValue. <br/>
+    /// However, the precision might become less the closer you reach count = int.MaxValue
     /// </remarks>
     public class ProgressingAverage_Double
     {

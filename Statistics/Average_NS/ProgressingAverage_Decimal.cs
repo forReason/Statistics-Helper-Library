@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace QuickStatistics.Net.Average_NS
+﻿namespace QuickStatistics.Net.Average_NS
 {
     /// <summary>
     /// Provides a simple, fast, and precise method to compute the average of a finite number of inputs. <br/><br/>
     /// thread safe
     /// </summary>
     /// <remarks>
-    /// This class is not suitable for an indefinite number of inputs. For that purpose, please refer to <see cref="SimpleMovingAverage_Decimal"/>.
+    /// This class is not suitable for an indefinite number of inputs. For that purpose, please refer to <see cref="SimpleMovingAverage_Decimal"/>.<br/>
+    /// The theoretical maximum amount of Data Points is decimal.MaxValue. <br/>
+    /// However, the precision becomes less the closer you reach count = decimal.MaxValue
     /// </remarks>
     public class ProgressingAverage_Decimal
     {

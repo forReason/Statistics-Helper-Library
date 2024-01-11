@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Threading;
+﻿using System.Numerics;
 
 namespace QuickStatistics.Net.Average_NS
 {
@@ -13,7 +10,9 @@ namespace QuickStatistics.Net.Average_NS
     /// </summary>
     /// <remarks>
     /// This class is not suitable for an indefinite number of inputs.
-    /// For that purpose, please refer to <see cref="SimpleMovingAverage"/>.
+    /// For that purpose, please refer to <see cref="SimpleMovingAverage"/>.<br/>
+    /// The theoretical maximum amount of Data Points is int.MaxValue. <br/>
+    /// However, the precision might become less the closer you reach count = int.MaxValue
     /// </remarks>
     public class ProgressingAverage<T> where T : INumber<T>
     {

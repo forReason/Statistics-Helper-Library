@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net7.0;net6.0énet8.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>AnyCPU;x64</Platforms>
@@ -24,6 +24,8 @@
 - median can be accessed by value property
 - clearer throws
 - fix moving Median
+- complete Rework of MovingAverage_Double and decimal (generic outstanding still)
+- added plenty unit tests for MovingAverage_Double
 
 2.4.0
 - Implemented Math Difference
