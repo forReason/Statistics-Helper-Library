@@ -17,7 +17,11 @@
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Version>2.5.0</Version>
-    <PackageReleaseNotes>2.5.0
+    <PackageReleaseNotes>2.5.1
+- added .net 8.0 support
+- added information for the maximum Data Count on ProgressingAverage
+
+2.5.0
 - updated running median documentation
 - added bool to check if it contains Values
 - added clear method
