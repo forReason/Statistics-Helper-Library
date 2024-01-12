@@ -16,8 +16,11 @@
     <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>2.5.1</Version>
-    <PackageReleaseNotes>2.5.1
+    <Version>2.6.0</Version>
+    <PackageReleaseNotes>2.6.0
+- added ProgressingAverage_Nano for minimal memory footprint scenarios
+
+2.5.1
 - added .net 8.0 support
 - added information for the maximum Data Count on ProgressingAverage
 

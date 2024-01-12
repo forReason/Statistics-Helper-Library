@@ -40,6 +40,22 @@ ma.Clear();
 ### Averaging
 - progressing_Average:
 a straight forward, very fast, precise implementation for calculating the average value. Limit is int.max (count of values) so it is not suited for an infinite stream of data such as for sensors
+- ProgressingAverage_Nano:
+Same as ProgressingAverave but optimized for absolute minimum memory footprint in case a large quantity of averages needs to be tracked.  
+usage:
+```
+// Arrange
+float currentValue = 0;
+ushort elementCount = 0;
+
+// Act
+ProgressingAverage_Nano.AddValue(ref currentValue, ref elementCount, 0);
+ProgressingAverage_Nano.AddValue(ref currentValue, ref elementCount, 10);
+
+// Verify
+Assert.Equal(5, currentValue);
+Assert.Equal(2ul, elementCount);
+```
 - Simple_Exponential_Average:
 Moving average approximation, very fast and lightweight
 - Simple_Moving_Average:
