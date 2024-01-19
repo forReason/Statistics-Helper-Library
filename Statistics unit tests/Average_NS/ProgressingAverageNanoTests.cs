@@ -117,5 +117,40 @@ namespace Statistics_unit_tests.Average_NS
                 throw new Exception("Value does not add up!");
             }
         }
+        [Fact]
+        public void FloatPrecisionTest()
+        {
+            // Prepare
+            ulong count = 0;
+            double value = 0;
+            float targetPercentage = 1.285F;
+            ulong totalAdds = ulong.MaxValue;
+            ulong iterations = 100000;
+            ulong epochs = 10000; // Total number of additions, adjust as needed
+
+            // Act
+            // Calculate the number of 100s and 0s to add
+            ulong countOf100s = (ulong)Math.Round((targetPercentage / 100) * iterations);
+            ulong countOf0s = iterations - countOf100s;
+
+            for (ulong iteration = 0; iteration < epochs; iteration++ )
+            {
+                count = iteration * (ulong.MaxValue / (epochs-1));
+                for (ulong i = 0; i < countOf100s; i++)
+                {
+                    ProgressingAverage_Nano.AddValue(ref value, ref count, 100);
+                }
+                for (ulong i = 0; i < countOf0s; i++)
+                {
+                    ProgressingAverage_Nano.AddValue(ref value, ref count, 0);
+                }
+
+                // Assert
+                // Using a tolerance for floating point comparison
+                double tolerance = 0.0001; // Define an appropriate tolerance
+                Assert.True(Math.Abs(value - targetPercentage) < tolerance, $"expected: {targetPercentage} actual: {value}" 
+                    + Environment.NewLine + $"failed after iterations: {count}");
+            }
+        }
     }
 }
