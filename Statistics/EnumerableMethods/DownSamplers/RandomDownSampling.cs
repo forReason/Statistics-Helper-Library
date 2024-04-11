@@ -1,65 +1,47 @@
-﻿using QuickStatistics.Net.Median_NS;
-
-namespace QuickStatistics.Net.EnumerableMethods.DownSamplers;
+﻿namespace QuickStatistics.Net.EnumerableMethods.DownSamplers;
 
 public static partial class DownSampler
 {
-   private static readonly Random random = new Random();
-
     /// <summary>
-    /// Down-samples an array to a smaller array using the Random Reservoir Sampling method with exponential skips.
+    /// Performs reservoir sampling on an input array to produce a downsampled array.
     /// </summary>
-    /// <remarks>
-    /// This method selects a random subset where each subset has the same probability of being chosen, optimized for large datasets.<br/>
-    /// The method is particularly useful when dealing with streaming data or large datasets where not all data can be kept in memory.
-    /// </remarks>
-    /// <param name="source">The enumerable source of data to down-sample.</param>
-    /// <param name="targetLength">The desired target length of the down-sampled data.</param>
-    /// <returns>A down-sampled array containing a random subset of the original data.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown if the target length is less than 1 or greater than the source length.</exception>
-    public static double[] ReservoirSample(IEnumerable<double> source, int targetLength)
+    /// <param name="sourceArray">The source array to sample from.</param>
+    /// <param name="desiredSampleSize">The desired length of the downsampled array.</param>
+    /// <returns>A down-sampled array where each element of the source had an equal probability of being included.</returns>
+    public static double[] ReservoirSample(double[] sourceArray, int desiredSampleSize)
     {
-        // Precondition checks
-        var sourceArray = source.ToArray();
-        int sourceLength = sourceArray.Length;
-        if (targetLength < 1)
-            throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be greater than 1!");
-        if (sourceLength < targetLength)
-            throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length cannot be longer than the source array!");
-
-        // Initialize the reservoir with the first part of the source
-        double[] reservoir = new double[targetLength];
-        for (int i = 0; i < targetLength; i++)
+        Random randomNumberGenerator = new Random();
+        if (desiredSampleSize < 1 || desiredSampleSize > sourceArray.Length)
+            throw new ArgumentOutOfRangeException(nameof(desiredSampleSize), "Desired sample size must be within the bounds of the source array size.");
+    
+        double[] sampledSubset = new double[desiredSampleSize];
+        // Initially fill the sampled subset array with the first elements
+        for (int initialFillIndex = 0; initialFillIndex < desiredSampleSize; initialFillIndex++)
         {
-            reservoir[i] = sourceArray[i];
+            sampledSubset[initialFillIndex] = sourceArray[initialFillIndex];
         }
 
-        // Start the sampling process
-        double w = Math.Exp(Math.Log(random.NextDouble()) / targetLength);
-        int i = targetLength;
+        // Begin filling the random subset with an evenly distributed selection
+        double skipWeight = Math.Exp(Math.Log(randomNumberGenerator.NextDouble()) / desiredSampleSize);
+        int currentIndex = desiredSampleSize;
 
-        while (i < sourceLength)
+        while (currentIndex < sourceArray.Length)
         {
-            i += (int)Math.Floor(Math.Log(random.NextDouble()) / Math.Log(1 - w)) + 1;
-            if (i < sourceLength)
+            int elementsToSkip = (int)(Math.Floor(Math.Log(randomNumberGenerator.NextDouble()) / Math.Log(1 - skipWeight)) + 1);
+
+            if (currentIndex >= sourceArray.Length || currentIndex + elementsToSkip < currentIndex) 
+                // Either reached the end or detected overflow
             {
-                int replaceIndex = random.Next(targetLength); // randomInteger(1, k) - 1 for zero-based index
-                reservoir[replaceIndex] = sourceArray[i];
-                w *= Math.Exp(Math.Log(random.NextDouble()) / targetLength);
+                break;
             }
+            // Replace a randomly chosen item in the subset with the current item from the source array
+            int replacementIndex = randomNumberGenerator.Next(desiredSampleSize);
+            sampledSubset[replacementIndex] = sourceArray[currentIndex];
+            skipWeight *= Math.Exp(Math.Log(randomNumberGenerator.NextDouble()) / desiredSampleSize);
+
+            currentIndex += elementsToSkip; // Update currentIndex to the new position after skipping
         }
 
-        return reservoir;
-    }
-
-    private static Random random = new Random();
-
-    /// <summary>
-    /// Generates a random number between 0 (inclusive) and 1 (exclusive).
-    /// </summary>
-    /// <returns>A double-precision floating point number in the range [0, 1).</returns>
-    private static double RandomDouble()
-    {
-        return random.NextDouble();
+        return sampledSubset;
     }
 }
