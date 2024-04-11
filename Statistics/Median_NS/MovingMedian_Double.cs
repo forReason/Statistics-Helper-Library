@@ -5,7 +5,8 @@
     /// This implementation is particularly suited for scenarios where data is received in a stream, and the median of the recent 'window' of values is required at any point in time.
     /// </summary>
     /// <remarks>
-    /// The class uses two heaps (minHeap and maxHeap) to efficiently calculate the median in a rolling window.
+    /// This class is not thread safe!<br/>
+    /// The class uses two heaps (minHeap and maxHeap) to efficiently calculate the median in a rolling window.<br/>
     /// The class also maintains a dictionary for quick lookups and deletions, making it suitable for large datasets with frequent updates.
     /// </remarks>
     public class MovingMedian_Double
@@ -40,8 +41,10 @@
             this.windowSize = windowSize;
             window = new Queue<(double value, ulong id)>(windowSize);
             valueToIds = new Dictionary<double, HashSet<ulong>>();
-            minHeap = new SortedSet<(double value, ulong id)>(Comparer<(double value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : x.value.CompareTo(y.value)));
-            maxHeap = new SortedSet<(double value, ulong id)>(Comparer<(double value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : y.value.CompareTo(x.value)));
+            minHeap = new SortedSet<(double value, ulong id)>(
+                Comparer<(double value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : x.value.CompareTo(y.value)));
+            maxHeap = new SortedSet<(double value, ulong id)>(
+                Comparer<(double value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : y.value.CompareTo(x.value)));
             idCounter = 0;
         }
         /// <summary>
@@ -129,6 +132,51 @@
                 maxHeap.Add(minHeap.Min);
                 minHeap.Remove(minHeap.Min);
             }
+        }
+
+        public ReadOnlySpan<double> GenerateDistribution(int resolution)
+        {
+            if (!ContainsValues) return []; 
+            resolution = Math.Clamp(resolution, 1, window.Count);
+            // Combine and sort all values from both heaps
+            var combinedValues = new List<double>(minHeap.Select(item => item.value));
+            combinedValues.AddRange(maxHeap.Select(item => item.value));
+            combinedValues.Sort();
+
+            if (combinedValues.Count <= resolution)
+            {
+                // If the total number of points is less than or equal to the desired resolution,
+                // just return the combined and sorted values.
+                return combinedValues.ToArray();
+            }
+
+            var output = new double[resolution];
+            // The 'step' is now the fractional index step in the combined list for each output point.
+            double step = (double)(combinedValues.Count - 1) / (resolution - 1);
+
+            for (int i = 0; i < resolution; i++)
+            {
+                double idx = i * step;
+                int lowerIdx = (int)Math.Floor(idx);
+                int upperIdx = (int)Math.Ceiling(idx);
+
+                if (upperIdx >= combinedValues.Count) upperIdx = combinedValues.Count - 1; // Boundary check
+
+                // If the calculated index is exactly an integer, no interpolation is needed.
+                if (lowerIdx == upperIdx || lowerIdx == idx)
+                {
+                    output[i] = combinedValues[lowerIdx];
+                }
+                else
+                {
+                    // Linear interpolation for indices between two data points
+                    double fraction = idx - lowerIdx;
+                    output[i] = combinedValues[lowerIdx] + fraction * (combinedValues[upperIdx] - combinedValues[lowerIdx]);
+                }
+            }
+
+            return output;
+            
         }
         /// <summary>
         /// Clears all the data from the rolling window and resets the internal state for fresh reuse.

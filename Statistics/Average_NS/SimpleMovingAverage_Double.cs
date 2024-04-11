@@ -1,7 +1,7 @@
 ﻿namespace QuickStatistics.Net.Average_NS
 {
     /// <summary>
-    /// Provides a simple and fast method for calculating the moving average on sliding data.
+    /// Provides a simple and fast method for calculating the moving average on a sliding data window.
     /// This class is especially useful for large datasets or continuous data streams.
     /// </summary>
     /// <remarks>
