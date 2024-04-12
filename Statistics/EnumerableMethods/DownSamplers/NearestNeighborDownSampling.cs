@@ -16,23 +16,28 @@ public static partial class DownSampler
         // Precondition checks
         if (targetLength < 1)
             throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be greater than 1!");
-        IList<double> sourceArray = source as IList<double> ?? source.ToArray();
-        int sourceLength = sourceArray.Count;
+        int sourceLength = source.Count();
         if (sourceLength == targetLength)
-            return sourceArray.ToArray();
+            return source.ToArray();
         if (sourceLength <= targetLength)
             throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be smaller than the source length.");
-        if (targetLength == 1)
-            return new[] {sourceArray[(int)Math.Round(sourceLength/2.0,0)] };
+        // TODO: if (targetLength == 1) return new[] {source[(int)Math.Round(sourceLength/2.0,0)] };
 
         double[] result = new double[targetLength];
         // Adjusting the factor calculation to effectively "center" each selection within its segment
         double factor = (double)(sourceLength - 1) / (targetLength - 1);
 
-        for (int targetIndex = 0; targetIndex < targetLength; targetIndex++)
+        int index = 0;
+        int currentFillIndex = 0;
+        double lastItem = default;
+        foreach(double item in source)
         {
-            int nearestSourceIndex = (int)Math.Round(targetIndex * factor);
-            result[targetIndex] = sourceArray[nearestSourceIndex];
+            if ((int)(index / factor) >= currentFillIndex)
+            {
+                result[currentFillIndex] = slidingAverageWindow.Value;
+                targetFill++;
+            }
+            index++;
         }
 
         return result;
