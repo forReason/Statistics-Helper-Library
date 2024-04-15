@@ -137,8 +137,4 @@ added capability to Simple Moving Average &amp; Moving average:
     <PackageReference Include="QuickCsv.Net" Version="1.0.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="EnumerableMethods\UpSamplers\" />
-  </ItemGroup>
-
 </Project>
