@@ -12,53 +12,24 @@
         /// <param name="inputIsSorted">if the input array is already sorted, specify true to save performance</param>
         /// <returns>median</returns>
         /// <exception cref="ArgumentException"></exception>
-        public static decimal GetMedian(decimal[] numbers, bool inputIsSorted = false)
+        public static decimal GetMedian(IEnumerable<decimal> numbers, bool inputIsSorted = false)
         {
-            if (numbers == null || numbers.Length == 0)
+            if (numbers == null || !numbers.Any())
             {
                 throw new ArgumentException("The input array must not be null or empty.");
             }
-
-            decimal[] sortedNumbers = new decimal[numbers.Length];
-            Array.Copy(numbers, sortedNumbers, numbers.Length);
-            if (!inputIsSorted)
-            {
-                Array.Sort(sortedNumbers);
-            }
-
-
-            return Calculate(sortedNumbers);
-        }
-        /// <summary>
-        /// gets the median value of a List
-        /// </summary>
-        /// <param name="numbers">the list with numbers where to get the median from</param>
-        /// <param name="inputIsSorted">if the input list is already sorted, specify true to save performance</param>
-        /// <returns>median</returns>
-        /// <exception cref="ArgumentException"></exception>
-        public static decimal GetMedian(List<decimal> numbers, bool inputIsSorted = false)
-        {
-            if (numbers == null || numbers.Count == 0)
-            {
-                throw new ArgumentException("The input list must not be null or empty.");
-            }
-
-            decimal[] sortedNumbers = numbers.ToArray();
-            if (!inputIsSorted)
-            {
-                Array.Sort(sortedNumbers);
-            }
-
-            return Calculate(sortedNumbers);
+            IList<decimal> sourceArray = numbers as IList<decimal> ?? numbers.ToList();
+            
+            return inputIsSorted ? Calculate(sourceArray) : Calculate(sourceArray.OrderBy(x => x).ToList());
         }
         /// <summary>
         /// gets the median value of a sorted(!) array
         /// </summary>
         /// <param name="sortedNumbers"></param>
         /// <returns></returns>
-        private static decimal Calculate(decimal[] sortedNumbers)
+        private static decimal Calculate(IList<decimal> sortedNumbers)
         {
-            int length = sortedNumbers.Length;
+            int length = sortedNumbers.Count;
 
             if (length % 2 == 0)
             {

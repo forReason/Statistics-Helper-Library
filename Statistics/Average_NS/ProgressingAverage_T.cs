@@ -72,6 +72,23 @@ namespace QuickStatistics.Net.Average_NS
                 avg.AddValue(Convert.ToDecimal(item));
             }
         }
+        /// <summary>
+        /// Calculates the average over a set of double values
+        /// </summary>
+        /// <param name="input">the values to calculate average for</param>
+        /// <returns>double average</returns>
+        public static double CalculateAverage(IEnumerable<T> input)
+        {
+            int Count = 0;
+            double Value = 0;
+            foreach (T item in input)
+            {
+                Count++;
+                Value += (Convert.ToDouble(item) - Value) / Count;
+            }
+
+            return Value;
+        }
 
         /// <summary>
         /// Clears the current average calculation.

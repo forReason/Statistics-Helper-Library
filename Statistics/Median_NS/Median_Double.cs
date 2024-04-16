@@ -23,52 +23,7 @@
 
             return inputIsSorted ? Calculate(sourceArray) : Calculate(sourceArray.OrderBy(x => x).ToList());
         }
-        /// <summary>
-        /// gets the median value of an array
-        /// </summary>
-        /// <param name="numbers">the array with numbers where to get the median from</param>
-        /// <param name="inputIsSorted">if the input array is already sorted, specify true to save performance</param>
-        /// <returns>median</returns>
-        /// <exception cref="ArgumentException"></exception>
-        public static double GetMedian(double[] numbers, bool inputIsSorted = false)
-        {
-            if (numbers is null || !numbers.Any())
-            {
-                throw new ArgumentException("The input array must not be null or empty.");
-            }
 
-            double[] sortedNumbers = new double[numbers.Length];
-            Array.Copy(numbers, sortedNumbers, numbers.Length);
-            if (!inputIsSorted)
-            {
-                Array.Sort(sortedNumbers);
-            }
-
-
-            return Calculate(sortedNumbers);
-        }
-        /// <summary>
-        /// gets the median value of a List
-        /// </summary>
-        /// <param name="numbers">the list with numbers where to get the median from</param>
-        /// <param name="inputIsSorted">if the input list is already sorted, specify true to save performance</param>
-        /// <returns>median</returns>
-        /// <exception cref="ArgumentException"></exception>
-        public static double GetMedian(List<double> numbers, bool inputIsSorted = false)
-        {
-            if (numbers is null || !numbers.Any())
-            {
-                throw new ArgumentException("The input list must not be null or empty.");
-            }
-
-            double[] sortedNumbers = numbers.ToArray();
-            if (!inputIsSorted)
-            {
-                Array.Sort(sortedNumbers);
-            }
-
-            return Calculate(sortedNumbers);
-        }
         /// <summary>
         /// gets the median value of a sorted(!) array
         /// </summary>
