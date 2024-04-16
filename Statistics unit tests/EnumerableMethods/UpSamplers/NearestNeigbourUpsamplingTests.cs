@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using QuickStatistics.Net.EnumerableMethods.UpSamplers;
 using Xunit;
 
