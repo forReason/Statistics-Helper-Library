@@ -17,9 +17,10 @@ public static partial class UpSampler
             throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be greater than 1!");
         IList<double> sourceArray = source as IList<double> ?? source.ToArray();
         int sourceLength = sourceArray.Count;
+        if (sourceLength == 0) return [];
         if (sourceLength == targetLength)
             return sourceArray.ToArray();
-        if (sourceLength >= targetLength)
+        if (sourceLength > targetLength)
             throw new ArgumentOutOfRangeException(nameof(targetLength),
                 "Target length must be greater than the source length.");
 

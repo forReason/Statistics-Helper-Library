@@ -17,31 +17,27 @@ public static partial class UpSampler
             throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be greater than 1!");
         IList<double> sourceArray = source as IList<double> ?? source.ToArray();
         int sourceLength = sourceArray.Count;
+        if (sourceLength == 0) return [];
         if (sourceLength == targetLength)
             return sourceArray.ToArray();
         if (sourceLength > targetLength)
             throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be greater than the source length.");
-
+        
         double[] result = new double[targetLength];
-        int repetitionFactor = targetLength / sourceLength;
-        int remainder = targetLength % sourceLength;
 
         // Fill the result array with repeated values from the source array
-        int resultIndex = 0;
-        for (int i = 0; i < sourceLength; i++)
+        for (int sourceIndex = 0; sourceIndex < sourceLength; sourceIndex++)
         {
-            for (int j = 0; j < repetitionFactor; j++)
+            double percentFillEnd = (sourceIndex + 1) / (double)sourceLength;
+            double percentFillStart = sourceIndex / (double)sourceLength;
+            double startIndex = (targetLength * percentFillStart);
+            double endIndex = (targetLength * percentFillEnd);
+            for (int targetIndex = (int)Math.Ceiling(startIndex); targetIndex <= Math.Min((int)endIndex,result.Length-1 ); targetIndex++)
             {
-                result[resultIndex++] = sourceArray[i];
+                result[targetIndex] = sourceArray[sourceIndex];
             }
         }
-
-        // Fill the remaining elements with the last value of the source array
-        for (int i = 0; i < remainder; i++)
-        {
-            result[resultIndex++] = sourceArray[sourceLength - 1];
-        }
-
+        
         return result;
     }
 }
