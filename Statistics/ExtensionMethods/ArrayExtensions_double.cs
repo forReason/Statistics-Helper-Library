@@ -1,4 +1,5 @@
-﻿using QuickStatistics.Net.Average_NS;
+﻿using System.Xml.Schema;
+using QuickStatistics.Net.Average_NS;
 using QuickStatistics.Net.Variance_NS;
 
 namespace QuickStatistics.Net.ExtensionMethods;
@@ -32,10 +33,9 @@ public static class ArrayExtensions_Double
         return method switch
         {
             UpSamplingMethod.LinearInterpolation => EnumerableMethods.UpSamplers.UpSampler.UpSampleLinearInterpolation(source, targetLength),
-            UpSamplingMethod.SplineInterpolation => throw new NotImplementedException(),
-            UpSamplingMethod.NearestNeighbor => throw new NotImplementedException(),
-            UpSamplingMethod.Repetition => throw new NotImplementedException(),
-            UpSamplingMethod.Resample => throw new NotImplementedException(),
+            UpSamplingMethod.SplineInterpolation => EnumerableMethods.UpSamplers.UpSampler.UpSampleSplineInterpolation(source, targetLength),
+            UpSamplingMethod.NearestNeighbor => EnumerableMethods.UpSamplers.UpSampler.UpSampleNearestNeighbor(source, targetLength),
+            UpSamplingMethod.Repetition => EnumerableMethods.UpSamplers.UpSampler.UpSampleRepetition(source, targetLength),
             _ => throw new ArgumentOutOfRangeException(nameof(method), method, "method is not implemented")
         };
     }
