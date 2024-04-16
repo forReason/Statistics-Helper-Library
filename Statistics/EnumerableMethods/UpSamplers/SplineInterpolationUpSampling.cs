@@ -130,6 +130,4 @@ public static partial class UpSampler
         double interpolatedValue = (1 - t) * y[j] + t * y[j + 1] + t * (1 - t) * (a * (1 - t) + b * t);
         return interpolatedValue;
     }
-
-
 }
