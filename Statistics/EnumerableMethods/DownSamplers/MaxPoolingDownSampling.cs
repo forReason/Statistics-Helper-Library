@@ -19,15 +19,16 @@ public static partial class DownSampler
     public static double[] DownSampleMaxPooling(IEnumerable<double> source, int targetLength)
     {
         // precondition checks
-        if (targetLength < 1)
-            throw new ArgumentOutOfRangeException($"{nameof(targetLength)} must be greater than 1!");
+        if (targetLength < 0)
+            throw new ArgumentOutOfRangeException($"{nameof(targetLength)} must be >= 0!");
         int sourceLength = source.Count();
-        if (sourceLength < targetLength)
-            throw new ArgumentOutOfRangeException($"{nameof(targetLength)} cannot be longer than {nameof(source)}!");
+        if (sourceLength == 0 || targetLength == 0) return [];
         if (sourceLength == targetLength)
         {
             return source.ToArray();
         }
+        if (sourceLength < targetLength)
+            throw new ArgumentOutOfRangeException($"{nameof(targetLength)} must be < {nameof(source)}!");
 
         // preparations for conversions
         double[] result = new double[targetLength];

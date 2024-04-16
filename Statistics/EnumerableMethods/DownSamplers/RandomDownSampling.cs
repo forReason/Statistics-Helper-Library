@@ -8,11 +8,20 @@ public static partial class DownSampler
     /// <param name="sourceArray">The source array to sample from.</param>
     /// <param name="desiredSampleSize">The desired length of the downsampled array.</param>
     /// <returns>A down-sampled array where each element of the source had an equal probability of being included.</returns>
-    public static double[] ReservoirSample(double[] sourceArray, int desiredSampleSize)
+    public static double[] ReservoirSample(IEnumerable<double> source, int desiredSampleSize)
     {
+        if (desiredSampleSize < 0)
+            throw new ArgumentOutOfRangeException(nameof(desiredSampleSize), $"{nameof(desiredSampleSize)} must be >= 0!");
         Random randomNumberGenerator = new Random();
-        if (desiredSampleSize < 1 || desiredSampleSize > sourceArray.Length)
-            throw new ArgumentOutOfRangeException(nameof(desiredSampleSize), "Desired sample size must be within the bounds of the source array size.");
+        IList<double> sourceArray = source as IList<double> ?? source.ToArray();
+        int sourceLength = sourceArray.Count;
+        if (sourceLength == 0 || desiredSampleSize == 0) return [];
+        if (sourceLength == desiredSampleSize)
+        {
+            return source.ToArray();
+        }
+        if (desiredSampleSize > sourceLength)
+            throw new ArgumentOutOfRangeException(nameof(desiredSampleSize), $"{nameof(desiredSampleSize)} must be <= {sourceLength}.");
     
         double[] sampledSubset = new double[desiredSampleSize];
         // Initially fill the sampled subset array with the first elements
@@ -25,11 +34,11 @@ public static partial class DownSampler
         double skipWeight = Math.Exp(Math.Log(randomNumberGenerator.NextDouble()) / desiredSampleSize);
         int currentIndex = desiredSampleSize;
 
-        while (currentIndex < sourceArray.Length)
+        while (currentIndex < sourceLength)
         {
             int elementsToSkip = (int)(Math.Floor(Math.Log(randomNumberGenerator.NextDouble()) / Math.Log(1 - skipWeight)) + 1);
 
-            if (currentIndex >= sourceArray.Length || currentIndex + elementsToSkip < currentIndex) 
+            if (currentIndex >= sourceLength || currentIndex + elementsToSkip < currentIndex) 
                 // Either reached the end or detected overflow
             {
                 break;

@@ -14,14 +14,17 @@ public static partial class DownSampler
     public static double[] DownSampleNearestNeighbor(IEnumerable<double> source, int targetLength)
     {
         // Precondition checks
-        if (targetLength < 1)
-            throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be greater than 1!");
+        if (targetLength < 0)
+            throw new ArgumentOutOfRangeException(nameof(targetLength), $"{nameof(targetLength)} must be >= 0!");
         IList<double> sourceArray = source as IList<double> ?? source.ToArray();
         int sourceLength = sourceArray.Count;
+        if (sourceLength == 0 || targetLength == 0) return [];
         if (sourceLength == targetLength)
+        {
             return sourceArray.ToArray();
+        }
         if (sourceLength <= targetLength)
-            throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be smaller than the source length.");
+            throw new ArgumentOutOfRangeException(nameof(targetLength), $"{nameof(targetLength)} must be <= {sourceLength}.");
         if (targetLength == 1)
             return new[] {sourceArray[(int)Math.Round(sourceLength/2.0,0)] };
 

@@ -8,14 +8,14 @@ namespace Statistics_unit_tests.EnumerableMethods.DownSamplers;
 
 public class AverageDownSamplingTests
 {
-    [Fact]
-    public void ReturnsCorrectlyDownsampledArra_Regular()
+    [Theory]
+    [InlineData(new double[] { 3.34}, 1, new double[] { 3.34 })]
+    [InlineData(new double[] { 1.0, 2.0, 3.0 }, 0, new double[] {  })]
+    [InlineData(new double[] { 1.0, 2.0 }, 1, new double[] { 1.5 })]
+    [InlineData(new double[] { 1.0, 2.0, -5, 8, 10, 22, 3,1,6,7,4,2  }, 3, 
+        new double[] { 1.5, 9, 4.75})]
+    public void ReturnsExpectedResult(double[] source, int targetLength, double[] expected)
     {
-        // Arrange
-        IEnumerable<double> source = Enumerable.Range(1, 10).Select(x => (double)x);
-        int targetLength = 5;
-        double[] expected = { 1.5, 3.5, 5.5, 7.5, 9.5 };
-
         // Act
         double[] result = DownSampler.DownSampleAverage(source, targetLength);
 
@@ -23,54 +23,13 @@ public class AverageDownSamplingTests
         Assert.Equal(expected, result);
     }
     [Fact]
-    public void ReturnsCorrectlyDownsampledArray_LongArray()
-    {
-        // Arrange
-        IEnumerable<double> source = Enumerable.Range(1, 100).Select(x => (double)x);
-        int targetLength = 5;
-        double[] expected = { 10.5, 30.5, 50.5, 70.5, 90.5 }; 
-
-        // Act
-        double[] result = DownSampler.DownSampleAverage(source, targetLength);
-
-        // Assert
-        Assert.Equal(expected, result);
-    }
-    [Fact]
-    public void ReturnsCorrectlyDownsampledArray_NoMiddleValue()
+    public void ReturnsExpectedResult_LongArray()
     {
         // Arrange
         IEnumerable<double> source = Enumerable.Range(1, 100).Select(x => (double)x);
-        int targetLength = 4;
-        double[] expected = { 13, 38, 63, 88 };
-
-        // Act
-        double[] result = DownSampler.DownSampleAverage(source, targetLength);
-
-        // Assert
-        Assert.Equal(expected, result);
-    }
-    [Fact]
-    public void ReturnsCorrectlyDownsampledArray_ShortArray()
-    {
-        // Arrange
-        IEnumerable<double> source = Enumerable.Range(1, 4).Select(x => (double)x);
-        int targetLength = 3;
-        double[] expected = { 1.5, 2.5, 3.5 };
-
-        // Act
-        double[] result = DownSampler.DownSampleAverage(source, targetLength);
-
-        // Assert
-        Assert.Equal(expected, result);
-    }
-    [Fact]
-    public void ReturnsCorrectlyDownsampledArray_SingleValue()
-    {
-        // Arrange
-        IEnumerable<double> source = Enumerable.Range(1, 10).Select(x => (double)x);
-        int targetLength = 1;
-        double[] expected = { 5.5 };
+        int targetLength = 5;
+        // For a range of 1-100 divided into 5 parts, each segment has 20 elements, median is middle
+        double[] expected = { 10.5, 30.5, 50.5, 70.5, 90.5 };
 
         // Act
         double[] result = DownSampler.DownSampleAverage(source, targetLength);
@@ -80,7 +39,7 @@ public class AverageDownSamplingTests
     }
 
     [Fact]
-    public void DownSample_TargetLengthGreaterThanSource_ThrowsArgumentOutOfRangeException()
+    public void TargetLengthGreaterThanSource_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         IEnumerable<double> source = new double[] { 1.0, 2.0 };
@@ -91,18 +50,18 @@ public class AverageDownSamplingTests
     }
 
     [Fact]
-    public void DownSample_TargetLengthLessThanOne_ThrowsArgumentOutOfRangeException()
+    public void TargetLengthLessThanZero_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         IEnumerable<double> source = new double[] { 1.0, 2.0, 3.0 };
-        int targetLength = 0;
+        int targetLength = -1;
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() => DownSampler.DownSampleAverage(source, targetLength));
     }
 
     [Fact]
-    public void DownSample_SourceLengthEqualsTargetLength_ReturnsIdenticalArray()
+    public void SourceLengthEqualsTargetLength_ReturnsIdenticalArray()
     {
         // Arrange
         IEnumerable<double> source = new double[] { 1.0, 2.0, 3.0 };
