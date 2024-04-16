@@ -7,6 +7,30 @@ namespace Statistics_unit_tests.EnumerableMethods.UpSamplers;
 
 public class RepetitionUpsamplingTests
 {
+    [Theory]
+    [InlineData(new double[] { 1.0, 2.0, 3.0 }, 5)]
+    [InlineData(new double[] { 1.0, 2.0, 3.0 }, 6)]
+    [InlineData(new double[] { 1.0, 2.0 }, 4)]
+    [InlineData(new double[] { 1.0, 2.0, -5, 8, }, 10)]
+    [InlineData(new double[] { 1.0, 2.0, -5, 8, }, 100)]
+    public void ReturnsCorrectLength(double[] source, int targetLength)
+    {
+        // Act
+        double[] result = UpSampler.UpSampleRepetition(source, targetLength);
+
+        // Assert
+        Assert.Equal(targetLength, result.Length);
+    }
+    [Theory]
+    [InlineData(new double[] { 1.0, 2.0, 3.0 }, 2)]
+    [InlineData(new double[] { 1.0, 2.0 }, 1)]
+    [InlineData(new double[] { 1.0, 2.0, -5, 8, }, 3)]
+    [InlineData(new double[] { 1.0, 2.0, -5, 8, }, -1)]
+    public void ThrowsException_IfTargetLengthIsInvalid(double[] source, int targetLength)
+    {
+        // Act & Assert
+        Assert.Throws<ArgumentOutOfRangeException>(() => UpSampler.UpSampleRepetition(source, targetLength));
+    }
     [Fact]
     public void UpSampleRepetition_WithValidInput_ShouldReturnCorrectlyUpSampledArray()
     {
@@ -42,27 +66,40 @@ public class RepetitionUpsamplingTests
     [InlineData(new double[] { 1.0, 2.0, 3.0 }, 6, new double[] { 1.0, 1.0, 2.0, 2.0, 3.0, 3.0 })]
     [InlineData(new double[] { 1.0, 2.0 }, 4, new double[] { 1.0, 1.0, 2.0, 2.0 })]
     [InlineData(new double[] { 1.0, 2.0, -5, 8, }, 10, new double[] { 1.0, 1.0, 1.0, 2.0, 2.0, -5, -5, -5, 8, 8 })]
-    public void UpSampleRepetition_WithTargetLengthGreaterThanSourceLength_ShouldCorrectlyInterpolate(double[] source, int targetLength, double[] expected)
+    public void ReturnsExpectedValues(double[] source, int targetLength, double[] expected)
     {
-        // Arrange
-        var sourceList = new List<double>(source);
-
         // Act
-        var result = UpSampler.UpSampleRepetition(sourceList, targetLength);
+        var result = UpSampler.UpSampleRepetition(source, targetLength);
 
         // Assert
         Assert.Equal(expected, result);
     }
-
     [Fact]
-    public void UpSampleRepetition_WithInvalidTargetLength_ShouldThrowArgumentOutOfRangeException()
+    public void WithEmptySource_ShouldReturnEmptyArray()
     {
         // Arrange
-        var source = new List<double> { 1.0, 2.0, 3.0 };
-        int targetLength = -1;
+        double[] source = {};
+        double[] expected = {};
 
-        // Act & Assert
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => UpSampler.UpSampleRepetition(source, targetLength));
-        Assert.Equal("targetLength", ex.ParamName);
+        // Act
+        var result = UpSampler.UpSampleRepetition(source, 10);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+    [Theory]
+    [InlineData(new double[] { 1.0, 2.0, 3.0 }, 3, 
+        new double[] { 1.0, 2.0, 3.0 })]
+    [InlineData(new double[] { 1.0, 2.0 }, 2, 
+        new double[] { 1.0, 2.0 })]
+    [InlineData(new double[] { 1.0, 2.0, -5, 8 }, 4, 
+        new double[] { 1.0, 2.0, -5, 8 })]
+    public void WithSameLength_DoesNotChange(double[] source, int targetLength, double[] expected)
+    {
+        // Act
+        double[] result = UpSampler.UpSampleRepetition(source, targetLength);
+
+        // Assert
+        Assert.Equal(expected, result);
     }
 }
