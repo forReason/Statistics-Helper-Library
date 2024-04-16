@@ -1,5 +1,4 @@
-﻿using QuickStatistics.Net.Average_NS;
-using QuickStatistics.Net.Median_NS;
+﻿using QuickStatistics.Net.Median_NS;
 using System;
 using Xunit;
 
@@ -14,6 +13,16 @@ namespace Statistics_unit_tests.Median_NS
             med.AddValue(10.5);
             //Assert.Equal(1, med.Count);
             Assert.Equal(10.5, med.GetMedian());
+        }
+        [Theory]
+        [InlineData(new double[] { 1, 3, 2 }, 2 )]
+        public void ReturnsExpectedResult(double[] source, double expected)
+        {
+            // Act
+            MovingMedian_Double med = new MovingMedian_Double(source.Length);
+            foreach(double input in source) med.AddValue(input);
+            //Assert.Equal(1, med.Count);
+            Assert.Equal(expected, med.GetMedian());
         }
         [Fact]
         public void TestAddingMultipleValues()

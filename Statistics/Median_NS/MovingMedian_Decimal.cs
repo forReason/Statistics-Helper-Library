@@ -10,8 +10,8 @@
     /// </remarks>
     public class MovingMedian_Decimal
     {
-        private readonly SortedSet<(decimal value, ulong id)> minHeap;
-        private readonly SortedSet<(decimal value, ulong id)> maxHeap;
+        private readonly SortedSet<(decimal value, ulong id)> _MinHeap;
+        private readonly SortedSet<(decimal value, ulong id)> _MaxHeap;
         private readonly Queue<(decimal value, ulong id)> window;
         private readonly int windowSize;
         private readonly Dictionary<decimal, HashSet<ulong>> valueToIds;
@@ -40,8 +40,8 @@
             this.windowSize = windowSize;
             window = new Queue<(decimal value, ulong id)>(windowSize);
             valueToIds = new Dictionary<decimal, HashSet<ulong >>();
-            minHeap = new SortedSet<(decimal value, ulong id)>(Comparer<(decimal value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : x.value.CompareTo(y.value)));
-            maxHeap = new SortedSet<(decimal value, ulong id)>(Comparer<(decimal value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : y.value.CompareTo(x.value)));
+            _MinHeap = new SortedSet<(decimal value, ulong id)>(Comparer<(decimal value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : x.value.CompareTo(y.value)));
+            _MaxHeap = new SortedSet<(decimal value, ulong id)>(Comparer<(decimal value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : y.value.CompareTo(x.value)));
             idCounter = 0;
         }
         /// <summary>
@@ -67,18 +67,22 @@
         /// <exception cref="InvalidOperationException">Thrown when no values have been added yet.</exception>
         public decimal GetMedian()
         {
-            if (maxHeap.Count == 0)
+            if (_MaxHeap.Count == 0)
             {
                 throw new InvalidOperationException("No values added yet.");
             }
 
-            if (maxHeap.Count == minHeap.Count)
+            if (_MaxHeap.Count == _MinHeap.Count)
             {
-                return (maxHeap.Min.value + minHeap.Min.value) / 2.0m;
+                return (_MaxHeap.Min.value + _MinHeap.Min.value) / 2.0m;
+            }
+            else if (_MinHeap.Count > _MaxHeap.Count)
+            {
+                return _MinHeap.Min.value;
             }
             else
             {
-                return maxHeap.Min.value;
+                return _MaxHeap.Min.value;
             }
         }
 
@@ -90,13 +94,13 @@
             }
             valueToIds[entry.value].Add(entry.id);
 
-            if (maxHeap.Count == 0 || entry.value <= maxHeap.Min.value)
+            if (_MaxHeap.Count == 0 || entry.value <= _MaxHeap.Min.value)
             {
-                maxHeap.Add(entry);
+                _MaxHeap.Add(entry);
             }
             else
             {
-                minHeap.Add(entry);
+                _MinHeap.Add(entry);
             }
 
             RebalanceHeaps();
@@ -112,23 +116,23 @@
             if (valueToIds[entry.value].Count == 0)
                 valueToIds.Remove(entry.value);
 
-            if (maxHeap.Contains(entry))
-                maxHeap.Remove(entry);
-            else if (minHeap.Contains(entry))
-                minHeap.Remove(entry);
+            if (_MaxHeap.Contains(entry))
+                _MaxHeap.Remove(entry);
+            else if (_MinHeap.Contains(entry))
+                _MinHeap.Remove(entry);
         }
 
         private void RebalanceHeaps()
         {
-            if (maxHeap.Count > minHeap.Count + 1)
+            if (_MaxHeap.Count > _MinHeap.Count + 1)
             {
-                minHeap.Add(maxHeap.Min);
-                maxHeap.Remove(maxHeap.Min);
+                _MinHeap.Add(_MaxHeap.Min);
+                _MaxHeap.Remove(_MaxHeap.Min);
             }
-            else if (minHeap.Count > maxHeap.Count + 1)
+            else if (_MinHeap.Count > _MaxHeap.Count + 1)
             {
-                maxHeap.Add(minHeap.Min);
-                minHeap.Remove(minHeap.Min);
+                _MaxHeap.Add(_MinHeap.Min);
+                _MinHeap.Remove(_MinHeap.Min);
             }
         }
         /// <summary>
@@ -137,8 +141,8 @@
         public void Clear()
         {
             window.Clear();
-            minHeap.Clear();
-            maxHeap.Clear();
+            _MinHeap.Clear();
+            _MaxHeap.Clear();
             valueToIds.Clear();
             idCounter = 0;
         }
