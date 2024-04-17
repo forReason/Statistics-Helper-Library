@@ -17,17 +17,18 @@
     <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>3.0.0</Version>
-    <PackageReleaseNotes>2.6.0
-- added ProgressingAverage_Nano for minimal memory footprint scenarios
+    <Version>3.1.0</Version>
+    <PackageReleaseNotes>3.1.0
+- Renamed RunningMedian to ProgressingMedian to fall in line with ProgressingAverage
+- Added feature to get distributionMap from Median
+- MovingMedian can obtain a percentile now
 
+3.0.0
+- added ProgressingAverage_Nano for minimal memory footprint scenarios
 - implemented enumerable upsampling methods
 - expanded unit tests
-
 - Fixed a critical issue in Moving median where the result was shifted by 1 slot
-
 - update generic methods (&gt;= .NET 7)
-
 - added several extension methods for arrays 
 ```
 double[] myEnumerable = [1,3];
