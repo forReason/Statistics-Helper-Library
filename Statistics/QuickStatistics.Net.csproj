@@ -18,71 +18,21 @@
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Version>3.0.0</Version>
-    <PackageReleaseNotes>2.6.0
-- added ProgressingAverage_Nano for minimal memory footprint scenarios
+    <PackageReleaseNotes>3.0.0
+- implemented enumerable downsampling methods
 
-2.5.1
-- added .net 8.0 support
-- added information for the maximum Data Count on ProgressingAverage
+- implemented enumerable upsampling methods
+- expanded unit tests
 
-2.5.0
-- updated running median documentation
-- added bool to check if it contains Values
-- added clear method
-- median can be accessed by value property
-- clearer throws
-- fix moving Median
-- complete Rework of MovingAverage_Double and decimal (generic outstanding still)
-- added plenty unit tests for MovingAverage_Double
+- Fixed a critical issue in Moving median where the result was shifted by 1 slot
 
-2.4.0
-- Implemented Math Difference
-- Minor code cleanup
+- update generic methods (&gt;= .NET 7)
 
-2.3.4
-- no longer applies decay upon lookup when no datetime is provided
-- adjusted percentage to machine format (0.0 - 1.0)
-
-2.3.3
-- added a fix when exponentialaverage backup file was empty
-
-2.3.2
-- exponential standard deviation can now be expressed as percentage 
-
-2.3.1
-- added exponential standard deviation
-
-2.2.1
-- fixed ambiguity for Trend
-
-2.2.0
-added capability to Simple Moving Average &amp; Moving average:
-- AbsoluteRateOfChange
-- Trend
-- Momentum
-- Deviation
-
-2.1.2
-- improved xml documentation on time based minimum maximum
-- time based min/max now has better support for adding time values (historic data)
-- added xml documentation for timespot value
-2.3.0
-- added time based exponential average
-- added time based exponential standard deviation
-
-2.1.1
-- Timebased sliding maximum is now public
-
-2.1.0
-- Critical fix in ProgressingAverageDecimal
-- Massive Documentation improvement
-- Made ProgressingAverage Thread Safe
-
-2.0.0
-- several bugfixes
-- improved unit tests
-- Line of moving average is now smoothed out and it follows data gaps better
-- added Median functionalities</PackageReleaseNotes>
+- added several extension methods for arrays 
+```
+double[] myEnumerable = [1,3];
+double average = myEnumerable.GetAverage();
+```</PackageReleaseNotes>
     <NeutralLanguage>en</NeutralLanguage>
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>

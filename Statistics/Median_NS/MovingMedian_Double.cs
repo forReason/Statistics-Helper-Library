@@ -1,4 +1,8 @@
-﻿namespace QuickStatistics.Net.Median_NS
+﻿using QuickStatistics.Net.ExtensionMethods;
+using QuickStatistics.Net.Math_NS;
+using QuickStatistics.Net.MinMax_NS;
+
+namespace QuickStatistics.Net.Median_NS
 {
     /// <summary>
     /// The MovingMedian_Double class implements a rolling or moving median calculation. It is designed to continuously provide the median value from a dynamically changing set of data. 
@@ -32,6 +36,15 @@
         /// </summary>
         /// <exception cref="InvalidOperationException">Thrown when no values have been added yet.</exception>
         public double Value => GetMedian();
+
+        /// <summary>
+        /// returns the Minimum value in the current sliding Window
+        /// </summary>
+        public double Minimum => _MaxHeap.Max.value; // counterintuitive but its correct
+        /// <summary>
+        /// returns the maximum value in the current sliding window
+        /// </summary>
+        public double Maximum => _MinHeap.Max.value; // counterintuitive but its correct
         /// <summary>
         /// Initializes a new instance of the MovingMedian_Double class with a specified window size.
         /// </summary>
@@ -144,49 +157,55 @@
             }
         }
 
-        public ReadOnlySpan<double> GenerateDistribution(int resolution)
+        public double GetPercentile(double percentile)
+        {
+            if (percentile < 0 || percentile > 1.0) throw new ArgumentOutOfRangeException($"{nameof(percentile)} must be in the range of [0.0 - 1.0]");
+            if (percentile <= 0) return Minimum;
+            if (percentile >= 1.0) return Maximum;
+            int index = (int)(window.Count * percentile);
+            if (index < _MaxHeap.Count)
+                return _MaxHeap[index].Value;
+        }
+        
+
+        /// <summary>
+        /// generates a distribution map for the values in the current Heap
+        /// </summary>
+        /// <param name="steps">the resolution</param>
+        /// <returns></returns>
+        public SortedDictionary<double, int> GenerateDistribution(int steps = 10)
         {
             if (!ContainsValues) return []; 
-            resolution = Math.Clamp(resolution, 1, window.Count);
+            steps = Math.Max(steps, 1);
             // Combine and sort all values from both heaps
-            var combinedValues = new List<double>(_MinHeap.Select(item => item.value));
-            combinedValues.AddRange(_MaxHeap.Select(item => item.value));
-            combinedValues.Sort();
+            List<double> combinedValues = new List<double>(_MaxHeap.Select(item => item.value).Reverse());
+            combinedValues.AddRange(_MinHeap.Select(item => item.value));
 
-            if (combinedValues.Count <= resolution)
+            double minimum = Minimum;
+            double maximum = Maximum;
+            double coverage = Difference.Get(minimum, maximum);
+            double epsilon = Math.Max(1e-10 * coverage, Double.Epsilon);  // Use a small epsilon relative to the coverage or the smallest positive Double
+            double stepSize = (coverage + epsilon) / steps;
+            List<double>[] distribution = new List<double>[steps];
+            for (int i = 0; i < distribution.Length; i++)
             {
-                // If the total number of points is less than or equal to the desired resolution,
-                // just return the combined and sorted values.
-                return combinedValues.ToArray();
+                distribution[i] = new List<double>();
             }
-
-            var output = new double[resolution];
-            // The 'step' is now the fractional index step in the combined list for each output point.
-            double step = (double)(combinedValues.Count - 1) / (resolution - 1);
-
-            for (int i = 0; i < resolution; i++)
-            {
-                double idx = i * step;
-                int lowerIdx = (int)Math.Floor(idx);
-                int upperIdx = (int)Math.Ceiling(idx);
-
-                if (upperIdx >= combinedValues.Count) upperIdx = combinedValues.Count - 1; // Boundary check
-
-                // If the calculated index is exactly an integer, no interpolation is needed.
-                if (lowerIdx == upperIdx || lowerIdx == idx)
-                {
-                    output[i] = combinedValues[lowerIdx];
-                }
-                else
-                {
-                    // Linear interpolation for indices between two data points
-                    double fraction = idx - lowerIdx;
-                    output[i] = combinedValues[lowerIdx] + fraction * (combinedValues[upperIdx] - combinedValues[lowerIdx]);
-                }
-            }
-
-            return output;
             
+            foreach ((double value, ulong id) entry in window)
+            {
+                double distanceFromMin = Difference.Get(minimum, entry.value);
+                int step = (int)(distanceFromMin / stepSize);
+                distribution[step].Add(entry.value);
+            }
+            
+            SortedDictionary<double, int> DistributionMap = new SortedDictionary<double, int>();
+            foreach (List<double> collection in distribution)
+            {
+                DistributionMap[collection.GetMedian()] = collection.Count;
+            }
+
+            return DistributionMap;
         }
         /// <summary>
         /// Clears all the data from the rolling window and resets the internal state for fresh reuse.

@@ -1,5 +1,6 @@
 ﻿using QuickStatistics.Net.Median_NS;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Statistics_unit_tests.Median_NS
@@ -115,6 +116,23 @@ namespace Statistics_unit_tests.Median_NS
             // Assert for correct behavior before and after overflow
             Assert.Equal(expectedMedianBeforeOverflow, medianBeforeOverflow);
             Assert.Equal(expectedMedianAfterOverflow, medianAfterOverflow);
+        }
+
+        [Fact]
+        public void GenerateDistribution()
+        {
+            Random rng = new Random();
+            int numbers = 100;
+            MovingMedian_Double median = new MovingMedian_Double(numbers);
+            for (int i = 0; i < numbers; i++)
+            {
+                median.AddValue(rng.NextDouble()*1000);
+            }
+
+            SortedDictionary<double, int> result = median.GenerateDistribution(15);
+            string excelKeys = string.Join(",", result.Keys);
+            string excelValues = string.Join(",", result.Values);
+            Console.WriteLine(excelKeys);
         }
     }
 }
