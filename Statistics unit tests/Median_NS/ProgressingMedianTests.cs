@@ -5,12 +5,12 @@ using Xunit;
 
 namespace Statistics_unit_tests.Median_NS
 {
-    public class RunningMedianTests
+    public class ProgressingMedianTests
     {
         [Fact]
         public void TestAddingOneValue()
         {
-            RunningMedian_Double med = new RunningMedian_Double { };
+            ProgressingMedian_Double med = new ProgressingMedian_Double { };
             med.AddValue(10.5);
             //Assert.Equal(1, med.Count);
             Assert.Equal(10.5, med.GetMedian());
@@ -18,7 +18,7 @@ namespace Statistics_unit_tests.Median_NS
         [Fact]
         public void TestAddingMultipleValues()
         {
-            RunningMedian_Decimal med = new RunningMedian_Decimal();
+            ProgressingMedian_Decimal med = new ProgressingMedian_Decimal();
             var maxShortValue = (short.MaxValue - 10); // Subtract 10 to reach the overflow point quickly
             decimal expectedMedianBeforeOverflow, expectedMedianAfterOverflow;
 
@@ -40,7 +40,7 @@ namespace Statistics_unit_tests.Median_NS
         [Fact]
         public void TestEmptyValue()
         {
-            RunningMedian_Double med = new RunningMedian_Double();
+            ProgressingMedian_Double med = new ProgressingMedian_Double();
 
             Assert.Throws<InvalidOperationException>(() => med.GetMedian());
         }
@@ -48,7 +48,7 @@ namespace Statistics_unit_tests.Median_NS
         public void TestClear()
         {
             // add pre clear values
-            RunningMedian_Double med = new RunningMedian_Double();
+            ProgressingMedian_Double med = new ProgressingMedian_Double();
             med.AddValue(5);
             med.AddValue(5);
             med.AddValue(5);
