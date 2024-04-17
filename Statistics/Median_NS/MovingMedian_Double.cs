@@ -38,7 +38,15 @@ public class MovingMedian_Double
     /// Gets the current median value of the elements.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown when no values have been added yet.</exception>
-    public double Value => GetMedian();
+    public double Value {
+        get
+        {
+            if (_Value is null) _Value = GetMedian();
+            return _Value.Value;
+        }
+    }
+
+    public double? _Value = null;
 
     /// <summary>
     /// returns the Minimum value in the current sliding Window
@@ -49,6 +57,24 @@ public class MovingMedian_Double
     /// returns the maximum value in the current sliding window
     /// </summary>
     public double Maximum => _MinHeap.Max.value; // counterintuitive but its correct
+
+    /// <summary>
+    /// gets the standard deviation for the current data point
+    /// </summary>
+    /// <remarks>
+    /// The standard deviation is cached when accessed until a new datapoint is added.
+    /// However, the calculation if not in cache is rather expensive
+    /// </remarks>
+    public double StdDeviation 
+    {
+        get
+        {
+            if (_StdDeviation is null)
+                _StdDeviation = Variance_NS.StandardDeviation_Double.CalculateStandardDeviation(window.Select(c => c.value));
+            return _StdDeviation.Value;
+        }
+    }
+    private double? _StdDeviation = null;
 
     /// <summary>
     /// Initializes a new instance of the MovingMedian_Double class with a specified window size.
@@ -174,6 +200,17 @@ public class MovingMedian_Double
     }
 
     /// <summary>
+    /// calculates the value for a given sigma factor.
+    /// </summary>
+    /// <remarks>common Sigma factors are in the range of -3 to +3</remarks>
+    /// <param name="sigmaFactor">the sigma factor to calculate the value for</param>
+    /// <returns>the calculated value at point sigma </returns>
+    public double GetSigmaValue(double sigmaFactor)
+    {
+        return Variance_NS.NormalDistribution.GetXForSigma(Value, StdDeviation,sigmaFactor);
+    }
+
+    /// <summary>
     /// returns the two bracketing values of a precise index
     /// </summary>
     /// <param name="preciceIndex">the index which to obtain the brackets for</param>
@@ -224,9 +261,7 @@ public class MovingMedian_Double
 
         return (lowValue, bigValue);
     }
-
-
-
+    
     /// <summary>
     /// generates a distribution map for the values in the current Heap
     /// </summary>
@@ -267,6 +302,25 @@ public class MovingMedian_Double
         }
 
         return DistributionMap;
+    }
+    /// <summary>
+    /// generates a normal distribution or bell curve
+    /// </summary>
+    /// <param name="resolution">the number of Data points to generate</param>
+    /// <returns></returns>
+    public SortedDictionary<double, double> GenerateNormalDistribution(int resolution = 7)
+    {
+        SortedDictionary<double, double> curve = new SortedDictionary<double, double>();
+        double start = Value - 3 * StdDeviation;
+        double end = Value + 3 * StdDeviation;
+        double stepSize = (end - start) / resolution;
+
+        for (double x = start; x <= end; x += stepSize)
+        {
+            curve[x] = Variance_NS.NormalDistribution.ProbabilityDensityFunction(x, Value, StdDeviation);
+        }
+
+        return curve;
     }
 
     /// <summary>

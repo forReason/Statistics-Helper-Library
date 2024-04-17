@@ -176,5 +176,21 @@ namespace Statistics_unit_tests.Median_NS
             string excelValues = string.Join(",", result.Values);
             Console.WriteLine(excelKeys);
         }
+        [Fact]
+        public void GenerateNormalDistribution()
+        {
+            Random rng = new Random();
+            int numbers = 100;
+            MovingMedian_Double median = new MovingMedian_Double(numbers);
+            for (int i = 0; i < numbers; i++)
+            {
+                median.AddValue(rng.NextDouble()*1000);
+            }
+
+            SortedDictionary<double, double> result = median.GenerateNormalDistribution(15);
+            string excelKeys = string.Join(",", result.Keys);
+            string excelValues = string.Join(",", result.Values);
+            Console.WriteLine(excelKeys);
+        }
     }
 }
