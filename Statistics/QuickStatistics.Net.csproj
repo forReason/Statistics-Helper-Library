@@ -24,7 +24,7 @@
 - MovingMedian can obtain a percentile now
 
 3.0.0
-- added ProgressingAverage_Nano for minimal memory footprint scenarios
+- implemented enumerable downsampling methods
 - implemented enumerable upsampling methods
 - expanded unit tests
 - Fixed a critical issue in Moving median where the result was shifted by 1 slot
