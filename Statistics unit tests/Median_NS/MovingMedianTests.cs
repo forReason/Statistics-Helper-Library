@@ -17,6 +17,7 @@ namespace Statistics_unit_tests.Median_NS
         }
         [Theory]
         [InlineData(new double[] { 1, 3, 2 }, 2 )]
+        [InlineData(new double[] { 1, 4, 3, 5,7,23,2,1,9,3 }, 3.5 )]
         public void ReturnsExpectedResult(double[] source, double expected)
         {
             // Act
@@ -24,6 +25,47 @@ namespace Statistics_unit_tests.Median_NS
             foreach(double input in source) med.AddValue(input);
             //Assert.Equal(1, med.Count);
             Assert.Equal(expected, med.GetMedian());
+        }
+        [Theory]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0,0 )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0.1,1 )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0.2,2 )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0.3,3 )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0.4,4 )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0.5,5 )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0.6,6 )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0.7,7 )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0.8,8 )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0.9,9 )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 1,10 )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0.05,0.5 )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0.95,9.5 )]
+        public void TestGetPercentile(double[] source, double percentile ,double expected)
+        {
+            // Act
+            MovingMedian_Double med = new MovingMedian_Double(source.Length);
+            foreach(double input in source) med.AddValue(input);
+            double result = med.GetPercentile(percentile);
+            Assert.Equal(expected, result);
+        }
+        [Theory]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0,0,1  )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 0.5,0,1  )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 3,3,4  )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 4,4,5  )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 4.5,4,5  )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 5,5,6  )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 8,8,9  )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 8.7,8,9  )]
+        [InlineData(new double[] { 0, 1, 2, 3, 4,5,6,7,8,9,10 }, 9.9,9, 10  )]
+        public void GetBracket(double[] source, double preciseIndex , double firstResult, double secondResult)
+        {
+            // Act
+            MovingMedian_Double med = new MovingMedian_Double(source.Length);
+            foreach(double input in source) med.AddValue(input);
+            (double,double) result = med.GetBracket(preciseIndex);
+            Assert.Equal(firstResult, result.Item1);
+            Assert.Equal(secondResult, result.Item2);
         }
         [Fact]
         public void TestAddingMultipleValues()
