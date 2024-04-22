@@ -1,32 +1,26 @@
-﻿using System.Numerics;
+﻿namespace QuickStatistics.Net.EnumerableMethods.UpSamplers;
 
-namespace QuickStatistics.Net.EnumerableMethods.DownSamplers;
-
-public static partial class DownSampler
+public static partial class UpSampler
 {
     /// <summary>
-    /// Down-samples an array to a smaller array using a Nearest Neighbor approach.
+    /// Up-samples an array to a larger array using a Nearest Neighbor approach.
     /// </summary>
-    /// <param name="source">The array to down-sample.</param>
+    /// <param name="source">The array to up-sample.</param>
     /// <param name="targetLength">The desired target length.</param>
-    /// <returns>A down-sampled array where each element is selected using the Nearest Neighbor method.</returns>
+    /// <returns>An up-sampled array where each element is selected using the Nearest Neighbor method.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the target length is invalid.</exception>
-    public static double[] DownSampleNearestNeighbor(IEnumerable<double> source, int targetLength)
+    public static double[] UpSampleNearestNeighbor(IEnumerable<double> source, int targetLength)
     {
         // Precondition checks
-        if (targetLength < 0)
-            throw new ArgumentOutOfRangeException(nameof(targetLength), $"{nameof(targetLength)} must be >= 0!");
+        if (targetLength < 1)
+            throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be greater than 1!");
         IList<double> sourceArray = source as IList<double> ?? source.ToArray();
         int sourceLength = sourceArray.Count;
-        if (sourceLength == 0 || targetLength == 0) return [];
+        if (sourceLength == 0) return [];
         if (sourceLength == targetLength)
-        {
             return sourceArray.ToArray();
-        }
-        if (sourceLength <= targetLength)
-            throw new ArgumentOutOfRangeException(nameof(targetLength), $"{nameof(targetLength)} must be <= {sourceLength}.");
-        if (targetLength == 1)
-            return new[] {sourceArray[(int)Math.Round(sourceLength/2.0,0)] };
+        if (sourceLength >= targetLength)
+            throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be greater than the source length.");
 
         double[] result = new double[targetLength];
         // Adjusting the factor calculation to effectively "center" each selection within its segment
@@ -40,30 +34,25 @@ public static partial class DownSampler
 
         return result;
     }
-#if NET7_0_OR_GREATER
     /// <summary>
-    /// Down-samples an array to a smaller array using a Nearest Neighbor approach.
+    /// Up-samples an array to a larger array using a Nearest Neighbor approach.
     /// </summary>
-    /// <param name="source">The array to down-sample.</param>
+    /// <param name="source">The array to up-sample.</param>
     /// <param name="targetLength">The desired target length.</param>
-    /// <returns>A down-sampled array where each element is selected using the Nearest Neighbor method.</returns>
+    /// <returns>An up-sampled array where each element is selected using the Nearest Neighbor method.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the target length is invalid.</exception>
-    public static T[] DownSampleNearestNeighbor<T>(IEnumerable<T> source, int targetLength) where T : INumber<T>
+    public static T[] UpSampleNearestNeighbor<T>(IEnumerable<T> source, int targetLength)
     {
         // Precondition checks
-        if (targetLength < 0)
-            throw new ArgumentOutOfRangeException(nameof(targetLength), $"{nameof(targetLength)} must be >= 0!");
+        if (targetLength < 1)
+            throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be greater than 1!");
         IList<T> sourceArray = source as IList<T> ?? source.ToArray();
         int sourceLength = sourceArray.Count;
-        if (sourceLength == 0 || targetLength == 0) return [];
+        if (sourceLength == 0) return [];
         if (sourceLength == targetLength)
-        {
             return sourceArray.ToArray();
-        }
-        if (sourceLength <= targetLength)
-            throw new ArgumentOutOfRangeException(nameof(targetLength), $"{nameof(targetLength)} must be <= {sourceLength}.");
-        if (targetLength == 1)
-            return new[] {sourceArray[(int)Math.Round(sourceLength/2.0,0)] };
+        if (sourceLength >= targetLength)
+            throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be greater than the source length.");
 
         T[] result = new T[targetLength];
         // Adjusting the factor calculation to effectively "center" each selection within its segment
@@ -77,30 +66,25 @@ public static partial class DownSampler
 
         return result;
     }
-    #endif
     /// <summary>
-    /// Down-samples an array to a smaller array using a Nearest Neighbor approach.
+    /// Up-samples an array to a larger array using a Nearest Neighbor approach.
     /// </summary>
-    /// <param name="source">The array to down-sample.</param>
+    /// <param name="source">The array to up-sample.</param>
     /// <param name="targetLength">The desired target length.</param>
-    /// <returns>A down-sampled array where each element is selected using the Nearest Neighbor method.</returns>
+    /// <returns>An up-sampled array where each element is selected using the Nearest Neighbor method.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the target length is invalid.</exception>
-    public static decimal[] DownSampleNearestNeighbor(IEnumerable<decimal> source, int targetLength)
+    public static decimal[] UpSampleNearestNeighbor(IEnumerable<decimal> source, int targetLength)
     {
         // Precondition checks
-        if (targetLength < 0)
-            throw new ArgumentOutOfRangeException(nameof(targetLength), $"{nameof(targetLength)} must be >= 0!");
+        if (targetLength < 1)
+            throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be greater than 1!");
         IList<decimal> sourceArray = source as IList<decimal> ?? source.ToArray();
         int sourceLength = sourceArray.Count;
-        if (sourceLength == 0 || targetLength == 0) return [];
+        if (sourceLength == 0) return [];
         if (sourceLength == targetLength)
-        {
             return sourceArray.ToArray();
-        }
-        if (sourceLength <= targetLength)
-            throw new ArgumentOutOfRangeException(nameof(targetLength), $"{nameof(targetLength)} must be <= {sourceLength}.");
-        if (targetLength == 1)
-            return new[] {sourceArray[(int)Math.Round(sourceLength/2.0,0)] };
+        if (sourceLength >= targetLength)
+            throw new ArgumentOutOfRangeException(nameof(targetLength), "Target length must be greater than the source length.");
 
         decimal[] result = new decimal[targetLength];
         // Adjusting the factor calculation to effectively "center" each selection within its segment

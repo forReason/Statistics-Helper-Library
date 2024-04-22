@@ -1,22 +1,20 @@
-﻿using QuickStatistics.Net.MinMax_NS;
-
-namespace QuickStatistics.Net.Median_NS
+﻿namespace QuickStatistics.Net.Median_NS
 {
     /// <summary>
     /// running median can be used to quickly gather the median of all values added (so far)
     /// note, you might run into memory constraints, so this method is not suitable for infinite data flow
     /// </summary>
-    public class RunningMedian_Double
+    public class ProgressingMedian_Decimal
     {
-        private readonly SortedSet<(double value, ulong id)> minHeap;
-        private readonly SortedSet<(double value, ulong id)> maxHeap;
+        private readonly SortedSet<(decimal value, ulong id)> minHeap;
+        private readonly SortedSet<(decimal value, ulong id)> maxHeap;
         /// <summary>
         /// retrieves the current Median Value.
         /// </summary>
         /// <remarks>Values need to be added before accessing</remarks>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">when no Values are added yet</exception>
-        public double Value => GetMedian();
+        public decimal Value => GetMedian();
         /// <summary>
         ///  the amount of Values added so far
         /// </summary>
@@ -26,10 +24,10 @@ namespace QuickStatistics.Net.Median_NS
         /// </summary>
         public bool ContainsValues => ValueCount > 0;
 
-        public RunningMedian_Double()
+        public ProgressingMedian_Decimal()
         {
-            minHeap = new SortedSet<(double value, ulong id)>(Comparer<(double value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : x.value.CompareTo(y.value)));
-            maxHeap = new SortedSet<(double value, ulong id)>(Comparer<(double value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : y.value.CompareTo(x.value)));
+            minHeap = new SortedSet<(decimal value, ulong id)>(Comparer<(decimal value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : x.value.CompareTo(y.value)));
+            maxHeap = new SortedSet<(decimal value, ulong id)>(Comparer<(decimal value, ulong id)>.Create((x, y) => x.value == y.value ? x.id.CompareTo(y.id) : y.value.CompareTo(x.value)));
             ValueCount = 0;
         }
 
@@ -39,11 +37,8 @@ namespace QuickStatistics.Net.Median_NS
         /// <remarks></remarks>
         /// <param name="value"></param>
         /// <exception cref="InvalidOperationException">when the maximum number of values is rdded alreaty</exception>
-        public void AddValue(double value)
+        public void AddValue(decimal value)
         {
-            if (ValueCount == ulong.MaxValue){
-                throw new InvalidOperationException("Max Data count reached! please use MovingMedian instead!");
-            }
             var entry = (value, ValueCount++);
 
             if (maxHeap.Count == 0 || value <= maxHeap.Min.value)
@@ -64,7 +59,7 @@ namespace QuickStatistics.Net.Median_NS
         /// <remarks>Values need to be added before accessing</remarks>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">when no Values are added yet</exception>
-        public double GetMedian()
+        public decimal GetMedian()
         {
             if (maxHeap.Count == 0)
             {
@@ -73,7 +68,7 @@ namespace QuickStatistics.Net.Median_NS
 
             if (maxHeap.Count == minHeap.Count)
             {
-                return (maxHeap.Min.value + minHeap.Min.value) / 2.0;
+                return (maxHeap.Min.value + minHeap.Min.value) / 2.0m;
             }
             else
             {

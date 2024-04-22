@@ -13,7 +13,7 @@ public static partial class ArrayExtensions
     /// <param name="method">the sampling method to use</param>
     /// <returns>a new, shortened array</returns>
     /// <exception cref="ArgumentOutOfRangeException">the target length or the input length do not match</exception>
-    public static double[] DownSample(this IEnumerable<double> source, int targetLength, DownSamplingMethod method )
+    public static decimal[] DownSample(this IEnumerable<decimal> source, int targetLength, DownSamplingMethod method )
     {
         return method switch
         {
@@ -35,7 +35,7 @@ public static partial class ArrayExtensions
     /// <param name="method">the method of interpolating</param>
     /// <returns>an array with higher, interpolated resolution</returns>
     /// <exception cref="ArgumentOutOfRangeException">input arguments were invalid</exception>
-    public static double[] UpSample(this IEnumerable<double> source, int targetLength, UpSamplingMethod method )
+    public static decimal[] UpSample(this IEnumerable<decimal> source, int targetLength, UpSamplingMethod method )
     {
         return method switch
         {
@@ -54,9 +54,9 @@ public static partial class ArrayExtensions
      /// <param name="source">the input array</param>
      /// <param name="inputIsSorted">saves processing power</param>
      /// <returns>median value of the input array</returns>
-    public static double GetMedian(this IEnumerable<double> source, bool inputIsSorted = false)
+    public static decimal GetMedian(this IEnumerable<decimal> source, bool inputIsSorted = false)
     {
-        return Median_NS.Median_Double.GetMedian(source, inputIsSorted);
+        return Median_NS.Median_Decimal.GetMedian(source, inputIsSorted);
     }
      
     /// <summary>
@@ -65,9 +65,9 @@ public static partial class ArrayExtensions
     /// <remarks>because the calculator iterates over the entire array, it might be more performant to use the standalone functions</remarks>
     /// <param name="source">the input array</param>>
     /// <returns>average value of the input array</returns>
-    public static double GetAverage(this IEnumerable<double> source)
+    public static decimal GetAverage(this IEnumerable<decimal> source)
     {
-        return ProgressingAverage_Double.CalculateAverage(source);
+        return ProgressingAverage_Decimal.CalculateAverage(source);
     }
     
     /// <summary>
@@ -76,8 +76,8 @@ public static partial class ArrayExtensions
     /// <remarks>because the calculator iterates over the entire array, it might be more performant to use the standalone functions</remarks>
     /// <param name="source">the input array to calculate the std deviation for</param>
     /// <returns>the standard deviation of the array</returns>
-    public static double GetStandardDeviation(this IEnumerable<double> source)
+    public static decimal GetStandardDeviation(this IEnumerable<decimal> source)
     {
-        return StandardDeviation_Double.CalculateStandardDeviation(source);
+        return StandardDeviation_Decimal.CalculateStandardDeviation(source);
     }
 }

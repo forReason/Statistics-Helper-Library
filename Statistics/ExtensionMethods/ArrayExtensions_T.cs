@@ -1,9 +1,11 @@
-﻿using QuickStatistics.Net.Average_NS;
+﻿using System.Numerics;
+using QuickStatistics.Net.Average_NS;
 using QuickStatistics.Net.Variance_NS;
 
 namespace QuickStatistics.Net.ExtensionMethods;
 
-public static partial class ArrayExtensions
+#if NET7_0_OR_GREATER
+public static class ArrayExtensions_T<T> where T : INumber<T>
 {
     /// <summary>
     /// down-samples an array according to the requested down sampling Method
@@ -13,7 +15,7 @@ public static partial class ArrayExtensions
     /// <param name="method">the sampling method to use</param>
     /// <returns>a new, shortened array</returns>
     /// <exception cref="ArgumentOutOfRangeException">the target length or the input length do not match</exception>
-    public static double[] DownSample(this IEnumerable<double> source, int targetLength, DownSamplingMethod method )
+    public static T[] DownSample<T>(IEnumerable<T> source, int targetLength, DownSamplingMethod method ) where T : INumber<T>
     {
         return method switch
         {
@@ -35,7 +37,7 @@ public static partial class ArrayExtensions
     /// <param name="method">the method of interpolating</param>
     /// <returns>an array with higher, interpolated resolution</returns>
     /// <exception cref="ArgumentOutOfRangeException">input arguments were invalid</exception>
-    public static double[] UpSample(this IEnumerable<double> source, int targetLength, UpSamplingMethod method )
+    public static T[] UpSample<T>(IEnumerable<T> source, int targetLength, UpSamplingMethod method ) where T : INumber<T>
     {
         return method switch
         {
@@ -46,17 +48,17 @@ public static partial class ArrayExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(method), method, "method is not implemented")
         };
     }
-
-     /// <summary>
-     /// returns the median value of an array
-     /// </summary>
-     /// <remarks>because the calculator iterates over the entire array, it might be more performant to use the standalone functions</remarks>
-     /// <param name="source">the input array</param>
-     /// <param name="inputIsSorted">saves processing power</param>
-     /// <returns>median value of the input array</returns>
-    public static double GetMedian(this IEnumerable<double> source, bool inputIsSorted = false)
+    
+    /// <summary>
+    /// returns the median value of an array as double
+    /// </summary>
+    /// <remarks>because the calculator iterates over the entire array, it might be more performant to use the standalone functions</remarks>
+    /// <param name="source">the input array</param>
+    /// <param name="inputIsSorted">saves processing power</param>
+    /// <returns>median value of the input array</returns>
+    public static double GetMedian<T>(IEnumerable<T> source, bool inputIsSorted = false) where T : INumber<T>
     {
-        return Median_NS.Median_Double.GetMedian(source, inputIsSorted);
+        return Median_NS.Median.GetMedian(source, inputIsSorted);
     }
      
     /// <summary>
@@ -65,9 +67,9 @@ public static partial class ArrayExtensions
     /// <remarks>because the calculator iterates over the entire array, it might be more performant to use the standalone functions</remarks>
     /// <param name="source">the input array</param>>
     /// <returns>average value of the input array</returns>
-    public static double GetAverage(this IEnumerable<double> source)
+    public static double GetAverage<T>(IEnumerable<T> source) where T : INumber<T>
     {
-        return ProgressingAverage_Double.CalculateAverage(source);
+        return ProgressingAverage<T>.CalculateAverage(source);
     }
     
     /// <summary>
@@ -76,8 +78,9 @@ public static partial class ArrayExtensions
     /// <remarks>because the calculator iterates over the entire array, it might be more performant to use the standalone functions</remarks>
     /// <param name="source">the input array to calculate the std deviation for</param>
     /// <returns>the standard deviation of the array</returns>
-    public static double GetStandardDeviation(this IEnumerable<double> source)
+    public static double GetStandardDeviation<T>(IEnumerable<T> source) where T : INumber<T>
     {
-        return StandardDeviation_Double.CalculateStandardDeviation(source);
+        return StandardDeviation<T>.CalculateStandardDeviation(source);
     }
 }
+#endif

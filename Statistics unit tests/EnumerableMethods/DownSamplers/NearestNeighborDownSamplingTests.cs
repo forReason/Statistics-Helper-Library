@@ -8,23 +8,26 @@ namespace Statistics_unit_tests.EnumerableMethods.DownSamplers;
 
 public class NearestNeighborDownSamplingTests
 {
-    [Fact]
-    public void ReturnsCorrectlyDownsampledArray_Regular()
+    [Theory]
+    [InlineData(new double[] { 3.34}, 1, new double[] { 3.34 })]
+    [InlineData(new double[] { 1.0, 2.0, 3.0 }, 0, new double[] {  })]
+    [InlineData(new double[] { 1.0, 2.0 }, 1, new double[] { 2 })]
+    [InlineData(new double[] { 1, 3, 2, 4, 6, 7 }, 2, new double[] { 1, 7 })]
+    [InlineData(new double[] { 1, 2, 3, 4, 5 }, 3, new double[] { 1, 3, 5 })]
+    [InlineData(new double[] { 10, 20, 30, 40, 50, 60 }, 3, new double[] { 10, 30, 60 })]
+    public void ReturnsExpectedResult(double[] source, int targetLength, double[] expected)
     {
         // Arrange
-        IEnumerable<double> source = Enumerable.Range(1, 10).Select(x => (double)x);
-        int targetLength = 5;
-        double[] expected = { 1, 3, 5, 8, 10 };
 
         // Act
-        double[] result = DownSampler.DownSampleNearestNeighbor(source, targetLength);
+        var result = DownSampler.DownSampleNearestNeighbor(source, targetLength);
 
         // Assert
         Assert.Equal(expected, result);
     }
 
     [Fact]
-    public void ReturnsCorrectlyDownsampledArray_LongArray()
+    public void ReturnsExpectedResult_LongArray()
     {
         // Arrange
         IEnumerable<double> source = Enumerable.Range(0, 1000).Select(x => (double)x);
@@ -39,7 +42,7 @@ public class NearestNeighborDownSamplingTests
     }
 
     [Fact]
-    public void ReturnsCorrectlyDownsampledArray_NoMiddleValue()
+    public void ReturnsCorrectlyDownSampledArray_NoMiddleValue()
     {
         // Arrange
         IEnumerable<double> source = Enumerable.Range(1, 100).Select(x => (double)x);
@@ -54,22 +57,7 @@ public class NearestNeighborDownSamplingTests
     }
 
     [Fact]
-    public void ReturnsCorrectlyDownsampledArray_ShortArray()
-    {
-        // Arrange
-        IEnumerable<double> source = Enumerable.Range(1, 4).Select(x => (double)x);
-        int targetLength = 3;
-        double[] expected = { 1, 3, 4 }; // Adjusted expected values
-
-        // Act
-        double[] result = DownSampler.DownSampleNearestNeighbor(source, targetLength);
-
-        // Assert
-        Assert.Equal(expected, result);
-    }
-
-    [Fact]
-    public void ReturnsCorrectlyDownsampledArray_SingleValue()
+    public void ReturnsCorrectlyDownSampledArray_SingleValue()
     {
         // Arrange
         IEnumerable<double> source = Enumerable.Range(1, 10).Select(x => (double)x);
@@ -84,7 +72,7 @@ public class NearestNeighborDownSamplingTests
     }
 
     [Fact]
-    public void DownSample_TargetLengthGreaterThanSource_ThrowsArgumentOutOfRangeException()
+    public void TargetLengthGreaterThanSource_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         IEnumerable<double> source = new double[] { 1.0, 2.0 };
@@ -95,7 +83,7 @@ public class NearestNeighborDownSamplingTests
     }
 
     [Fact]
-    public void DownSample_TargetLengthLessThanOne_ThrowsArgumentOutOfRangeException()
+    public void TargetLengthLessThanOne_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         IEnumerable<double> source = new double[] { 1.0, 2.0, 3.0 };
@@ -106,7 +94,7 @@ public class NearestNeighborDownSamplingTests
     }
 
     [Fact]
-    public void DownSample_SourceLengthEqualsTargetLength_ReturnsIdenticalArray()
+    public void SourceLengthEqualsTargetLength_ReturnsIdenticalArray()
     {
         // Arrange
         IEnumerable<double> source = new double[] { 1.0, 2.0, 3.0 };

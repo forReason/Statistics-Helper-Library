@@ -8,24 +8,24 @@ namespace Statistics_unit_tests.EnumerableMethods.DownSamplers;
 
 public class MedianDownSamplingTests
 {
-    [Fact]
-    public void ReturnsCorrectlyDownsampledArray_Regular()
+    [Theory]
+    [InlineData(new double[] { 3.34}, 1, new double[] { 3.34 })]
+    [InlineData(new double[] { 1.0, 2.0, 3.0 }, 0, new double[] {  })]
+    [InlineData(new double[] { 1.0, 2.0 }, 1, new double[] { 1.5 })]
+    [InlineData(new double[] { 1, 3, 2, 7, 6, 4 }, 2, new double[] { 2, 6 })]
+    [InlineData(new double[] { 1, 2, 3, 4, 5 }, 3, new double[] { 1.5, 3.5, 4.5 })]
+    [InlineData(new double[] { 10, 20, 30, 40, 50, 60 }, 2, new double[] { 20, 50 })]
+    public void ReturnsExpectedResult(double[] source, int targetLength, double[] expected)
     {
-        // Arrange
-        IEnumerable<double> source = Enumerable.Range(1, 10).Select(x => (double)x);
-        int targetLength = 5;
-        // For median downsampling, choose the median of each segment
-        double[] expected = { 1.5, 3.5, 5.5, 7.5, 9.5 };
-
         // Act
-        double[] result = DownSampler.DownSampleMedian(source, targetLength);
+        var result = DownSampler.DownSampleMedian(source, targetLength);
 
         // Assert
         Assert.Equal(expected, result);
     }
 
     [Fact]
-    public void ReturnsCorrectlyDownsampledArray_LongArray()
+    public void ReturnsExpectedResult_LongArray()
     {
         // Arrange
         IEnumerable<double> source = Enumerable.Range(1, 100).Select(x => (double)x);
@@ -41,7 +41,7 @@ public class MedianDownSamplingTests
     }
 
     [Fact]
-    public void ReturnsCorrectlyDownsampledArray_NoMiddleValue()
+    public void ReturnsCorrectlyDownSampledArray_NoMiddleValue()
     {
         // Arrange
         IEnumerable<double> source = Enumerable.Range(1, 100).Select(x => (double)x);
@@ -57,39 +57,7 @@ public class MedianDownSamplingTests
     }
 
     [Fact]
-    public void ReturnsCorrectlyDownsampledArray_ShortArray()
-    {
-        // Arrange
-        IEnumerable<double> source = Enumerable.Range(1, 4).Select(x => (double)x);
-        int targetLength = 3;
-        // For median downsampling, select median values based on segment division
-        double[] expected = { 1.5, 2.5, 3.5 }; // Might adjust based on exact downsampling logic
-
-        // Act
-        double[] result = DownSampler.DownSampleMedian(source, targetLength);
-
-        // Assert
-        Assert.Equal(expected, result);
-    }
-
-    [Fact]
-    public void ReturnsCorrectlyDownsampledArray_SingleValue()
-    {
-        // Arrange
-        IEnumerable<double> source = Enumerable.Range(1, 10).Select(x => (double)x);
-        int targetLength = 1;
-        // Median of 1-10
-        double[] expected = { 5.5 };
-
-        // Act
-        double[] result = DownSampler.DownSampleMedian(source, targetLength);
-
-        // Assert
-        Assert.Equal(expected, result);
-    }
-
-    [Fact]
-    public void DownSample_TargetLengthGreaterThanSource_ThrowsArgumentOutOfRangeException()
+    public void TargetLengthGreaterThanSource_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         IEnumerable<double> source = new double[] { 1.0, 2.0 };
@@ -100,7 +68,7 @@ public class MedianDownSamplingTests
     }
 
     [Fact]
-    public void DownSample_TargetLengthLessThanOne_ThrowsArgumentOutOfRangeException()
+    public void TargetLengthLessThanOne_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         IEnumerable<double> source = new double[] { 1.0, 2.0, 3.0 };
@@ -111,7 +79,7 @@ public class MedianDownSamplingTests
     }
 
     [Fact]
-    public void DownSample_SourceLengthEqualsTargetLength_ReturnsIdenticalArray()
+    public void SourceLengthEqualsTargetLength_ReturnsIdenticalArray()
     {
         // Arrange
         IEnumerable<double> source = new double[] { 1.0, 2.0, 3.0 };

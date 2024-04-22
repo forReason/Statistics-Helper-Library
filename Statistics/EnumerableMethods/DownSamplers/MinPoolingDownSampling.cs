@@ -1,12 +1,13 @@
 ﻿using System.Numerics;
-using QuickStatistics.Net.Average_NS;
+using QuickStatistics.Net.MinMax_NS;
 
 namespace QuickStatistics.Net.EnumerableMethods.DownSamplers;
 
 public static partial class DownSampler
 {
     /// <summary>
-    /// down-samples an array to a smaller array using an averaging approach.
+    /// down-samples an array to a smaller array using a min pooling approach.<br/>
+    /// Example: {1,3,2,4,6,7} should be down-sampled into [2], this means, the minimum of each block is used: {1,4}
     /// </summary>
     /// <remarks>
     /// In an ideal case, the smaller array is smaller by a factor of a full number. Eg [100] to [25] (factor 4)<br/>
@@ -16,7 +17,7 @@ public static partial class DownSampler
     /// <param name="targetLength">the desired target length</param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException">the source array must be longer than the target array and targetLength must be > 1</exception>
-    public static double[] DownSampleAverage(IEnumerable<double> source, int targetLength)
+    public static double[] DownSampleMinPooling(IEnumerable<double> source, int targetLength)
     {
         // precondition checks
         if (targetLength < 0)
@@ -29,22 +30,21 @@ public static partial class DownSampler
         }
         if (sourceLength < targetLength)
             throw new ArgumentOutOfRangeException($"{nameof(targetLength)} must be < {nameof(source)}!");
-        
 
         // preparations for conversions
         double[] result = new double[targetLength];
         double factor = sourceLength / (double)targetLength;
-        SimpleMovingAverage_Double slidingAverageWindow = new((int)Math.Ceiling(factor));
-        // downsample
+        Sliding_Minimum maximum = new Sliding_Minimum((int)Math.Ceiling(factor));
+        // down-sample
         int i = 0;
         int targetFill = 0;
         foreach (double input in source)
         {
-            slidingAverageWindow.AddValue(input);
+            maximum.AddPoint(input);
             i++;
             if ((int)(i / factor) > targetFill)
             {
-                result[targetFill] = slidingAverageWindow.Value;
+                result[targetFill] = maximum.Value;
                 targetFill++;
             }
         }
@@ -54,7 +54,8 @@ public static partial class DownSampler
     }
 #if NET7_0_OR_GREATER
     /// <summary>
-    /// down-samples an array to a smaller array using a generic averaging approach.
+    /// down-samples an array to a smaller array using a generic min pooling approach.<br/>
+    /// Example: {1,3,2,4,6,7} should be down-sampled into [2], this means, the minimum of each block is used: {1,4}
     /// </summary>
     /// <remarks>
     /// Since this is a generic method, it utilizes internal double conversion, which might lead to conversion errors t -> double -> t <br/>
@@ -65,7 +66,7 @@ public static partial class DownSampler
     /// <param name="targetLength">the desired target length</param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException">the source array must be longer than the target array and targetLength must be > 1</exception>
-    public static T[] DownSampleAverage<T>(IEnumerable<T> source, int targetLength) where T : INumber<T>
+    public static T[] DownSampleMinPooling<T>(IEnumerable<T> source, int targetLength)where T : INumber<T>
     {
         // precondition checks
         if (targetLength < 0)
@@ -78,23 +79,22 @@ public static partial class DownSampler
         }
         if (sourceLength < targetLength)
             throw new ArgumentOutOfRangeException($"{nameof(targetLength)} must be < {nameof(source)}!");
-        
 
         // preparations for conversions
         T[] result = new T[targetLength];
         double factor = sourceLength / (double)targetLength;
-        SimpleMovingAverage_Double slidingAverageWindow = new((int)Math.Ceiling(factor));
-        // downsample
+        Sliding_Minimum maximum = new Sliding_Minimum((int)Math.Ceiling(factor));
+        // down-sample
         int i = 0;
         int targetFill = 0;
         foreach (T input in source)
         {
             double inputValue = Convert.ToDouble(input);
-            slidingAverageWindow.AddValue(inputValue);
+            maximum.AddPoint(inputValue);
             i++;
             if ((int)(i / factor) > targetFill)
             {
-                result[targetFill] = T.CreateTruncating(slidingAverageWindow.Value);
+                result[targetFill] = T.CreateTruncating(maximum.Value);
                 targetFill++;
             }
         }
@@ -102,9 +102,10 @@ public static partial class DownSampler
         // finalize
         return result;
     }
-    #endif
+#endif
     /// <summary>
-    /// down-samples an array to a smaller array using an averaging approach.
+    /// down-samples an array to a smaller array using a min pooling approach.<br/>
+    /// Example: {1,3,2,4,6,7} should be down-sampled into [2], this means, the minimum of each block is used: {1,4}
     /// </summary>
     /// <remarks>
     /// In an ideal case, the smaller array is smaller by a factor of a full number. Eg [100] to [25] (factor 4)<br/>
@@ -114,7 +115,7 @@ public static partial class DownSampler
     /// <param name="targetLength">the desired target length</param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException">the source array must be longer than the target array and targetLength must be > 1</exception>
-    public static decimal[] DownSampleAverage(IEnumerable<decimal> source, int targetLength)
+    public static decimal[] DownSampleMinPooling(IEnumerable<decimal> source, int targetLength)
     {
         // precondition checks
         if (targetLength < 0)
@@ -127,22 +128,21 @@ public static partial class DownSampler
         }
         if (sourceLength < targetLength)
             throw new ArgumentOutOfRangeException($"{nameof(targetLength)} must be < {nameof(source)}!");
-        
 
         // preparations for conversions
         decimal[] result = new decimal[targetLength];
-        decimal factor = sourceLength / (decimal)targetLength;
-        SimpleMovingAverage_Decimal slidingAverageWindow = new((int)Math.Ceiling(factor));
-        // down sample
+        double factor = sourceLength / (double)targetLength;
+        Sliding_Minimum_Decimal maximum = new Sliding_Minimum_Decimal((int)Math.Ceiling(factor));
+        // down-sample
         int i = 0;
         int targetFill = 0;
         foreach (decimal input in source)
         {
-            slidingAverageWindow.AddValue(input);
+            maximum.AddPoint(input);
             i++;
             if ((int)(i / factor) > targetFill)
             {
-                result[targetFill] = slidingAverageWindow.Value;
+                result[targetFill] = maximum.Value;
                 targetFill++;
             }
         }

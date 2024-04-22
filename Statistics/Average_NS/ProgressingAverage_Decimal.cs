@@ -74,6 +74,23 @@
         }
 
         /// <summary>
+        /// Calculates the average over a set of double values
+        /// </summary>
+        /// <param name="input">the values to calculate average for</param>
+        /// <returns>double average</returns>
+        public static decimal CalculateAverage(IEnumerable<decimal> input)
+        {
+            int Count = 0;
+            decimal Value = 0;
+            foreach (decimal item in input)
+            {
+                Count++;
+                Value += (item - Value) / Count;
+            }
+
+            return Value;
+        }
+        /// <summary>
         /// Clears the current average calculation.
         /// </summary>
         public void Clear()

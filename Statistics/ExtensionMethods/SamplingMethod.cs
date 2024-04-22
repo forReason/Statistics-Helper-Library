@@ -54,9 +54,5 @@ public enum UpSamplingMethod
     /// <summary>
     /// repeats values
     /// </summary>
-    Repetition,
-    /// <summary>
-    /// inserts 0's, then applies a low pass filter
-    /// </summary>
-    Resample
+    Repetition
 }

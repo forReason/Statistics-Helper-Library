@@ -4,75 +4,43 @@ namespace QuickStatistics.Net.Median_NS
 {
 #if NET7_0_OR_GREATER
     /// <summary>
-    /// generic method in order to obtain the median from other types than double.
+    /// Provides methods to calculate the median of a sequence of numbers.
     /// </summary>
-    /// <remarks>internaly uses a conversion to double at some point so may not be a good idea for large data types such a decimal<br/>
-    /// better use <see cref="Median_Decimal"/> for this purpose</remarks>
-    /// <typeparam name="T"></typeparam>
-    public class Median<T> where T : INumber<T>
+    public static class Median
     {
         /// <summary>
-        /// gets the median value of an array of numbers
+        /// Gets the median value of a sequence of numbers as a double.
         /// </summary>
-        /// <param name="numbers">the numbers input</param>
-        /// <param name="inputIsSorted">specify when the input numbers are sorted already to save processing time</param>
-        /// <returns>median</returns>
-        /// <exception cref="ArgumentException"></exception>
-        public double GetMedian(T[] numbers, bool inputIsSorted = false)
+        /// <typeparam name="T">The number type implementing INumber.</typeparam>
+        /// <param name="numbers">The sequence of numbers.</param>
+        /// <param name="inputIsSorted">Specifies if the input sequence is already sorted.</param>
+        /// <returns>The median value as double.</returns>
+        /// <exception cref="ArgumentException">Thrown if the input sequence is null or empty.</exception>
+        public static double GetMedian<T>(IEnumerable<T> numbers, bool inputIsSorted = false) where T : INumber<T>
         {
-            if (numbers == null || numbers.Length == 0)
-            {
-                throw new ArgumentException("The input array must not be null or empty.");
-            }
+            if (numbers is null || !numbers.Any())
+                throw new ArgumentException("The input sequence must not be null or empty.");
 
-            T[] sortedNumbers = new T[numbers.Length];
-            Array.Copy(numbers, sortedNumbers, numbers.Length);
-            if (!inputIsSorted)
-            {
-                Array.Sort(sortedNumbers);
-            }
-
-
-            return Calculate(sortedNumbers);
+            var sortedNumbers = inputIsSorted ? numbers.ToList() : numbers.OrderBy(x => x).ToList();
+            return CalculateMedian(sortedNumbers);
         }
-        /// <summary>
-        /// gets the median value of a list of numbers
-        /// </summary>
-        /// <param name="numbers">the numbers input</param>
-        /// <param name="inputIsSorted">specify when the input numbers are sorted already to save processing time</param>
-        /// <returns>median</returns>
-        /// <exception cref="ArgumentException"></exception>
-        public double GetMedian(List<T> numbers, bool inputIsSorted = false)
-        {
-            if (numbers == null || numbers.Count == 0)
-            {
-                throw new ArgumentException("The input list must not be null or empty.");
-            }
 
-            T[] sortedNumbers = numbers.ToArray();
-            if (!inputIsSorted)
-            {
-                Array.Sort(sortedNumbers);
-            }
-
-            return Calculate(sortedNumbers);
-        }
         /// <summary>
-        /// gets the median value from a SORTED array of numbers
+        /// Calculates the median from a sorted list of numbers and returns it as double.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="sortedNumbers"></param>
         /// <returns></returns>
-        private double Calculate(T[] sortedNumbers)
+        private static double CalculateMedian<T>(IList<T> sortedNumbers) where T : INumber<T>
         {
-            int length = sortedNumbers.Length;
-
-            if (length % 2 == 0)
+            int count = sortedNumbers.Count;
+            if (count % 2 == 0)
             {
-                return (Convert.ToDouble(sortedNumbers[length / 2 - 1]) + Convert.ToDouble(sortedNumbers[length / 2])) / 2.0;
+                return (Convert.ToDouble(sortedNumbers[count / 2 - 1]) + Convert.ToDouble(sortedNumbers[count / 2])) / 2.0;
             }
             else
             {
-                return Convert.ToDouble(sortedNumbers[length / 2]);
+                return Convert.ToDouble(sortedNumbers[count / 2]);
             }
         }
     }

@@ -209,7 +209,7 @@ namespace Optimize.AverageNS
             uint numberSizeSteps = 20;
             SimpleExponentialAverage_Double simpleAverage = new SimpleExponentialAverage_Double(numberSizeSteps, optimizeValue);
             ProgressingAverage_Double progressingAverage = new ProgressingAverage_Double();
-            StandardDeviation divergence_sdv = new StandardDeviation();
+            StandardDeviation_Double divergence_sdv = new StandardDeviation_Double();
             ProgressingAverage_Double divergence_avg = new ProgressingAverage_Double();
             ProgressingAverage_Double total_divergence_sdv_avg = new ProgressingAverage_Double();
             ProgressingAverage_Double total_divergence_avg = new ProgressingAverage_Double();
@@ -281,12 +281,12 @@ namespace Optimize.AverageNS
             uint lengthSteps = 15;
             // generate simple average queues
             List<SimpleExponentialAverage_Double> simpleAverages = new List<SimpleExponentialAverage_Double>();
-            List<StandardDeviation> divergence_sdv = new List<StandardDeviation>();
+            List<StandardDeviation_Double> divergence_sdv = new List<StandardDeviation_Double>();
             List<ProgressingAverage_Double> divergence_avg = new List<ProgressingAverage_Double>();
             for(int i = 2; i <= lengthSteps; i++)
             {
                 simpleAverages.Add(new SimpleExponentialAverage_Double((uint)Math.Pow(i, 4),optimizeValue));
-                divergence_sdv.Add(new StandardDeviation());
+                divergence_sdv.Add(new StandardDeviation_Double());
                 divergence_avg.Add(new ProgressingAverage_Double());
             }
             ProgressingAverage_Double comparisonBenchmark = new ProgressingAverage_Double();
