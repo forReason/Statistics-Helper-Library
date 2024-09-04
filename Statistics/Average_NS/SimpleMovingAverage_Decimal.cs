@@ -1,29 +1,40 @@
-﻿namespace QuickStatistics.Net.Average_NS
+﻿using System.Globalization;
+using System.Text;
+
+namespace QuickStatistics.Net.Average_NS
 {
     /// <summary>
-    /// a very simple and fast method to get the moving average on sliding data.
-    /// This function is particularly useful for large datasets or infinite data inflow
+    /// A method to calculate the moving average on sliding data using a fixed-size window.
+    /// This implementation is particularly useful for infinite or unbounded data streams,
+    /// as it maintains a constant memory footprint by only storing data points within the defined window size (`MaxDataLength`).
     /// </summary>
     /// <remarks>
-    /// Memory requirement grows linearly with the data length. <br/>
-    /// For very large lengths, an <see cref="SimpleExponentialAverage_Decimal"/> may
-    /// be better suited, although less precise (focusses on recent datapoints)
+    /// Memory requirement grows linearly with the window size (`MaxDataLength`), not with the total data inflow.
+    /// For very large window sizes, a <see cref="SimpleExponentialAverage_Decimal"/> may be more suitable,
+    /// as it uses constant memory and focuses on recent data points, albeit with a loss in precision.
     /// </remarks>
     public class SimpleMovingAverage_Decimal
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleMovingAverage_Decimal"/> class with a specified length for the moving average window.
+        /// Initializes a new instance of the <see cref="SimpleMovingAverage_Decimal"/> class with a specified window size for the moving average.
+        /// This window size defines how many of the most recent data points are used in the calculation.
         /// </summary>
         /// <remarks>
-        /// Memory requirement grows linearly with the data length. <br/>
-        /// For very large lengths, an <see cref="SimpleExponentialAverage_Decimal"/> may
-        /// be better suited, although less precise (focusses on recent datapoints)
+        /// Memory usage grows linearly with the window size (`MaxDataLength`), not the total amount of data processed.
+        /// For scenarios requiring very large window sizes, consider using a <see cref="SimpleExponentialAverage_Decimal"/>,
+        /// which maintains a constant memory footprint by focusing on recent data points, albeit with reduced precision.
         /// </remarks>
-        /// <param name="length">The length of the moving average window.</param>
-        public SimpleMovingAverage_Decimal(int length)
+        /// <param name="length">The fixed window size for the moving average, determining how many recent data points are considered.</param>
+        /// <param name="backupPath">the path to a backup file. if set, every datapoint will be stored. WARNING with large and fast data!</param>
+        public SimpleMovingAverage_Decimal(int length, string backupPath = "")
         {
             MaxDataLength = length;
             Clear();
+            if (!string.IsNullOrEmpty(backupPath))
+            {
+                BackupFile = new FileInfo(backupPath);
+                RestoreBackup();
+            }
         }
         /// <summary>
         /// holds all the values
@@ -50,6 +61,8 @@
         /// </summary>
         public decimal AbsoluteRateOfChange { get { return (AverageQueue.Last() - AverageQueue.Peek()) / AverageQueue.Count; } }
 
+        public FileInfo? BackupFile { get; private set; }
+        private Queue<string> BackupLines = new Queue<string>();
         /// <summary>
         /// Calculates the trend based on the moving average in order to obtain a percentage
         /// </summary>
@@ -107,6 +120,51 @@
                 change -= AverageQueue.Dequeue();
                 Value += change;
             }
+            if (BackupFile != null)
+            {
+                AddBackupValue(input);
+                StoreBackup();
+            }
+        }
+        private void AddBackupValue(decimal input)
+        {
+            if (BackupFile == null) return;
+            
+            BackupLines.Enqueue(input.ToString(CultureInfo.InvariantCulture));
+
+            if (BackupLines.Count > MaxDataLength)
+            {
+                BackupLines.Dequeue();
+            }
+        }
+
+        private void StoreBackup()
+        {
+            if (BackupFile == null) return;
+
+            BackupFile.Directory.Create();
+            File.WriteAllLines(BackupFile.FullName, BackupLines);
+        }
+
+        private void RestoreBackup()
+        {
+            if (BackupFile?.Exists != true) return;
+
+            string[] lines = File.ReadAllLines(BackupFile.FullName);
+            foreach (string line in lines)
+            {
+                decimal value = decimal.Parse(line, CultureInfo.InvariantCulture);
+                AverageQueue.Enqueue(value / MaxDataLength);
+                if (AverageQueue.Count <= MaxDataLength)
+                {
+                    Value += (value - Value) / AverageQueue.Count;
+                }
+                else
+                {
+                    decimal change = value / MaxDataLength - AverageQueue.Dequeue();
+                    Value += change;
+                }
+            }
         }
         /// <summary>
         /// Clears all data points and resets the moving average to zero.
@@ -115,7 +173,9 @@
         {
             AverageQueue.Clear();
             Value = 0;
+            BackupLines.Clear();
         }
+
         /// <returns>The current SMA value as a string.</returns>
         public override string ToString()
         {

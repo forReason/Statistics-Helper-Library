@@ -1,29 +1,38 @@
-﻿namespace QuickStatistics.Net.Average_NS
+﻿using System.Globalization;
+
+namespace QuickStatistics.Net.Average_NS
 {
     /// <summary>
-    /// Provides a simple and fast method for calculating the moving average on a sliding data window.
-    /// This class is especially useful for large datasets or continuous data streams.
+    /// Provides a simple and efficient method for calculating the moving average over a sliding data window.
+    /// This class is especially useful for large datasets or continuous data streams, as it maintains a fixed memory footprint based on the specified window size.
     /// </summary>
     /// <remarks>
-    /// Memory requirement grows linearly with the data length. <br/>
-    /// For very large lengths, an <see cref="SimpleExponentialAverage_Double"/> may
-    /// be better suited, although less precise (focusses on recent datapoints)
+    /// Memory usage grows linearly with the window size (`MaxDataLength`), not the total amount of data processed.
+    /// For scenarios requiring very large window sizes, a <see cref="SimpleExponentialAverage_Double"/> may be more appropriate,
+    /// as it uses constant memory by focusing on recent data points, albeit with reduced precision.
     /// </remarks>
     public class SimpleMovingAverage_Double
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleMovingAverage_Double"/> class with a specified length for the moving average window.
+        /// Initializes a new instance of the <see cref="SimpleMovingAverage_Double"/> class with a specified window size for the moving average.
+        /// This window size determines the number of recent data points included in the calculation.
         /// </summary>
         /// <remarks>
-        /// Memory requirement grows linearly with the data length. <br/>
-        /// For very large lengths, an <see cref="SimpleExponentialAverage_Double"/> may
-        /// be better suited, although less precise (focusses on recent datapoints)
+        /// Memory usage grows linearly with the window size (`MaxDataLength`), making it suitable for large datasets with a manageable window size.
+        /// For very large window sizes, consider using a <see cref="SimpleExponentialAverage_Double"/> to maintain constant memory usage,
+        /// though with less precision due to its focus on recent data points.
         /// </remarks>
-        /// <param name="length">The length of the moving average window.</param>
-        public SimpleMovingAverage_Double(int length)
+        /// <param name="length">The window size for the moving average, defining how many recent data points are considered.</param>
+        /// <param name="backupPath">the path to a backup file. if set, every datapoint will be stored. WARNING with large and fast data!</param>
+        public SimpleMovingAverage_Double(int length, string backupPath = "")
         {
             MaxDataLength = length;
             Clear();
+            if (!string.IsNullOrEmpty(backupPath))
+            {
+                BackupFile = new FileInfo(backupPath);
+                RestoreBackup();
+            }
         }
 
         /// <summary>
@@ -55,6 +64,8 @@
         /// </summary>
         public double AbsoluteRateOfChange { get { return (AverageQueue.Last() - AverageQueue.Peek()) / AverageQueue.Count; } }
 
+        public FileInfo? BackupFile { get; private set; }
+        private Queue<string> BackupLines = new Queue<string>();
         /// <summary>
         /// Calculates the trend based on the moving average in order to obtain a percentage
         /// </summary>
@@ -113,8 +124,52 @@
                 change -= AverageQueue.Dequeue();
                 Value += change;
             }
+            if (BackupFile != null)
+            {
+                AddBackupValue(input);
+                StoreBackup();
+            }
+        }
+        private void AddBackupValue(double input)
+        {
+            if (BackupFile == null) return;
+            
+            BackupLines.Enqueue(input.ToString(CultureInfo.InvariantCulture));
+
+            if (BackupLines.Count > MaxDataLength)
+            {
+                BackupLines.Dequeue();
+            }
         }
 
+        private void StoreBackup()
+        {
+            if (BackupFile == null) return;
+
+            BackupFile.Directory.Create();
+            File.WriteAllLines(BackupFile.FullName, BackupLines);
+        }
+
+        private void RestoreBackup()
+        {
+            if (BackupFile?.Exists != true) return;
+
+            string[] lines = File.ReadAllLines(BackupFile.FullName);
+            foreach (string line in lines)
+            {
+                double value = double.Parse(line, CultureInfo.InvariantCulture);
+                AverageQueue.Enqueue(value / MaxDataLength);
+                if (AverageQueue.Count <= MaxDataLength)
+                {
+                    Value += (value - Value) / AverageQueue.Count;
+                }
+                else
+                {
+                    double change = value / MaxDataLength - AverageQueue.Dequeue();
+                    Value += change;
+                }
+            }
+        }
         /// <summary>
         /// Clears all data points and resets the moving average to zero.
         /// </summary>
@@ -122,6 +177,7 @@
         {
             AverageQueue.Clear();
             Value = 0;
+            BackupLines.Clear();
         }
         /// <returns>The current SMA value as a string.</returns>
         public override string ToString()

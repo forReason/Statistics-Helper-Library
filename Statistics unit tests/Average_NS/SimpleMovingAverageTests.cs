@@ -1,9 +1,6 @@
 ﻿using QuickStatistics.Net.Average_NS;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using Xunit;
 
 namespace Statistics_unit_tests.Average_NS
@@ -156,6 +153,85 @@ namespace Statistics_unit_tests.Average_NS
                     }
                 }
             }
+        }
+        [Fact]
+        public void AddValue_ShouldUpdateAverageCorrectly()
+        {
+            // Arrange
+            var sma = new SimpleMovingAverage_Decimal(3);
+            sma.AddValue(1);
+            sma.AddValue(2);
+            sma.AddValue(3);
+
+            // Act
+            var result = sma.Value;
+
+            // Assert
+            Assert.Equal(2, result); // (1 + 2 + 3) / 3 = 2
+        }
+
+        [Fact]
+        public void Backup_ShouldStoreValuesCorrectly()
+        {
+            // Arrange
+            string backupPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".txt");
+            var sma = new SimpleMovingAverage_Decimal(3, backupPath);
+            sma.AddValue(1);
+            sma.AddValue(2);
+            sma.AddValue(3);
+
+            // Act
+            var lines = File.ReadAllLines(backupPath);
+
+            // Assert
+            Assert.Equal(3, lines.Length);
+
+            // Clean up
+            File.Delete(backupPath);
+        }
+
+        [Fact]
+        public void RestoreBackup_ShouldLoadValuesCorrectly()
+        {
+            // Arrange
+            string backupPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".txt");
+            File.WriteAllLines(backupPath, new[] { "0.3333333333333333333333333333", "0.6666666666666666666666666667", "1" });
+            var sma = new SimpleMovingAverage_Decimal(3, backupPath);
+
+            // Act
+            var result = Math.Round(sma.Value,3);
+
+            // Assert
+            Assert.Equal(0.667m, result); // (1 + 2 + 3) / 3 = 2
+
+            // Clean up
+            File.Delete(backupPath);
+        }
+
+        [Fact]
+        public void AddValue_ShouldNotThrow_WhenBackupPathIsEmpty()
+        {
+            // Arrange
+            var sma = new SimpleMovingAverage_Decimal(3, "");
+
+            // Act & Assert
+            var exception = Record.Exception(() => sma.AddValue(1));
+            Assert.Null(exception); // Ensure no exception is thrown
+        }
+
+        [Fact]
+        public void Backup_ShouldBeDisabled_WhenBackupPathIsNull()
+        {
+            // Arrange
+            var sma = new SimpleMovingAverage_Decimal(3, null);
+
+            // Act
+            sma.AddValue(1);
+            sma.AddValue(2);
+            sma.AddValue(3);
+
+            // BackupFile should be null and no backup should be stored
+            Assert.Null(sma.BackupFile);
         }
     }
 }

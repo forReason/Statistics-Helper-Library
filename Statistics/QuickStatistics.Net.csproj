@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net8.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -17,8 +17,12 @@
     <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>3.1.0</Version>
-    <PackageReleaseNotes>3.1.0
+    <Version>3.1.1</Version>
+    <PackageReleaseNotes>3.1.1
+- Added option to back up SimpleMovingAverage, just as MovingAverage
+- update docs for simple moving average
+
+3.1.0
 - Renamed RunningMedian to ProgressingMedian to fall in line with ProgressingAverage
 - Added feature to get distributionMap from Median
 - MovingMedian can obtain a percentile now
@@ -85,7 +89,7 @@ double average = myEnumerable.GetAverage();
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="QuickCsv.Net" Version="1.0.1" />
+    <PackageReference Include="QuickCsv.Net" Version="1.1.1" />
   </ItemGroup>
 
   <ItemGroup>
