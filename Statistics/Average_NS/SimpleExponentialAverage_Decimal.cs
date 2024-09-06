@@ -18,7 +18,7 @@ namespace QuickStatistics.Net.Average_NS
         private uint _CorrectedDataLength;
         private decimal _DivergenceCorrection;
         private uint _CurrentDataLength { get; set; }
-        public FileInfo? BackupFile { get; private set; }
+        public FileInfo? BackupFile { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleExponentialAverage_Decimal"/> class with specified settings.
