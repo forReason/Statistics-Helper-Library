@@ -17,8 +17,11 @@
     <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>3.1.2</Version>
-    <PackageReleaseNotes>3.1.2
+    <Version>3.1.3</Version>
+    <PackageReleaseNotes>3.1.3
+- SimpleExponentialAverage was internal
+
+3.1.2
 - Added backup Option to SimpleExponentialAverage
 
 3.1.1

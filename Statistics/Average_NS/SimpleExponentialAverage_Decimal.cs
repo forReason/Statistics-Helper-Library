@@ -12,7 +12,7 @@ namespace QuickStatistics.Net.Average_NS
     /// The exponential moving average is a type of weighted moving average that gives more weight to recent data points,
     /// making it more responsive to recent changes compared to a simple moving average.
     /// </remarks>
-    internal class SimpleExponentialAverage_Decimal
+    public class SimpleExponentialAverage_Decimal
     {
         private uint _MaxDataLength;
         private uint _CorrectedDataLength;
