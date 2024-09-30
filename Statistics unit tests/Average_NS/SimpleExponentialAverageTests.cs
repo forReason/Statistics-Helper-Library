@@ -23,6 +23,20 @@ public class SimpleExponentialAverageTests
             // Assert
             Assert.Equal(22.5m, result, 1); // (10 + 20 + 30) / 3 = 20 (approximately due to EMA behavior)
         }
+        [Fact]
+        public void AddValue_TestSave()
+        {
+            string benchPath = Path.Combine(
+                "ModelBenchmarks", 
+                "192.168.1.1", 
+                "test" + ".benchmark"
+            );
+            FileInfo benchFile = new FileInfo(benchPath);
+            if (!benchFile.Directory.Exists) benchFile.Directory.Create();
+            SimpleExponentialAverage_Decimal newBench = new SimpleExponentialAverage_Decimal(1000, backupPath: benchPath);
+            newBench.AddValue(100);
+            {}
+        }
 
         [Fact]
         public void Backup_ShouldStoreStateCorrectly()

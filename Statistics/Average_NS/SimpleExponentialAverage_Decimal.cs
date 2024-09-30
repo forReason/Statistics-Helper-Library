@@ -124,6 +124,7 @@ namespace QuickStatistics.Net.Average_NS
                 {
                     writer.WriteLine(Value.ToString(CultureInfo.InvariantCulture));
                     writer.WriteLine(_CurrentDataLength.ToString(CultureInfo.InvariantCulture));
+                    writer.Flush();
                 }
 
                 // Check if the original backup file exists.
