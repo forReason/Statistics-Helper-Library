@@ -17,8 +17,8 @@
     <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>3.1.4</Version>
-    <PackageReleaseNotes>3.x.x
+    <Version>3.2.1</Version>
+    <PackageReleaseNotes>3.2.1
 - fix writer Flush
 
 3.1.3
