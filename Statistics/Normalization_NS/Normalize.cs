@@ -23,15 +23,14 @@ public static class Normalize
     /// </remarks>
     public static (double normalizedInteger, double normalizedFraction) NormalizeDecimal(decimal value, decimal maxValue)
     {
-        // Extract integer and fractional parts
+        // Extract integer (123.456 -> 123)
         decimal integerPart = Math.Floor(value);
-        decimal fractionalPart = value - integerPart;
 
-        // Normalize integer part to the range [0, 1]
+        // 21 000 000 -> 1.0
         double normalizedInteger = (double)(integerPart / maxValue);
 
-        // Normalize fractional part (scaled to 0 to 1 within a single unit)
-        double normalizedFraction = (double)fractionalPart;
+        // Normalize fractional part (0.xxxx)
+        double normalizedFraction = (double)(value - integerPart);
 
         return (normalizedInteger, normalizedFraction);
     }
