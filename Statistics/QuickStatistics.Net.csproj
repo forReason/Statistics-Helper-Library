@@ -17,8 +17,11 @@
     <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>3.2.2</Version>
-    <PackageReleaseNotes>3.2.2
+    <Version>3.2.3</Version>
+    <PackageReleaseNotes>3.2.3
+- add date normalization
+
+3.2.2
 - Added normalization namespace and method to normalize a decimal value to two double values for neuronal nets
 
 3.2.1

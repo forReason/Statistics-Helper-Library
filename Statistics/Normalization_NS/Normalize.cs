@@ -35,4 +35,37 @@ public static class Normalize
 
         return (normalizedInteger, normalizedFraction);
     }
+    /// <summary>
+    /// Normalizes a DateTime value to the range [0, 1] based on an optional start date and an end date.
+    /// </summary>
+    /// <param name="value">The DateTime value to normalize.</param>
+    /// <param name="startDate">The start DateTime for normalization. Defaults to Unix epoch (1970-01-01T00:00:00Z).</param>
+    /// <param name="endDate">The end DateTime for normalization. Defaults to the year 4000.</param>
+    /// <returns>
+    /// A double representing the normalized DateTime value in the range [0, 1].
+    /// </returns>
+    /// <remarks>
+    /// The function assumes that <paramref name="value"/> is within the range of [<paramref name="startDate"/>, <paramref name="endDate"/>].
+    /// </remarks>
+    public static double NormalizeDateTime(DateTime value, DateTime? startDate = null, DateTime? endDate = null)
+    {
+        // Default start date to Unix epoch (1970-01-01T00:00:00Z)
+        DateTime start = startDate ?? new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        // Default end date to the year 4000
+        DateTime end = endDate ?? new DateTime(4000, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        if (value < start || value > end)
+            throw new ArgumentOutOfRangeException(nameof(value), "The DateTime value must be within the specified range.");
+
+        // Calculate the total range in milliseconds
+        double totalRange = (end - start).TotalMilliseconds;
+
+        // Calculate the value's position in milliseconds from the start
+        double valuePosition = (value - start).TotalMilliseconds;
+
+        // Normalize to the range [0, 1]
+        return valuePosition / totalRange;
+    }
+
 }
