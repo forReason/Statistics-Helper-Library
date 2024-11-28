@@ -17,8 +17,17 @@
     <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>3.2.3</Version>
-    <PackageReleaseNotes>3.2.3
+    <Version>3.3.0</Version>
+    <PackageReleaseNotes>3.3.0
+- Added String identifier normalization
+- Add decimal to floar array normalization
+- add unit tests
+- improve normalization features
+- add datetime extension for normalizing
+- improve decimal normalization
+- add long normalization
+
+3.2.3
 - add date normalization
 
 3.2.2
@@ -111,5 +120,9 @@ double average = myEnumerable.GetAverage();
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>Statistics unit tests</_Parameter1>
     </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AiHelpers\" />
   </ItemGroup>
 </Project>
