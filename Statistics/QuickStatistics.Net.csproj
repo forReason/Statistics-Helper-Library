@@ -17,8 +17,11 @@
     <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>3.3.0</Version>
-    <PackageReleaseNotes>3.3.0
+    <Version>3.4.0</Version>
+    <PackageReleaseNotes>3.4.0
+Added sleep tracker functionality. Experimentatal, could be used for health apps or ai advisors.
+
+3.3.0
 - Added String identifier normalization
 - Add decimal to floar array normalization
 - add unit tests
@@ -120,9 +123,5 @@ double average = myEnumerable.GetAverage();
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>Statistics unit tests</_Parameter1>
     </AssemblyAttribute>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="AiHelpers\" />
   </ItemGroup>
 </Project>
