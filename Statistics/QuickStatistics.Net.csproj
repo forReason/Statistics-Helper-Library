@@ -17,7 +17,7 @@
     <PackageTags>statistics;average;moving average;min;max;variance;median;moving median;rolling median;trend;strength;deviation</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>3.4.1</Version>
+    <Version>3.4.2</Version>
     <PackageReleaseNotes>3.4.1
 - update packages
 
@@ -119,7 +119,7 @@ double average = myEnumerable.GetAverage();
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="QuickCsv.Net" Version="1.1.1" />
+    <PackageReference Include="QuickCsv.Net" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
